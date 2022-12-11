@@ -1,0 +1,14 @@
+{
+  "name": "Gachon App",
+  "description": "가천대학교 학생들을 위한 어플리케이션",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "hello",
+    "default_popup": "index.html"
+  },
+  "permissions": ["storage"]
+}
