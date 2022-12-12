@@ -4,11 +4,23 @@
   "version": "1.0",
   "manifest_version": 3,
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/pages/background/index.js"
   },
   "action": {
     "default_title": "hello",
-    "default_popup": "index.html"
+    "default_popup": "src/pages/popup/index.html"
   },
-  "permissions": ["storage"]
+  "icons": {
+    "16": "logo16.png",
+    "48": "logo48.png",
+    "128": "logo128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://cyber.gachon.ac.kr/*"],
+      "js": ["src/pages/content/index.js"]
+    }
+  ],
+  "options_page": "src/pages/options/index.html",
+  "permissions": ["storage", "activeTab"]
 }
