@@ -18,7 +18,8 @@
     "baseUrl": ".",
     "paths": {
       "@styles/*": ["src/styles/*"],
-      "@pages/*": ["src/pages/*"]
+      "@pages/*": ["src/pages/*"],
+      "@utils/*": ["src/utils/*"]
     }
   },
   "include": ["src", "**/*.ts", "**/*.tsx"],

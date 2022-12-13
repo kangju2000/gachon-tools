@@ -4,7 +4,7 @@
   "version": "1.0",
   "manifest_version": 3,
   "action": {
-    "default_title": "hello",
+    "default_title": "popup",
     "default_popup": "src/pages/popup/index.html"
   },
   "icons": {
@@ -14,8 +14,14 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://cyber.gachon.ac.kr/*"],
+      "matches": ["https://cyber.gachon.ac.kr/"],
       "js": ["src/pages/content/index.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/js/*.js", "assets/css/*.css"],
+      "matches": ["*://*/*"]
     }
   ],
   "options_page": "src/pages/options/index.html",

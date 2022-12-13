@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import path, { resolve } from 'path';
+import customDynamicImport from './src/utils/custom-dynamic-import';
 
 const root = resolve(__dirname, 'src');
 const pagesDir = resolve(root, 'pages');
@@ -9,7 +10,7 @@ const stylesDir = resolve(root, 'styles');
 const outDir = resolve(__dirname, 'dist');
 const publicDir = resolve(__dirname, 'public');
 
-const isDev = process.env.__DEV__ === 'true';
+// const isDev = process.env.__DEV__ === 'true';
 
 export default defineConfig({
   resolve: {
@@ -19,11 +20,11 @@ export default defineConfig({
       '@pages': pagesDir,
     },
   },
-  plugins: [react(), tsconfigPaths()],
+  plugins: [react(), tsconfigPaths(), customDynamicImport()],
   publicDir,
   build: {
     outDir,
-    sourcemap: isDev,
+    sourcemap: false,
     rollupOptions: {
       input: {
         content: resolve(pagesDir, 'content', 'index.ts'),
@@ -33,7 +34,7 @@ export default defineConfig({
       },
       output: {
         entryFileNames: 'src/pages/[name]/index.js',
-        chunkFileNames: isDev ? 'assets/js/[name].js' : 'assets/js/[name].[hash].js',
+        chunkFileNames: 'assets/js/[name].[hash].js',
         assetFileNames: assetInfo => {
           const { dir, name: _name } = path.parse(assetInfo.name as string);
           const assetFolder = getLastElement(dir.split('/'));
