@@ -6,15 +6,15 @@ interface IBox {
 
 function Box({ course }: IBox) {
   return (
-    <div className="w-full">
-      <p>
+    <div className="w-full flex justify-between">
+      <a href={`https://cyber.gachon.ac.kr/course/view.php?id=${course.id}`}>
         {course.title} / {course.professor}
-      </p>
+      </a>
       <p>
         {course.assignment?.map(item => (
           <>
-            <p>{item.title}</p>
-            <p>{item.isDone}</p>
+            <a href={item.link}>{item.title}</a>
+            <p>{item.isDone ? '제출완료' : '미제출'}</p>
           </>
         ))}
       </p>

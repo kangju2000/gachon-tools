@@ -30,19 +30,19 @@ function Content() {
     return link.split('=')[1];
   };
 
-  const setAssignment = async (id: string) => {
+  const getAssignment = async (id: string) => {
     const data = await axios
       .get(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${id}`)
       .then(res => res.data);
     const element = getElement(data);
-
     const assignmentLink = element.querySelectorAll('td.cell.c1 > a');
     const deadline = element.getElementsByClassName('cell c2');
     const isDone = element.getElementsByClassName('cell c3');
 
-    let assignList: IAssignment[] = [];
+    let assignment: IAssignment[] = [];
+
     Array.from({ length: assignmentLink.length }).forEach((_, i) => {
-      assignList.push({
+      assignment.push({
         title: assignmentLink[i].textContent as string,
         link: (assignmentLink[i] as HTMLAnchorElement).href,
         deadline: deadline[i].textContent as string,
@@ -50,43 +50,38 @@ function Content() {
       });
     });
 
-    const updateCourseList = courseList.map(course => {
-      if ((course.id = id)) {
-        return {
-          ...course,
-          assignment: assignList,
-        };
-      }
-      return course;
-    });
-
-    setCourseList(updateCourseList);
+    return assignment;
   };
 
-  const onSearchClick = () => {
-    courseList.map(course => {
-      setAssignment(course.id);
-    });
-
-    setIsFound(true);
-  };
-
-  useEffect(() => {
-    console.log('로드 성공');
+  const init = () => {
     const courseLinkList = document.getElementsByClassName('course_link');
     const courseDetailList = document.getElementsByClassName('course-title');
 
     Array.from({ length: courseLinkList.length }).forEach((_, i) => {
       const link = (courseLinkList[i] as HTMLAnchorElement).href;
+      const id = getCourseId(link);
       const [title, professor] = (courseDetailList[i] as HTMLElement).innerText.split('\n\n');
-      setCourseList(prev => [...prev, { id: getCourseId(link), title, professor }]);
+      getAssignment(id).then(assignment =>
+        setCourseList(prev => [...prev, { id, title, professor, assignment }]),
+      );
     });
+  };
+
+  useEffect(() => {
+    console.log('로드 성공');
+    init();
   }, []);
 
   return (
     <div>
-      <button onClick={onSearchClick}>과제 찾기</button>
-      {isFound ? courseList.map(course => <Box course={course} />) : <p>로딩중...</p>}
+      <button
+        onClick={() => {
+          console.log(courseList);
+        }}
+      >
+        과제 찾기
+      </button>
+      {courseList ? courseList.map(course => <Box course={course} />) : <p>로딩중...</p>}
     </div>
   );
 }
