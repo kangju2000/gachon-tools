@@ -15,7 +15,8 @@
   "content_scripts": [
     {
       "matches": ["https://cyber.gachon.ac.kr/"],
-      "js": ["src/pages/content/index.js"]
+      "js": ["src/pages/content/index.js"],
+      "css": ["assets/css/Globals.chunk.css", "assets/css/Main.chunk.css"]
     }
   ],
   "web_accessible_resources": [

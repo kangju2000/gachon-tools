@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import Box from './components/Box/Box';
+import styles from './index.module.css';
 
 const dummyData = [
   {
     id: '79609',
     title: '컴퓨터그래픽스 (07943_003) (2학기)',
     professor: '황재천',
-    assignment: [
+    assignments: [
       {
         title: '과제_1차',
         link: 'https://cyber.gachon.ac.kr/mod/assign/view.php?id=581089',
@@ -32,15 +32,15 @@ const dummyData = [
     id: '79658',
     title: '운영체제 (08306_001) (2학기)',
     professor: '오상엽',
-    assignment: [],
+    assignments: [],
   },
   {
     id: '82194',
     title: 'JAVA (13979_001) (2학기)',
     professor: '윤유림',
-    assignment: [
+    assignments: [
       {
-        title: 'Programming Test #0',
+        title: 'Programming Test #0dkdkdkdkdkdkdkdkdkdkdkdkdkdkdk',
         link: 'https://cyber.gachon.ac.kr/mod/assign/view.php?id=561658',
         deadline: '2020-09-08 23:00',
         isDone: false,
@@ -111,13 +111,13 @@ const dummyData = [
     id: '80677',
     title: '사회봉사 (12427_038) (2학기)',
     professor: '이병문',
-    assignment: [],
+    assignments: [],
   },
   {
     id: '79655',
     title: '데이터베이스 (08296_006) (2학기)',
     professor: '윤영미',
-    assignment: [
+    assignments: [
       {
         title: 'UNIVERSITY 데이터베이스 설계',
         link: 'https://cyber.gachon.ac.kr/mod/assign/view.php?id=586409',
@@ -166,7 +166,7 @@ const dummyData = [
     id: '80637',
     title: '창의적 사고 (12410_001) (2학기)',
     professor: '조선희',
-    assignment: [
+    assignments: [
       {
         title: '수업요약문제출',
         link: 'https://cyber.gachon.ac.kr/mod/assign/view.php?id=566084',
@@ -191,13 +191,13 @@ const dummyData = [
     id: '80615',
     title: '플랫폼 혁명의 이해 (12402_001) (2학기)',
     professor: '이승훈',
-    assignment: [],
+    assignments: [],
   },
   {
     id: '82530',
     title: '지성학Ⅱ (14572_001) (2학기)',
     professor: '이두형',
-    assignment: [
+    assignments: [
       {
         title: '[필수] 지성학2 중간과제 제출',
         link: 'https://cyber.gachon.ac.kr/mod/assign/view.php?id=590885',
@@ -222,7 +222,7 @@ const dummyData = [
     id: '73208',
     title: '2022 폭력예방교육 (글로벌 재학생 2학년~5학년 대상)',
     professor: '이윤우 / 송채수',
-    assignment: [],
+    assignments: [],
   },
 ];
 
@@ -237,7 +237,7 @@ export interface ICourse {
   id: string;
   title: string;
   professor: string;
-  assignment?: IAssignment[];
+  assignments?: IAssignment[];
 }
 
 export interface IContent {
@@ -246,7 +246,7 @@ export interface IContent {
 
 function Content() {
   const [courseList, setCourseList] = useState<ICourse[]>([]);
-  const [isFound, setIsFound] = useState<boolean>(false);
+  const [isDone, setIsDone] = useState<boolean>(false);
 
   const getElement = (data: string) => {
     const element = document.createElement('div');
@@ -258,58 +258,88 @@ function Content() {
     return link.split('=')[1];
   };
 
-  const getAssignment = async (id: string) => {
-    const data = await axios
-      .get(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${id}`)
-      .then(res => res.data);
+  const getCourseElement = async (id: string) => {
+    const response = await axios.get(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${id}`);
+    const data = await response.data;
     const element = getElement(data);
+
+    return element;
+  };
+
+  const getAssignments = (element: HTMLElement) => {
     const assignmentLink = element.querySelectorAll('td.cell.c1 > a');
     const deadline = element.getElementsByClassName('cell c2');
     const isDone = element.getElementsByClassName('cell c3');
 
-    let assignment: IAssignment[] = [];
+    const assignments: IAssignment[] = [];
 
     Array.from({ length: assignmentLink.length }).forEach((_, i) => {
-      assignment.push({
+      assignments.push({
         title: assignmentLink[i].textContent as string,
         link: (assignmentLink[i] as HTMLAnchorElement).href,
         deadline: deadline[i].textContent as string,
-        isDone: isDone[i].textContent === '제출 완료', // 영어 강의일 경우 바꿔야 함
+        isDone:
+          isDone[i].textContent === '제출 완료' ||
+          isDone[i].textContent === 'Submitted for grading',
       });
     });
 
-    return assignment;
+    return assignments;
   };
 
-  const init = () => {
+  const getCourses = () => {
     const courseLinkList = document.getElementsByClassName('course_link');
-    const courseDetailList = document.getElementsByClassName('course-title');
+    const professorList = document.getElementsByClassName('prof');
 
     Array.from({ length: courseLinkList.length }).forEach((_, i) => {
-      const link = (courseLinkList[i] as HTMLAnchorElement).href;
-      const id = getCourseId(link);
-      const [title, professor] = (courseDetailList[i] as HTMLElement).innerText.split('\n\n');
-      getAssignment(id).then(assignment =>
-        setCourseList(prev => [...prev, { id, title, professor, assignment }]),
-      );
+      const id = getCourseId((courseLinkList[i] as HTMLAnchorElement).href);
+      const professor = professorList[i].textContent as string;
+
+      getCourseElement(id).then(element => {
+        const assignments = getAssignments(element);
+        const title = element.getElementsByClassName('breadcrumb')[0].textContent as string;
+        setCourseList(prev => [...prev, { id, title, professor, assignments }]);
+      });
     });
   };
 
+  // const init = () => {
+  //   getCourses().then(courses => {
+  //     console.log(courses);
+  //     setCourseList(courses);
+  //     setIsDone(true);
+  //   });
+  // };
+
   useEffect(() => {
-    console.log('로드 성공');
-    process.env.NODE_ENV === 'production' ? init() : setCourseList(dummyData);
+    process.env.NODE_ENV === 'production' ? getCourses() : setCourseList(dummyData);
   }, []);
 
   return (
-    <div>
-      <button
-        onClick={() => {
-          console.log(courseList);
-        }}
-      >
-        과제 찾기
-      </button>
-      {/* {courseList ? courseList.map(course => <Box course={course} />) : <p>로딩중...</p>} */}
+    <div className={styles.container}>
+      <nav className={styles.menu}>
+        <h1 className={`text-[22px]`}>내 과제 리스트</h1>
+        <div className={styles.line}></div>
+        {courseList.map(course => (
+          <p className={`${styles.courseTitle} ${styles.hidden_text}`}>{course.title}</p>
+        ))}
+      </nav>
+      <section className={styles.taskList}>
+        <button className={styles.btn_filter}>시간 순</button>
+        {courseList.map(course =>
+          course.assignments?.map(assignment => (
+            <div className={styles.task}>
+              <div className="sm:w-[120px] xl:w-[200px]">
+                <p className={`${styles.task_courseTitle} ${styles.hidden_text}`}>{course.title}</p>
+                <p className={`${styles.task_assignmentTitle} ${styles.hidden_text}`}>
+                  {assignment.title}
+                </p>
+              </div>
+              <div>{assignment.deadline}</div>
+            </div>
+          )),
+        )}
+      </section>
     </div>
   );
 }
