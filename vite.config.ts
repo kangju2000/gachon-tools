@@ -10,8 +10,6 @@ const stylesDir = resolve(root, 'styles');
 const outDir = resolve(__dirname, 'dist');
 const publicDir = resolve(__dirname, 'public');
 
-// const isDev = process.env.__DEV__ === 'true';
-
 export default defineConfig({
   resolve: {
     alias: {
@@ -28,8 +26,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         content: resolve(pagesDir, 'content', 'index.ts'),
-        // contentStyle: resolve(pagesDir, 'content', 'index.css'),
-        // background: resolve(pagesDir, 'background', 'index.ts'),
+        contentStyle: resolve(pagesDir, 'content', 'index.module.scss'),
         popup: resolve(pagesDir, 'popup', 'index.html'),
         options: resolve(pagesDir, 'options', 'index.html'),
       },

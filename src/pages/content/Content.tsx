@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import styles from './index.module.css';
+import TaskBox from './components/TaskBox';
+import styles from './index.module.scss';
 
 const dummyData = [
   {
@@ -246,7 +247,7 @@ export interface IContent {
 
 function Content() {
   const [courseList, setCourseList] = useState<ICourse[]>([]);
-  const [isDone, setIsDone] = useState<boolean>(false);
+  const [currentMenuId, setCurrentMenuId] = useState<string>('');
 
   const getElement = (data: string) => {
     const element = document.createElement('div');
@@ -303,14 +304,6 @@ function Content() {
     });
   };
 
-  // const init = () => {
-  //   getCourses().then(courses => {
-  //     console.log(courses);
-  //     setCourseList(courses);
-  //     setIsDone(true);
-  //   });
-  // };
-
   useEffect(() => {
     process.env.NODE_ENV === 'production' ? getCourses() : setCourseList(dummyData);
   }, []);
@@ -320,23 +313,33 @@ function Content() {
       <nav className={styles.menu}>
         <h1 className={`text-[22px]`}>내 과제 리스트</h1>
         <div className={styles.line}></div>
+        <p
+          className={`${styles.courseTitle} ${
+            currentMenuId === '' ? 'text-[#0370a6]' : 'text-inherit'
+          }`}
+          onClick={() => setCurrentMenuId('')}
+        >
+          전체 보기
+        </p>
         {courseList.map(course => (
-          <p className={`${styles.courseTitle} ${styles.hidden_text}`}>{course.title}</p>
+          <p
+            className={`${styles.courseTitle} ${
+              currentMenuId === course.id ? 'text-[#0370a6]' : 'text-inherit'
+            }`}
+            onClick={() => setCurrentMenuId(course.id)}
+          >
+            {course.title}
+          </p>
         ))}
       </nav>
       <section className={styles.taskList}>
         <button className={styles.btn_filter}>시간 순</button>
-        {courseList.map(course =>
+        {(currentMenuId
+          ? courseList.filter(course => course.id === currentMenuId)
+          : courseList
+        ).map(course =>
           course.assignments?.map(assignment => (
-            <div className={styles.task}>
-              <div className="sm:w-[120px] xl:w-[200px]">
-                <p className={`${styles.task_courseTitle} ${styles.hidden_text}`}>{course.title}</p>
-                <p className={`${styles.task_assignmentTitle} ${styles.hidden_text}`}>
-                  {assignment.title}
-                </p>
-              </div>
-              <div>{assignment.deadline}</div>
-            </div>
+            <TaskBox courseTitle={course.title} assignment={assignment} />
           )),
         )}
       </section>
