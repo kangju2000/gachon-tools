@@ -1,32 +1,31 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import path, { resolve } from 'path';
-import customDynamicImport from './src/utils/custom-dynamic-import';
+import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import customDynamicImport from './src/utils/plugins/custom-dynamic-import';
 
 const root = resolve(__dirname, 'src');
-const pagesDir = resolve(root, 'pages');
 const stylesDir = resolve(root, 'styles');
-const outDir = resolve(__dirname, 'dist');
+const pagesDir = resolve(root, 'pages');
 const publicDir = resolve(__dirname, 'public');
 
 export default defineConfig({
   resolve: {
     alias: {
       '@src': root,
-      '@styles': stylesDir,
       '@pages': pagesDir,
+      '@public': publicDir,
+      '@styles': stylesDir,
     },
   },
   plugins: [react(), tsconfigPaths(), customDynamicImport()],
-  publicDir,
   build: {
-    outDir,
+    outDir: 'dist',
     sourcemap: false,
     rollupOptions: {
       input: {
+        background: resolve(pagesDir, 'background', 'index.ts'),
         content: resolve(pagesDir, 'content', 'index.ts'),
-        contentStyle: resolve(pagesDir, 'content', 'index.module.scss'),
         popup: resolve(pagesDir, 'popup', 'index.html'),
         options: resolve(pagesDir, 'options', 'index.html'),
       },

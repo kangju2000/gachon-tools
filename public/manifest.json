@@ -12,11 +12,15 @@
     "48": "logo48.png",
     "128": "logo128.png"
   },
+  "background": {
+    "service_worker": "src/pages/background/index.js",
+    "type": "module"
+  },
   "content_scripts": [
     {
       "matches": ["https://cyber.gachon.ac.kr/"],
       "js": ["src/pages/content/index.js"],
-      "css": ["assets/css/Globals.chunk.css", "assets/css/Main.chunk.css"]
+      "css": ["assets/css/Globals.chunk.css"]
     }
   ],
   "web_accessible_resources": [
@@ -25,6 +29,7 @@
       "matches": ["*://*/*"]
     }
   ],
+  "host_permissions": ["https://cyber.gachon.kr/*"],
   "options_page": "src/pages/options/index.html",
   "permissions": ["storage", "activeTab"]
 }

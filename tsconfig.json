@@ -7,7 +7,6 @@
     "skipLibCheck": true,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "moduleResolution": "Node",
@@ -19,9 +18,11 @@
     "paths": {
       "@styles/*": ["src/styles/*"],
       "@pages/*": ["src/pages/*"],
-      "@utils/*": ["src/utils/*"]
+      "@components/*": ["src/components/*"],
+      "@apis/*": ["src/apis/*"],
+      "@helpers/*": ["src/helpers/*"]
     }
   },
-  "include": ["src", "**/*.ts", "**/*.tsx"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

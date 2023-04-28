@@ -1,7 +1,11 @@
-import axios from 'axios';
+import courseApi from '@apis/course';
+import AssignmentCard from '@components/domains/AssignmentCard';
+import Modal from '@components/uis/Modal';
+import { Listbox } from '@headlessui/react';
+import Portal from '@helpers/portal';
 import { useEffect, useState } from 'react';
-import TaskBox from './components/TaskBox';
-import styles from './index.module.scss';
+import type { Assignment, Course } from 'src/types';
+import { generateNewElement, getCourseId } from 'src/utils';
 
 const dummyData = [
   {
@@ -227,43 +231,14 @@ const dummyData = [
   },
 ];
 
-export interface IAssignment {
-  title: string;
-  link: string;
-  deadline: string;
-  isDone: boolean;
-}
-
-export interface ICourse {
-  id: string;
-  title: string;
-  professor: string;
-  assignments?: IAssignment[];
-}
-
-export interface IContent {
-  element: any;
-}
-
 function Content() {
-  const [courseList, setCourseList] = useState<ICourse[]>([]);
-  const [currentMenuId, setCurrentMenuId] = useState<string>('');
-
-  const getElement = (data: string) => {
-    const element = document.createElement('div');
-    element.innerHTML = data;
-    return element;
-  };
-
-  const getCourseId = (link: string) => {
-    return link.split('=')[1];
-  };
+  const [courseList, setCourseList] = useState<Course[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const getCourseElement = async (id: string) => {
-    const response = await axios.get(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${id}`);
-    const data = await response.data;
-    const element = getElement(data);
-
+    const { data } = await courseApi.getCourseById(id);
+    const element = generateNewElement(data);
     return element;
   };
 
@@ -272,78 +247,82 @@ function Content() {
     const deadline = element.getElementsByClassName('cell c2');
     const isDone = element.getElementsByClassName('cell c3');
 
-    const assignments: IAssignment[] = [];
-
-    Array.from({ length: assignmentLink.length }).forEach((_, i) => {
-      assignments.push({
-        title: assignmentLink[i].textContent as string,
-        link: (assignmentLink[i] as HTMLAnchorElement).href,
-        deadline: deadline[i].textContent as string,
-        isDone:
-          isDone[i].textContent === '제출 완료' ||
-          isDone[i].textContent === 'Submitted for grading',
-      });
-    });
+    const assignments: Assignment[] = Array.from({
+      length: assignmentLink.length,
+    }).reduce<Assignment[]>((acc, _, i) => {
+      return [
+        ...acc,
+        {
+          title: assignmentLink[i].textContent as string,
+          link: (assignmentLink[i] as HTMLAnchorElement).href,
+          deadline: deadline[i].textContent as string,
+          isDone:
+            isDone[i].textContent === '제출 완료' ||
+            isDone[i].textContent === 'Submitted for grading',
+        },
+      ];
+    }, []);
 
     return assignments;
   };
 
-  const getCourses = () => {
+  const getCourseList = async () => {
     const courseLinkList = document.getElementsByClassName('course_link');
     const professorList = document.getElementsByClassName('prof');
 
-    Array.from({ length: courseLinkList.length }).forEach((_, i) => {
-      const id = getCourseId((courseLinkList[i] as HTMLAnchorElement).href);
+    const idArray = Array.from({ length: courseLinkList.length }).map((_, i) =>
+      getCourseId((courseLinkList[i] as HTMLAnchorElement).href),
+    );
+
+    const courseElements = await Promise.all(idArray.map(id => getCourseElement(id)));
+
+    const courseArray = courseElements.reduce<Course[]>((acc, cur, i) => {
+      const assignments = getAssignments(cur);
+      const title = cur.getElementsByClassName('breadcrumb')[0].textContent as string;
       const professor = professorList[i].textContent as string;
 
-      getCourseElement(id).then(element => {
-        const assignments = getAssignments(element);
-        const title = element.getElementsByClassName('breadcrumb')[0].textContent as string;
-        setCourseList(prev => [...prev, { id, title, professor, assignments }]);
-      });
-    });
+      return [...acc, { id: idArray[i], title, professor, assignments }];
+    }, []);
+
+    setCourseList(courseArray);
+    setSelectedCourse(courseArray[0]);
   };
 
   useEffect(() => {
-    process.env.NODE_ENV === 'production' ? getCourses() : setCourseList(dummyData);
+    process.env.NODE_ENV === 'production' ? getCourseList() : setCourseList(dummyData);
   }, []);
 
+  console.log(courseList);
   return (
-    <div className={styles.container}>
-      <nav className={styles.menu}>
-        <h1 className={`text-[22px]`}>내 과제 리스트</h1>
-        <div className={styles.line}></div>
-        <p
-          className={`${styles.courseTitle} ${
-            currentMenuId === '' ? 'text-[#0370a6]' : 'text-inherit'
-          }`}
-          onClick={() => setCurrentMenuId('')}
-        >
-          전체 보기
-        </p>
-        {courseList.map(course => (
-          <p
-            className={`${styles.courseTitle} ${
-              currentMenuId === course.id ? 'text-[#0370a6]' : 'text-inherit'
-            }`}
-            onClick={() => setCurrentMenuId(course.id)}
-          >
-            {course.title}
-          </p>
-        ))}
-      </nav>
-      <section className={styles.taskList}>
-        <button className={styles.btn_filter}>시간 순</button>
-        {(currentMenuId
-          ? courseList.filter(course => course.id === currentMenuId)
-          : courseList
-        ).map(course =>
-          course.assignments?.map(assignment => (
-            <TaskBox courseTitle={course.title} assignment={assignment} />
-          )),
-        )}
-      </section>
-    </div>
+    <>
+      <Portal elementId="modal">
+        <Modal isOpen={isModalOpen}>
+          {selectedCourse && (
+            <>
+              <Listbox value={selectedCourse} onChange={setSelectedCourse}>
+                <Listbox.Button>{selectedCourse.title}</Listbox.Button>
+                <Listbox.Options>
+                  {courseList.map(course => (
+                    <Listbox.Option key={course.id} value={course}>
+                      {course.title}
+                    </Listbox.Option>
+                  ))}
+                </Listbox.Options>
+              </Listbox>
+              <div className="flex flex-col gap-2 mt-4">
+                {selectedCourse.assignments?.map(assignment => (
+                  <AssignmentCard key={assignment.title} assignment={assignment} />
+                ))}
+              </div>
+            </>
+          )}
+        </Modal>
+      </Portal>
+      <div
+        className="w-[40px] h-[40px] rounded-[50px] bg-[#2F6EA2] cursor-pointer"
+        onClick={() => setIsModalOpen(prev => !prev)}
+      ></div>
+    </>
   );
 }
 
