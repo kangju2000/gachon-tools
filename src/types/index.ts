@@ -7,7 +7,7 @@ export interface Assignment {
 
 export interface Course {
   id: string;
-  title: string;
+  name: string;
   professor: string;
   assignments?: Assignment[];
 }

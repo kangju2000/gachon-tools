@@ -2,7 +2,12 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
 
   theme: {
-    extend: {},
+    extend: {
+      boxShadow: {
+        'modal-lg': '0px 54px 90px -40px rgba(251, 132, 132, 0.25)',
+        'modal-sm': '0px 14px 44px rgba(199, 190, 226, 0.5)',
+      },
+    },
   },
   plugins: [],
   parserOptions: {

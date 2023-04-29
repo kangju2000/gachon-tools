@@ -1,7 +1,10 @@
-import react from '@vitejs/plugin-react';
 import path, { resolve } from 'path';
+
+import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
+
 import customDynamicImport from './src/utils/plugins/custom-dynamic-import';
 
 const root = resolve(__dirname, 'src');
@@ -18,7 +21,7 @@ export default defineConfig({
       '@styles': stylesDir,
     },
   },
-  plugins: [react(), tsconfigPaths(), customDynamicImport()],
+  plugins: [react(), tsconfigPaths(), svgr(), customDynamicImport()],
   build: {
     outDir: 'dist',
     sourcemap: false,
