@@ -2,15 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+#root,
+#modal {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#root h1,
+#root h2,
+#root h3,
+#root h4,
+#root h5,
+#root h6,
+#root p,
+#modal h1,
+#modal h2,
+#modal h3,
+#modal h4,
+#modal h5,
+#modal h6,
+#modal p {
   margin: 0;
-  font-weight: normal;
-  font-size: 1em;
 }
 body {
   position: fixed;

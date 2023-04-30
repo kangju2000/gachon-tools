@@ -1,7 +1,7 @@
 import courseApi from '@apis/course';
-import AssignmentCard from '@components/domains/AssignmentCard';
+import AssignmentItem from '@components/domains/AssignmentItem';
+import Filter from '@components/uis/Filter';
 import Modal from '@components/uis/Modal';
-import { Listbox } from '@headlessui/react';
 import Portal from '@helpers/portal';
 import { useEffect, useState } from 'react';
 import dummyData from 'src/data/dummyData';
@@ -85,33 +85,40 @@ export default function Content() {
   }, []);
 
   console.log(courseList);
+  if (!selectedCourse) return null;
   return (
     <>
       <Portal elementId="modal">
-        <Modal isOpen={isModalOpen}>
-          {selectedCourse && (
-            <>
-              <Listbox value={selectedCourse} onChange={setSelectedCourse}>
-                <Listbox.Button>{selectedCourse.name}</Listbox.Button>
-                <Listbox.Options>
-                  {courseList.map(course => (
-                    <Listbox.Option key={course.id} value={course}>
-                      {course.name}
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </Listbox>
-              <div className="flex flex-col gap-2 mt-4">
-                {selectedCourse.assignments?.map(assignment => (
-                  <AssignmentCard
-                    key={assignment.title}
-                    assignment={assignment}
-                    courseName={selectedCourse.name}
-                  />
+        <Modal
+          isOpen={isModalOpen}
+          className="fixed bottom-28 left-1/2 translate-x-[-50%] w-[770px] h-[500px] p-[80px] shadow-modal-lg"
+        >
+          <div className="flex justify-between items-center">
+            <Filter
+              value={selectedCourse}
+              valueList={courseList}
+              onChange={setSelectedCourse}
+              hasBorder={false}
+            >
+              <Filter.Header name={selectedCourse.name} />
+              <Filter.Modal>
+                {courseList.map(course => (
+                  <Filter.Item key={course.id} item={course}>
+                    {course.name}
+                  </Filter.Item>
                 ))}
-              </div>
-            </>
-          )}
+              </Filter.Modal>
+            </Filter>
+          </div>
+          <div className="flex flex-col gap-2 h-[200px] mt-4 overflow-hidden overflow-y-scroll">
+            {selectedCourse?.assignments?.map(assignment => (
+              <AssignmentItem
+                key={assignment.title}
+                assignment={assignment}
+                courseName={selectedCourse.name}
+              />
+            ))}
+          </div>
         </Modal>
       </Portal>
       <div

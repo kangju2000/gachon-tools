@@ -17,7 +17,7 @@ const Icon = ({ type }: { type: 'check' | 'minus' | 'x' }) =>
     x: <XMarkIcon width={38} height={38} />,
   }[type]);
 
-const AssignmentCard = ({ assignment, courseName }: Props) => {
+const AssignmentItem = ({ assignment, courseName }: Props) => {
   const { title, deadline, isDone, link } = assignment;
   const currentDate = new Date();
   const targetDate = new Date(deadline);
@@ -27,7 +27,7 @@ const AssignmentCard = ({ assignment, courseName }: Props) => {
   return (
     <a href={link} target="_blank" rel="noreferrer" className="text-[#0E0D46]">
       <div className="flex justify-between items-center w-[600px] h-[70px] p-[16px] rounded-[24px] bg-white hover:bg-[#FAF2FE]">
-        <div className="flex">
+        <div className="flex items-center">
           <Icon type={iconType} />
           <div className="w-[160px] ml-[20px]">
             <h4 className="text-[14px] font-bold">{title}</h4>
@@ -37,10 +37,10 @@ const AssignmentCard = ({ assignment, courseName }: Props) => {
             <h4 className="text-[14px]">{deadline}</h4>
           </div>
         </div>
-        <p className="text-[14px]">{timeFormat(assignment.deadline)}</p>
+        <div className="text-[14px]">{timeFormat(assignment.deadline)}</div>
       </div>
     </a>
   );
 };
 
-export default AssignmentCard;
+export default AssignmentItem;

@@ -15,7 +15,6 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@headlessui/react": "^1.7.14",
     "@types/chrome": "^0.0.204",
     "@types/node": "^18.11.13",
     "@types/react": "^18.0.26",
