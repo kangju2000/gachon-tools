@@ -6,28 +6,24 @@ import { createContext, useContext, useState } from 'react';
 
 type FilterProps<T> = {
   value: T;
-  valueList: T[];
   children: React.ReactNode;
-  width?: string;
+  maxWidth?: string;
   hasBorder?: boolean;
   onChange?: React.Dispatch<React.SetStateAction<T>>;
 };
 
-const FilterDataContext = createContext<Pick<FilterProps<unknown>, 'value' | 'valueList'> | null>(
-  null,
-);
+const FilterDataContext = createContext<Pick<FilterProps<unknown>, 'value'> | null>(null);
 
 const OpenClosedContext = createContext<{ isOpen: boolean; toggleModal: () => void } | null>(null);
 
 let handleChange: React.Dispatch<React.SetStateAction<unknown>> | undefined;
 
-const Filter = <T extends object>({
+const Filter = <T extends object | string>({
   value,
-  valueList,
-  hasBorder,
-  width,
+  maxWidth,
   onChange,
   children,
+  hasBorder = true,
 }: FilterProps<T>) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,16 +37,19 @@ const Filter = <T extends object>({
 
   return (
     <OpenClosedContext.Provider value={{ isOpen, toggleModal }}>
-      <FilterDataContext.Provider value={{ value, valueList }}>
+      <FilterDataContext.Provider value={{ value }}>
         <div
-          className={`relative flex items-center p-[14px] 
-        ${hasBorder && 'border-[#C7CCDE] rounded-[8px] '} 
-        ${width && `w-[${width}]`}
-        `}
+          className={`relative flex items-center p-[12px]
+        ${hasBorder && 'border-[#C7CCDE] border-solid border-[1px] rounded-[8px]'}`}
+          style={{ maxWidth }}
           onClick={toggleModal}
         >
           {children}
-          {isOpen ? <DropupIcon /> : <DropdownIcon />}
+          {isOpen ? (
+            <DropupIcon className="flex-shrink-0 ml-[5px]" />
+          ) : (
+            <DropdownIcon className="flex-shrink-0 ml-[5px]" />
+          )}
         </div>
       </FilterDataContext.Provider>
     </OpenClosedContext.Provider>
@@ -59,23 +58,27 @@ const Filter = <T extends object>({
 
 type FilterHeaderProps = {
   name: string;
+  className?: string;
 };
 
-const FilterHeader = ({ name }: FilterHeaderProps) => {
-  return <h3 className="text-[18px] font-bold">{name}</h3>;
+const FilterHeader = ({ name, className }: FilterHeaderProps) => {
+  return <h3 className={`single-line-ellipsis text-[14px] ${className}`}>{name}</h3>;
 };
 
 type FilterModalProps = {
   children: React.ReactNode;
+  pos?: 'left' | 'right';
 };
 
-const FilterModal = ({ children }: FilterModalProps) => {
+const FilterModal = ({ children, pos = 'right' }: FilterModalProps) => {
   const { isOpen } = useContext(OpenClosedContext);
 
   return (
     <Modal
       isOpen={isOpen}
-      className="absolute flex flex-col justify-center top-[-10px] left-[-220px] w-[200px] p-[8px] rounded-[16px] z-10 shadow-modal-sm"
+      className={`absolute flex flex-col top-[55px] justify-center max-w-[200px] p-[8px] rounded-[14px] z-10 shadow-modal-sm
+        ${pos === 'left' ? 'left-0' : 'right-0'}
+      `}
     >
       {children}
     </Modal>
@@ -86,30 +89,28 @@ type FilterItemProps<T> = {
   children: React.ReactNode;
 };
 
-const FilterItem = <T extends object>({ item, children }: FilterItemProps<T>) => {
-  const { value: currentValue, valueList } = useContext(FilterDataContext);
+const FilterItem = <T extends object | string>({ item, children }: FilterItemProps<T>) => {
+  const { value } = useContext(FilterDataContext);
 
-  const isChecked = currentValue === item;
+  const isChecked = value === item;
 
   const handleClick = () => {
     if (isChecked) return;
 
-    handleChange(valueList.find(value => value === item));
+    handleChange(item);
   };
 
   return (
     <div
-      className="flex items-center p-[16px] rounded-[8px] bg-white hover:bg-[#FBF7FF]"
+      className="flex items-center p-[8px] rounded-[8px] bg-white hover:bg-[#FBF7FF]"
       onClick={handleClick}
     >
       {isChecked ? (
-        <CheckIcon className="flex-shrink-0" />
+        <CheckIcon className="flex-shrink-0" width={16} height={16} />
       ) : (
-        <div className="w-[24px] h-[24px] flex-shrink-0"></div>
+        <div className="w-[16px] h-[16px] flex-shrink-0"></div>
       )}
-      <p className="ml-[5px] text-[14px] whitespace-nowrap overflow-hidden text-ellipsis">
-        {children}
-      </p>
+      <p className="pl-[5px] text-[14px] single-line-ellipsis">{children}</p>
     </div>
   );
 };

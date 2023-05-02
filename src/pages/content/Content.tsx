@@ -3,15 +3,23 @@ import AssignmentItem from '@components/domains/AssignmentItem';
 import Filter from '@components/uis/Filter';
 import Modal from '@components/uis/Modal';
 import Portal from '@helpers/portal';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import dummyData from 'src/data/dummyData';
-import { generateNewElement, getCourseId } from 'src/utils';
+import { generateNewElement, getLinkId } from 'src/utils';
 
 import type { Assignment, Course } from 'src/types';
 
 export default function Content() {
-  const [courseList, setCourseList] = useState<Course[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [courseList, setCourseList] = useState<Course[]>([
+    { id: '-1', name: '전체', professor: '' },
+  ]);
+  const [assignmentList, setAssignmentList] = useState<Assignment[]>([]);
+
+  const [selectedCourse, setSelectedCourse] = useState<Course>(courseList[0]);
+  const [sortType, setSortType] = useState<'마감일 순' | '최신 순'>('마감일 순');
+  const [currentTaskStatus, setCurrentTaskStatus] = useState<'진행 중인 과제' | '모든 과제'>(
+    '진행 중인 과제',
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const getCourseElements = async (idList: string[]) => {
@@ -26,26 +34,29 @@ export default function Content() {
     return courseElements;
   };
 
-  const getAssignments = (element: HTMLElement) => {
+  const getAssignments = (element: HTMLElement, courseId: string) => {
     const assignmentLink = element.querySelectorAll('td.cell.c1 > a');
     const deadline = element.getElementsByClassName('cell c2');
     const isDone = element.getElementsByClassName('cell c3');
 
     const assignments: Assignment[] = Array.from({
       length: assignmentLink.length,
-    }).reduce<Assignment[]>((acc, _, i) => {
-      return [
+    }).reduce<Assignment[]>(
+      (acc, _, i) => [
         ...acc,
         {
-          title: assignmentLink[i].textContent as string,
+          id: getLinkId((assignmentLink[i] as HTMLAnchorElement).href),
+          courseId,
+          title: assignmentLink[i].textContent,
           link: (assignmentLink[i] as HTMLAnchorElement).href,
-          deadline: deadline[i].textContent as string,
+          deadline: deadline[i].textContent,
           isDone:
             isDone[i].textContent === '제출 완료' ||
             isDone[i].textContent === 'Submitted for grading',
         },
-      ];
-    }, []);
+      ],
+      [],
+    );
 
     return assignments;
   };
@@ -56,7 +67,7 @@ export default function Content() {
 
     const professorList = Array.from(professorElements).map(element => element.textContent);
     const courseIdList = Array.from(courseLinkElements).map(element =>
-      getCourseId((element as HTMLAnchorElement).href),
+      getLinkId((element as HTMLAnchorElement).href),
     );
 
     const courseElements = await getCourseElements(courseIdList);
@@ -65,13 +76,17 @@ export default function Content() {
       const id = courseIdList[i];
       const name = courseElement.getElementsByClassName('breadcrumb')[0].textContent;
       const professor = professorList[i];
-      const assignments = getAssignments(courseElement);
 
-      return [...acc, { id, name, professor, assignments }];
+      return [...acc, { id, name, professor }];
     }, []);
 
-    setCourseList(courseArray);
-    setSelectedCourse(courseArray[0]);
+    const assignmentArray = courseElements.reduce<Assignment[]>((acc, courseElement, i) => {
+      const assignments = getAssignments(courseElement, courseIdList[i]);
+      return [...acc, ...assignments];
+    }, []);
+
+    setCourseList(prev => [...prev, ...courseArray]);
+    setAssignmentList(assignmentArray);
   };
 
   useEffect(() => {
@@ -84,41 +99,80 @@ export default function Content() {
     setSelectedCourse(dummyData[0]);
   }, []);
 
-  console.log(courseList);
-  if (!selectedCourse) return null;
   return (
     <>
       <Portal elementId="modal">
         <Modal
           isOpen={isModalOpen}
-          className="fixed bottom-28 left-1/2 translate-x-[-50%] w-[770px] h-[500px] p-[80px] shadow-modal-lg"
+          className="fixed bottom-28 left-1/2 translate-x-[-50%] w-[770px] h-[500px] p-[60px] shadow-modal-lg"
         >
-          <div className="flex justify-between items-center">
-            <Filter
-              value={selectedCourse}
-              valueList={courseList}
-              onChange={setSelectedCourse}
-              hasBorder={false}
-            >
-              <Filter.Header name={selectedCourse.name} />
-              <Filter.Modal>
-                {courseList.map(course => (
-                  <Filter.Item key={course.id} item={course}>
-                    {course.name}
-                  </Filter.Item>
+          <Suspense fallback={<div>Loading...</div>}>
+            <div className="flex justify-between items-center">
+              <Filter
+                value={selectedCourse}
+                onChange={setSelectedCourse}
+                hasBorder={false}
+                maxWidth="300px"
+              >
+                <Filter.Header className="text-[18px] font-bold" name={selectedCourse.name} />
+                <Filter.Modal pos="left">
+                  {courseList.map(course => (
+                    <Filter.Item key={course.id} item={course}>
+                      {course.name}
+                    </Filter.Item>
+                  ))}
+                </Filter.Modal>
+              </Filter>
+              <div className="flex gap-[16px]">
+                <Filter value={currentTaskStatus} onChange={setCurrentTaskStatus}>
+                  <Filter.Header name={currentTaskStatus} />
+                  <Filter.Modal>
+                    <Filter.Item item="진행 중인 과제">진행 중인 과제</Filter.Item>
+                    <Filter.Item item="모든 과제">모든 과제</Filter.Item>
+                  </Filter.Modal>
+                </Filter>
+                <Filter value={sortType} onChange={setSortType}>
+                  <Filter.Header name={sortType} />
+                  <Filter.Modal>
+                    <Filter.Item item="마감일 순">마감일 순</Filter.Item>
+                    <Filter.Item item="최신 순">최신 순</Filter.Item>
+                  </Filter.Modal>
+                </Filter>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 h-[300px] mt-4 overflow-hidden overflow-y-scroll">
+              {selectedCourse.id === '-1' &&
+                assignmentList
+                  .filter(assignment => {
+                    if (currentTaskStatus === '진행 중인 과제') {
+                      return new Date(assignment.deadline).getTime() > new Date().getTime();
+                    }
+                    return true;
+                  })
+                  .sort((a, b) => {
+                    if (sortType === '마감일 순') {
+                      return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+                    }
+                    return Number(b.id) - Number(a.id);
+                  })
+                  .map(assignment => (
+                    <AssignmentItem
+                      key={assignment.id}
+                      assignment={assignment}
+                      courseName={selectedCourse.name}
+                    />
+                  ))}
+              {assignmentList
+                .filter(assignment => assignment.courseId === selectedCourse.id)
+                .map(assignment => (
+                  <AssignmentItem
+                    key={assignment.id}
+                    assignment={assignment}
+                    courseName={selectedCourse.name}
+                  />
                 ))}
-              </Filter.Modal>
-            </Filter>
-          </div>
-          <div className="flex flex-col gap-2 h-[200px] mt-4 overflow-hidden overflow-y-scroll">
-            {selectedCourse?.assignments?.map(assignment => (
-              <AssignmentItem
-                key={assignment.title}
-                assignment={assignment}
-                courseName={selectedCourse.name}
-              />
-            ))}
-          </div>
+            </div>
+          </Suspense>
         </Modal>
       </Portal>
       <div

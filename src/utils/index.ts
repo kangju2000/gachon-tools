@@ -13,8 +13,10 @@ const generateNewElement = (data: string) => {
   return element;
 };
 
-const getCourseId = (link: string) => {
-  return link.split('=')[1];
+const getLinkId = (link: string) => {
+  const queryString = link.substring(link.indexOf('?') + 1);
+  const urlParams = new URLSearchParams(queryString);
+  return urlParams.get('id');
 };
 
-export { timeFormat, generateNewElement, getCourseId };
+export { timeFormat, generateNewElement, getLinkId };

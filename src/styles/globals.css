@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  .filter-modal-base {
+    @apply absolute flex flex-col justify-center p-[8px] rounded-[16px] z-10 shadow-modal-sm;
+  }
+}
+
+@layer components {
+  .single-line-ellipsis {
+    @apply overflow-hidden whitespace-nowrap overflow-ellipsis;
+  }
+  .filter-modal {
+    @apply filter-modal-base top-[-10px] left-[-220px] w-[200px];
+  }
+}
+
 #root,
 #modal {
   -webkit-user-select: none;
