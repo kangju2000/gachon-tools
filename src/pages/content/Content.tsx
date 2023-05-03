@@ -4,8 +4,8 @@ import Filter from '@components/uis/Filter';
 import Modal from '@components/uis/Modal';
 import Portal from '@helpers/portal';
 import { Suspense, useEffect, useState } from 'react';
-import dummyData from 'src/data/dummyData';
-import { generateNewElement, getLinkId } from 'src/utils';
+import { assignmentData, courseData } from 'src/data/dummyData';
+import { generateNewElement, getLinkId, pipe } from 'src/utils';
 
 import type { Assignment, Course } from 'src/types';
 
@@ -14,12 +14,9 @@ export default function Content() {
     { id: '-1', name: '전체', professor: '' },
   ]);
   const [assignmentList, setAssignmentList] = useState<Assignment[]>([]);
-
   const [selectedCourse, setSelectedCourse] = useState<Course>(courseList[0]);
   const [sortType, setSortType] = useState<'마감일 순' | '최신 순'>('마감일 순');
-  const [currentTaskStatus, setCurrentTaskStatus] = useState<'진행 중인 과제' | '모든 과제'>(
-    '진행 중인 과제',
-  );
+  const [StatusType, setStatusType] = useState<'진행중인 과제' | '모든 과제'>('진행중인 과제');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const getCourseElements = async (idList: string[]) => {
@@ -89,14 +86,42 @@ export default function Content() {
     setAssignmentList(assignmentArray);
   };
 
+  const filterAssignmentList = (assignmentList: Assignment[], courseId: string) => {
+    if (courseId === '-1') {
+      return assignmentList;
+    }
+
+    return assignmentList.filter(assignment => assignment.courseId === courseId);
+  };
+
+  const sortAssignmentList = (assignmentList: Assignment[], type: string) => {
+    if (type === '마감일 순') {
+      return assignmentList.sort(
+        (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime(),
+      );
+    }
+
+    return assignmentList.sort((a, b) => Number(b.id) - Number(a.id));
+  };
+
+  const filterAssignmentStatus = (assignmentList: Assignment[], type: string) => {
+    if (type === '진행중인 과제') {
+      return assignmentList.filter(
+        assignment => new Date(assignment.deadline).getTime() > new Date().getTime(),
+      );
+    }
+
+    return assignmentList;
+  };
+
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
       getCourseList();
       return;
     }
 
-    setCourseList(dummyData);
-    setSelectedCourse(dummyData[0]);
+    setCourseList(courseData);
+    setAssignmentList(assignmentData);
   }, []);
 
   return (
@@ -124,13 +149,6 @@ export default function Content() {
                 </Filter.Modal>
               </Filter>
               <div className="flex gap-[16px]">
-                <Filter value={currentTaskStatus} onChange={setCurrentTaskStatus}>
-                  <Filter.Header name={currentTaskStatus} />
-                  <Filter.Modal>
-                    <Filter.Item item="진행 중인 과제">진행 중인 과제</Filter.Item>
-                    <Filter.Item item="모든 과제">모든 과제</Filter.Item>
-                  </Filter.Modal>
-                </Filter>
                 <Filter value={sortType} onChange={setSortType}>
                   <Filter.Header name={sortType} />
                   <Filter.Modal>
@@ -138,39 +156,28 @@ export default function Content() {
                     <Filter.Item item="최신 순">최신 순</Filter.Item>
                   </Filter.Modal>
                 </Filter>
+                <Filter value={StatusType} onChange={setStatusType}>
+                  <Filter.Header name={StatusType} />
+                  <Filter.Modal>
+                    <Filter.Item item="진행중인 과제">진행중인 과제</Filter.Item>
+                    <Filter.Item item="모든 과제">모든 과제</Filter.Item>
+                  </Filter.Modal>
+                </Filter>
               </div>
             </div>
-            <div className="flex flex-col gap-2 h-[300px] mt-4 overflow-hidden overflow-y-scroll">
-              {selectedCourse.id === '-1' &&
-                assignmentList
-                  .filter(assignment => {
-                    if (currentTaskStatus === '진행 중인 과제') {
-                      return new Date(assignment.deadline).getTime() > new Date().getTime();
-                    }
-                    return true;
-                  })
-                  .sort((a, b) => {
-                    if (sortType === '마감일 순') {
-                      return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
-                    }
-                    return Number(b.id) - Number(a.id);
-                  })
-                  .map(assignment => (
-                    <AssignmentItem
-                      key={assignment.id}
-                      assignment={assignment}
-                      courseName={selectedCourse.name}
-                    />
-                  ))}
-              {assignmentList
-                .filter(assignment => assignment.courseId === selectedCourse.id)
-                .map(assignment => (
-                  <AssignmentItem
-                    key={assignment.id}
-                    assignment={assignment}
-                    courseName={selectedCourse.name}
-                  />
-                ))}
+            <div className="flex flex-col items-center gap-2 h-[300px] mt-4 overflow-hidden overflow-y-scroll">
+              {pipe(
+                assignmentList,
+                assignmentList => filterAssignmentList(assignmentList, selectedCourse.id),
+                assignmentList => sortAssignmentList(assignmentList, sortType),
+                assignmentList => filterAssignmentStatus(assignmentList, StatusType),
+              ).map(assignment => (
+                <AssignmentItem
+                  key={assignment.id}
+                  assignment={assignment}
+                  courseName={courseList.find(course => course.id === assignment.courseId).name}
+                />
+              ))}
             </div>
           </Suspense>
         </Modal>
