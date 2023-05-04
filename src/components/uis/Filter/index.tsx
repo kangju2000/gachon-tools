@@ -76,7 +76,7 @@ const FilterModal = ({ children, pos = 'right' }: FilterModalProps) => {
   return (
     <Modal
       isOpen={isOpen}
-      className={`absolute flex flex-col top-[55px] justify-center max-w-[200px] p-[8px] rounded-[12px] z-10 shadow-modal-sm
+      className={`absolute flex flex-col top-[55px] justify-center max-w-[200px] p-[8px] rounded-[10px] z-10 shadow-modal-sm
         ${pos === 'left' ? 'left-0' : 'right-0'}
       `}
     >

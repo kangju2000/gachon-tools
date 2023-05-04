@@ -1,11 +1,8 @@
-import path, { resolve } from 'path';
-
 import react from '@vitejs/plugin-react';
+import path, { resolve } from 'path';
 import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
-
-import customDynamicImport from './src/utils/plugins/custom-dynamic-import';
 
 const root = resolve(__dirname, 'src');
 const stylesDir = resolve(root, 'styles');
@@ -21,10 +18,9 @@ export default defineConfig({
       '@styles': stylesDir,
     },
   },
-  plugins: [react(), tsconfigPaths(), svgr(), customDynamicImport()],
+  plugins: [react(), tsconfigPaths(), svgr()],
   build: {
     outDir: 'dist',
-    sourcemap: false,
     rollupOptions: {
       input: {
         background: resolve(pagesDir, 'background', 'index.ts'),
