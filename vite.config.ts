@@ -4,21 +4,19 @@ import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
+import resolveMetaChromeExtension from './src/utils/plugins/resolveMetaChromeExtension.js';
+
 const root = resolve(__dirname, 'src');
-const stylesDir = resolve(root, 'styles');
 const pagesDir = resolve(root, 'pages');
-const publicDir = resolve(__dirname, 'public');
 
 export default defineConfig({
+  base: './',
   resolve: {
     alias: {
-      '@src': root,
-      '@pages': pagesDir,
-      '@public': publicDir,
-      '@styles': stylesDir,
+      '@': root,
     },
   },
-  plugins: [react(), tsconfigPaths(), svgr()],
+  plugins: [react(), tsconfigPaths(), svgr(), resolveMetaChromeExtension()],
   build: {
     outDir: 'dist',
     rollupOptions: {
@@ -33,7 +31,7 @@ export default defineConfig({
         chunkFileNames: 'assets/js/[name].[hash].js',
         assetFileNames: assetInfo => {
           const { dir, name: _name } = path.parse(assetInfo.name as string);
-          const assetFolder = getLastElement(dir.split('/'));
+          const assetFolder = dir.split('/').at(-1);
           const name = assetFolder + firstUpperCase(_name);
           return `assets/[ext]/${name}.chunk.[ext]`;
         },
@@ -41,12 +39,6 @@ export default defineConfig({
     },
   },
 });
-
-function getLastElement<T>(array: ArrayLike<T>): T {
-  const length = array.length;
-  const lastIndex = length - 1;
-  return array[lastIndex];
-}
 
 function firstUpperCase(str: string) {
   const firstAlphabet = new RegExp(/( |^)[a-z]/, 'g');
