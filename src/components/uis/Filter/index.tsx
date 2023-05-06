@@ -75,14 +75,17 @@ const FilterModal = ({ children, pos = 'right' }: FilterModalProps) => {
   const { isOpen } = useContext(OpenClosedContext);
 
   return (
-    <Modal
+    <Modal.Background
       isOpen={isOpen}
-      className={`absolute flex flex-col top-[55px] justify-center max-w-[200px] p-[8px] rounded-[16px] z-10 shadow-modal-sm
-        ${pos === 'left' ? 'left-0' : 'right-0'}
-      `}
+      className={`absolute top-[55px] z-10 ${pos === 'left' ? 'left-0' : 'right-0'}`}
     >
-      {children}
-    </Modal>
+      <Modal
+        isOpen={isOpen}
+        className="flex flex-col justify-center max-w-[200px] p-[8px] rounded-[16px] shadow-modal-sm"
+      >
+        {children}
+      </Modal>
+    </Modal.Background>
   );
 };
 type FilterItemProps<T> = {

@@ -4,11 +4,9 @@ import Content from '@/pages/content/Content';
 
 const root = document.createElement('div');
 root.id = 'root';
-root.style.position = 'fixed';
-root.style.left = '50%';
-root.style.bottom = '20px';
-root.style.transform = 'translateX(-50%)';
-root.style.zIndex = '1000';
+root.style.position = 'absolute';
+root.style.top = '0';
+root.style.left = '0';
 
 const modal = document.createElement('div');
 modal.id = 'modal';

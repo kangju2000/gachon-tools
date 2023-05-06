@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
 import type { Assignment, Course } from '@/types';
@@ -111,18 +112,24 @@ export default function Content() {
   useEffect(() => (isModalOpen ? lockScroll() : openScroll()), [isModalOpen]);
 
   return (
-    <>
+    <div className="fixed bottom-[25px] left-1/2 translate-x-[-50%]">
+      <motion.div
+        whileHover={{ width: '100px' }}
+        className="w-[40px] h-[40px] rounded-[50px] bg-[#2F6EA2] shadow-md shadow-[#2F6EA2] cursor-pointer"
+        onClick={() => setIsModalOpen(prev => !prev)}
+      ></motion.div>
       <Portal elementId="modal">
         <Modal.Background
           isOpen={isModalOpen}
+          className="fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.5)] z-[1999]"
           onClick={event => {
-            if (event.target == modalRef.current) setIsModalOpen(false);
+            if (event.target === modalRef.current) setIsModalOpen(false);
           }}
           ref={modalRef}
         >
           <Modal
             isOpen={isModalOpen}
-            className="fixed bottom-28 left-1/2 translate-x-[-50%] flex flex-col w-[770px] h-[500px] min-w-[500px]  px-[60px] py-[50px] rounded-[36px] shadow-modal-lg"
+            className="fixed bottom-1/2 left-1/2 translate-x-[-50%] translate-y-1/2 flex flex-col w-[770px] h-[500px] min-w-[500px]  px-[60px] py-[50px] rounded-[36px] shadow-modal-lg"
           >
             <AssignmentFilter
               courseList={courseList}
@@ -152,10 +159,6 @@ export default function Content() {
           </Modal>
         </Modal.Background>
       </Portal>
-      <div
-        className="w-[40px] h-[40px] rounded-[50px] bg-[#2F6EA2] cursor-pointer"
-        onClick={() => setIsModalOpen(prev => !prev)}
-      ></div>
-    </>
+    </div>
   );
 }

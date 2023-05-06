@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { forwardRef } from 'react';
 
 type ModalProps = {
@@ -13,23 +14,29 @@ const Modal = ({ isOpen, className, children }: ModalProps) => {
 type ModalBackgroundProps = {
   isOpen: boolean;
   children: React.ReactNode;
+  className?: string;
   onClick?: (e: React.MouseEvent) => void;
 };
 
 const ModalBackground = (
-  { isOpen, children, onClick }: ModalBackgroundProps,
+  { isOpen, children, className, onClick }: ModalBackgroundProps,
   ref: React.RefObject<HTMLDivElement>,
 ) => {
   return (
-    isOpen && (
-      <div
-        className="fixed top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.5)]"
-        onClick={onClick}
-        ref={ref}
-      >
-        {children}
-      </div>
-    )
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className={className}
+          onClick={onClick}
+          ref={ref}
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
