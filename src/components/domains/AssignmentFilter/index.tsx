@@ -1,5 +1,6 @@
-import Filter from '@components/uis/Filter';
-import { Course } from 'src/types';
+import type { Course } from '@/types';
+
+import Filter from '@/components/uis/Filter';
 
 type Props = {
   courseList: Course[];

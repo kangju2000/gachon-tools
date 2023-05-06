@@ -1,8 +1,9 @@
-import { ReactComponent as CheckIcon } from '@assets/check.svg';
-import { ReactComponent as DropdownIcon } from '@assets/dropdown.svg';
-import { ReactComponent as DropupIcon } from '@assets/dropup.svg';
-import Modal from '@components/uis/Modal';
 import { createContext, useContext, useState } from 'react';
+
+import { ReactComponent as CheckIcon } from '@/assets/check.svg';
+import { ReactComponent as DropdownIcon } from '@/assets/dropdown.svg';
+import { ReactComponent as DropupIcon } from '@/assets/dropup.svg';
+import Modal from '@/components/uis/Modal';
 
 type FilterProps<T> = {
   value: T;
@@ -76,7 +77,7 @@ const FilterModal = ({ children, pos = 'right' }: FilterModalProps) => {
   return (
     <Modal
       isOpen={isOpen}
-      className={`absolute flex flex-col top-[55px] justify-center max-w-[200px] p-[8px] rounded-[10px] z-10 shadow-modal-sm
+      className={`absolute flex flex-col top-[55px] justify-center max-w-[200px] p-[8px] rounded-[16px] z-10 shadow-modal-sm
         ${pos === 'left' ? 'left-0' : 'right-0'}
       `}
     >

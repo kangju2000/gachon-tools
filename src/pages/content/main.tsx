@@ -1,5 +1,6 @@
-import Content from '@pages/content/Content';
 import { createRoot } from 'react-dom/client';
+
+import Content from '@/pages/content/Content';
 
 const root = document.createElement('div');
 root.id = 'root';

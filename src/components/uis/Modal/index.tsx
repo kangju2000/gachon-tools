@@ -7,7 +7,7 @@ type ModalProps = {
 };
 
 const Modal = ({ isOpen, className, children }: ModalProps) => {
-  return isOpen ? <div className={`bg-white rounded-[36px] ${className}`}>{children}</div> : null;
+  return isOpen ? <div className={`bg-white ${className}`}>{children}</div> : null;
 };
 
 type ModalBackgroundProps = {

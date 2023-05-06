@@ -1,7 +1,7 @@
-import { Assignment, Course } from 'src/types';
-import { pipe } from 'src/utils';
+import type { Assignment, Course } from '@/types';
 
-import AssignmentItem from '../AssignmentItem';
+import AssignmentItem from '@/components/domains/AssignmentItem';
+import { pipe } from '@/utils';
 
 type Props = {
   assignmentList: Assignment[];
@@ -55,13 +55,13 @@ const AssignmentList = ({
 
   if (!filteredAssignmentList.length)
     return (
-      <div className="flex flex-col items-center gap-2 h-[300px] mt-4 p-[5px] overflow-hidden overflow-y-scroll">
+      <div className="flex flex-col items-center flex-grow mt-4 p-[5px] overflow-hidden overflow-y-scroll">
         <p className="text-gray-400">과제가 없습니다.</p>
       </div>
     );
 
   return (
-    <div className="flex flex-col items-center gap-2 h-[300px] mt-4 p-[5px] overflow-hidden overflow-y-scroll">
+    <div className="flex flex-col items-center gap-2 flex-grow min-w-[500px] mt-4 p-[5px] overflow-hidden overflow-y-scroll">
       {filteredAssignmentList.map(assignment => (
         <AssignmentItem
           key={assignment.id}

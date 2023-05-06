@@ -1,8 +1,8 @@
-import { ReactComponent as CheckIcon } from '@assets/circle_check.svg';
-import { ReactComponent as XMarkIcon } from '@assets/circle_x.svg';
-import { timeFormat } from 'src/utils';
+import type { Assignment } from '@/types';
 
-import type { Assignment } from 'src/types';
+import { ReactComponent as CheckIcon } from '@/assets/circle_check.svg';
+import { ReactComponent as XMarkIcon } from '@/assets/circle_x.svg';
+import { timeFormat } from '@/utils';
 
 type Props = {
   assignment: Assignment;
