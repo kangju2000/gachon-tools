@@ -1,23 +1,28 @@
-import courseApi from '@apis/course';
-import AssignmentFilter from '@components/domains/AssignmentFilter';
-import AssignmentList from '@components/domains/AssignmentList';
-import Modal from '@components/uis/Modal';
-import Portal from '@helpers/portal';
 import { useEffect, useRef, useState } from 'react';
-import { assignmentData, courseData } from 'src/data/dummyData';
-import { generateNewElement, getLinkId } from 'src/utils';
 
-import type { Assignment, Course } from 'src/types';
+import type { Assignment, Course } from '@/types';
+
+import courseApi from '@/apis/course';
+import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg';
+import AssignmentFilter from '@/components/domains/AssignmentFilter';
+import AssignmentList from '@/components/domains/AssignmentList';
+import Modal from '@/components/uis/Modal';
+import { assignmentData, courseData } from '@/data/dummyData';
+import Portal from '@/helpers/portal';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
+import { generateNewElement, getLinkId } from '@/utils';
 
 export default function Content() {
   const [courseList, setCourseList] = useState<Course[]>([
     { id: '-1', name: '전체', professor: '' },
   ]);
-  const [assignmentList, setAssignmentList] = useState<Assignment[]>([]);
+  const [assignmentList, setAssignmentList] = useState<Assignment[] | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course>(courseList[0]);
   const [sortType, setSortType] = useState<'마감일 순' | '최신 순'>('마감일 순');
   const [statusType, setStatusType] = useState<'진행중인 과제' | '모든 과제'>('진행중인 과제');
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { lockScroll, openScroll } = useBodyScrollLock();
 
   const modalRef = useRef();
 
@@ -86,15 +91,24 @@ export default function Content() {
     setAssignmentList(assignmentArray);
   };
 
+  const handleRefresh = () => {
+    if (assignmentList === null) return;
+    setAssignmentList(null);
+    setCourseList([{ id: '-1', name: '전체', professor: '' }]);
+    getCourseList();
+  };
+
   useEffect(() => {
-    if (process.env.NODE_ENV === 'production') {
-      getCourseList();
+    if (process.env.NODE_ENV !== 'production') {
+      setCourseList(courseData);
+      setAssignmentList(assignmentData);
       return;
     }
 
-    setCourseList(courseData);
-    setAssignmentList(assignmentData);
+    getCourseList();
   }, []);
+
+  useEffect(() => (isModalOpen ? lockScroll() : openScroll()), [isModalOpen]);
 
   return (
     <>
@@ -108,7 +122,7 @@ export default function Content() {
         >
           <Modal
             isOpen={isModalOpen}
-            className="fixed bottom-28 left-1/2 translate-x-[-50%] w-[770px] h-[500px] p-[60px] shadow-modal-lg"
+            className="fixed bottom-28 left-1/2 translate-x-[-50%] flex flex-col w-[770px] h-[500px] min-w-[500px]  px-[60px] py-[50px] rounded-[36px] shadow-modal-lg"
           >
             <AssignmentFilter
               courseList={courseList}
@@ -119,13 +133,22 @@ export default function Content() {
               statusType={statusType}
               setStatusType={setStatusType}
             />
-            <AssignmentList
-              assignmentList={assignmentList}
-              courseList={courseList}
-              selectedCourseId={selectedCourse.id}
-              sortType={sortType}
-              statusType={statusType}
-            />
+            {assignmentList === null ? (
+              <div className="flex justify-center items-center flex-grow">
+                <p className="text-gray-400">잠시만 기다려주세요 :)</p>
+              </div>
+            ) : (
+              <AssignmentList
+                assignmentList={assignmentList}
+                courseList={courseList}
+                selectedCourseId={selectedCourse.id}
+                sortType={sortType}
+                statusType={statusType}
+              />
+            )}
+            <div className="flex justify-end items-center mt-5">
+              <RefreshIcon onClick={handleRefresh} className="cursor-pointer" />
+            </div>
           </Modal>
         </Modal.Background>
       </Portal>
