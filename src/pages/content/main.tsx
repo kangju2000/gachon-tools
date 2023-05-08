@@ -1,12 +1,11 @@
 import { createRoot } from 'react-dom/client';
 
 import Content from '@/pages/content/Content';
+import '@/styles/globals.css';
+import 'react-tooltip/dist/react-tooltip.css';
 
 const root = document.createElement('div');
 root.id = 'root';
-root.style.position = 'absolute';
-root.style.top = '0';
-root.style.left = '0';
 
 const modal = document.createElement('div');
 modal.id = 'modal';

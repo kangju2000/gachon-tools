@@ -61,7 +61,10 @@ const AssignmentList = ({
     );
 
   return (
-    <div className="flex flex-col items-center gap-2 flex-grow min-w-[500px] mt-4 p-[5px] overflow-hidden overflow-y-scroll">
+    <div
+      id="assignment-list"
+      className="flex flex-col items-center gap-2 flex-grow min-w-[500px] mt-4 p-[5px] overflow-hidden overflow-y-scroll"
+    >
       {filteredAssignmentList.map(assignment => (
         <AssignmentItem
           key={assignment.id}

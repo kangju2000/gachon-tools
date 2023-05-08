@@ -24,8 +24,8 @@ const AssignmentItem = ({ assignment, courseName }: Props) => {
         <div className="flex items-center">
           <Icon type={isDone ? 'check' : 'x'} />
           <div className="w-[160px] ml-[20px]">
-            <h4 className="text-[14px] font-bold">{title}</h4>
-            <p className="text-[12px] opacity-70">{courseName}</p>
+            <h4 className="text-[14px] font-bold single-line-ellipsis">{title}</h4>
+            <p className="text-[12px] opacity-70 ">{courseName}</p>
           </div>
           <div className="ml-[30px]">
             <h4 className="text-[14px]">{deadline}</h4>

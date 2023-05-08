@@ -1,7 +1,7 @@
 {
-  "name": "Gachon App",
-  "description": "가천대학교 학생들을 위한 어플리케이션",
-  "version": "1.0",
+  "name": "Gachon Tools - 사이버캠퍼스 확장프로그램",
+  "description": "가천대학교 사이버캠퍼스 확장프로그램",
+  "version": "1.0.0",
   "manifest_version": 3,
   "action": {
     "default_title": "popup",
@@ -18,7 +18,8 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://cyber.gachon.ac.kr/"],
+      "matches": ["https://cyber.gachon.ac.kr/*"],
+      "exclude_matches": ["https://cyber.gachon.ac.kr/login.php*"],
       "js": ["src/pages/content/index.js"],
       "css": ["assets/css/Globals.chunk.css"]
     }

@@ -1,5 +1,7 @@
+import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
+import { Tooltip } from 'react-tooltip';
 
 import type { Assignment, Course } from '@/types';
 
@@ -65,8 +67,14 @@ export default function Content() {
   };
 
   const getCourseList = async () => {
-    const professorElements = document.getElementsByClassName('prof');
-    const courseLinkElements = document.getElementsByClassName('course_link');
+    let element: HTMLElement = document.body;
+
+    if (window.location.href !== 'https://cyber.gachon.ac.kr') {
+      const { data } = await axios.get('https://cyber.gachon.ac.kr');
+      element = generateNewElement(data);
+    }
+    const professorElements = element.getElementsByClassName('prof');
+    const courseLinkElements = element.getElementsByClassName('course_link');
 
     const professorList = [...professorElements].map(element => element.textContent);
     const courseIdList = [...courseLinkElements].map(element =>
@@ -154,7 +162,12 @@ export default function Content() {
               />
             )}
             <div className="flex justify-end items-center mt-5">
-              <RefreshIcon onClick={handleRefresh} className="cursor-pointer" />
+              <RefreshIcon
+                onClick={handleRefresh}
+                className="cursor-pointer"
+                data-tooltip-id="refresh"
+              />
+              <Tooltip id="refresh">새로고침</Tooltip>
             </div>
           </Modal>
         </Modal.Background>
