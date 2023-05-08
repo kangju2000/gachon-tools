@@ -30,7 +30,5 @@
       "matches": ["*://*/*"]
     }
   ],
-  "host_permissions": ["https://cyber.gachon.kr/*"],
-  "options_page": "src/pages/options/index.html",
-  "permissions": ["storage", "activeTab"]
+  "options_page": "src/pages/options/index.html"
 }
