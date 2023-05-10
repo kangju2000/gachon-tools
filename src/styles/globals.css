@@ -40,6 +40,10 @@
 #modal h6,
 #modal p {
   margin: 0;
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1.1;
+  color: inherit;
 }
 #root body,
 #modal body {
@@ -79,5 +83,5 @@
 } */
 
 #modal::-webkit-scrollbar-button {
-  display:none;
+  display: none;
 }

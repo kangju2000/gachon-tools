@@ -1,31 +1,21 @@
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { Tooltip } from 'react-tooltip';
 
 import type { Assignment, Course } from '@/types';
 
 import courseApi from '@/apis/course';
-import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg';
-import AssignmentFilter from '@/components/domains/AssignmentFilter';
-import AssignmentList from '@/components/domains/AssignmentList';
-import Modal from '@/components/uis/Modal';
+import ContentModal from '@/components/domains/ContentModal';
 import { assignmentData, courseData } from '@/data/dummyData';
 import Portal from '@/helpers/portal';
-import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { generateNewElement, getLinkId } from '@/utils';
 
 export default function Content() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [assignmentList, setAssignmentList] = useState<Assignment[] | null>(null);
   const [courseList, setCourseList] = useState<Course[]>([
     { id: '-1', name: '전체', professor: '' },
   ]);
-  const [assignmentList, setAssignmentList] = useState<Assignment[] | null>(null);
-  const [selectedCourse, setSelectedCourse] = useState<Course>(courseList[0]);
-  const [sortType, setSortType] = useState<'마감일 순' | '최신 순'>('마감일 순');
-  const [statusType, setStatusType] = useState<'진행중인 과제' | '모든 과제'>('진행중인 과제');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const { lockScroll, openScroll } = useBodyScrollLock();
 
   const modalRef = useRef();
 
@@ -117,8 +107,6 @@ export default function Content() {
     getCourseList();
   }, []);
 
-  useEffect(() => (isModalOpen ? lockScroll() : openScroll()), [isModalOpen]);
-
   return (
     <div className="fixed bottom-[25px] left-1/2 translate-x-[-50%]">
       <motion.div
@@ -127,50 +115,17 @@ export default function Content() {
         onClick={() => setIsModalOpen(prev => !prev)}
       ></motion.div>
       <Portal elementId="modal">
-        <Modal.Background
-          isOpen={isModalOpen}
-          className="fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.5)] z-[1999]"
-          onClick={event => {
-            if (event.target === modalRef.current) setIsModalOpen(false);
-          }}
-          ref={modalRef}
-        >
-          <Modal
-            isOpen={isModalOpen}
-            className="fixed bottom-1/2 left-1/2 translate-x-[-50%] translate-y-1/2 flex flex-col w-[770px] h-[500px] min-w-[500px]  px-[60px] py-[50px] rounded-[36px] shadow-modal-lg"
-          >
-            <AssignmentFilter
-              courseList={courseList}
-              selectedCourse={selectedCourse}
-              setSelectedCourse={setSelectedCourse}
-              sortType={sortType}
-              setSortType={setSortType}
-              statusType={statusType}
-              setStatusType={setStatusType}
-            />
-            {assignmentList === null ? (
-              <div className="flex justify-center items-center flex-grow">
-                <p className="text-gray-400">잠시만 기다려주세요 :)</p>
-              </div>
-            ) : (
-              <AssignmentList
-                assignmentList={assignmentList}
-                courseList={courseList}
-                selectedCourseId={selectedCourse.id}
-                sortType={sortType}
-                statusType={statusType}
-              />
-            )}
-            <div className="flex justify-end items-center mt-5">
-              <RefreshIcon
-                onClick={handleRefresh}
-                className="cursor-pointer"
-                data-tooltip-id="refresh"
-              />
-              <Tooltip id="refresh">새로고침</Tooltip>
-            </div>
-          </Modal>
-        </Modal.Background>
+        {isModalOpen && (
+          <ContentModal
+            ref={modalRef}
+            onClick={event => {
+              if (event.target === modalRef.current) setIsModalOpen(false);
+            }}
+            assignmentList={assignmentList}
+            courseList={courseList}
+            handleRefresh={handleRefresh}
+          />
+        )}
       </Portal>
     </div>
   );

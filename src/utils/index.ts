@@ -1,10 +1,10 @@
 function timeFormat(deadline: string) {
   const curDate = new Date();
   const dueDate = new Date(deadline);
-  const timeDiff = curDate.getTime() - dueDate.getTime();
-  const day = Math.floor(Math.abs(timeDiff) / (1000 * 60 * 60 * 24) + 1);
-
-  return timeDiff > 0 ? '제출마감' : `D-${day}`;
+  const timeDiff = dueDate.getTime() - curDate.getTime();
+  const day = Math.floor(Math.abs(timeDiff) / (1000 * 60 * 60 * 24));
+  if (timeDiff > 0 && day === 0) return 'D-day';
+  return timeDiff < 0 ? '제출마감' : `D-${day}`;
 }
 
 function generateNewElement(data: string) {
