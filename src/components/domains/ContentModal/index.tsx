@@ -4,8 +4,8 @@ import { Tooltip } from 'react-tooltip';
 import type { Assignment, Course } from '@/types';
 
 import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg';
-import AssignmentFilter from '@/components/domains/AssignmentFilter';
 import AssignmentList from '@/components/domains/AssignmentList';
+import Filter from '@/components/uis/Filter';
 import Modal from '@/components/uis/Modal';
 
 type Props = {
@@ -14,14 +14,23 @@ type Props = {
   onClick: (event: React.MouseEvent) => void;
   handleRefresh: () => void;
 };
+const sort = [
+  { id: 1, name: '마감일 순' },
+  { id: 2, name: '최신 순' },
+];
+
+const status = [
+  { id: 1, name: '진행중인 과제' },
+  { id: 2, name: '모든 과제' },
+];
 
 const ContentModal = (
   { assignmentList, courseList, onClick, handleRefresh }: Props,
   ref: React.Ref<HTMLDivElement>,
 ) => {
   const [selectedCourse, setSelectedCourse] = useState<Course>(courseList[0]);
-  const [sortType, setSortType] = useState<'마감일 순' | '최신 순'>('마감일 순');
-  const [statusType, setStatusType] = useState<'진행중인 과제' | '모든 과제'>('진행중인 과제');
+  const [sortType, setSortType] = useState<{ id: number; name: string }>(sort[0]);
+  const [statusType, setStatusType] = useState<{ id: number; name: string }>(status[0]);
 
   useEffect(() => {
     document.body.style.cssText = `
@@ -43,15 +52,39 @@ const ContentModal = (
       ref={ref}
     >
       <Modal className="fixed bottom-1/2 left-1/2 translate-x-[-50%] translate-y-1/2 flex flex-col w-[770px] h-[500px] min-w-[500px]  px-[60px] py-[50px] rounded-[36px] shadow-modal-lg">
-        <AssignmentFilter
-          courseList={courseList}
-          selectedCourse={selectedCourse}
-          setSelectedCourse={setSelectedCourse}
-          sortType={sortType}
-          setSortType={setSortType}
-          statusType={statusType}
-          setStatusType={setStatusType}
-        />
+        <div className="flex justify-between items-center text-[#0E0D46]">
+          <Filter
+            value={selectedCourse}
+            onChange={setSelectedCourse}
+            hasBorder={false}
+            maxWidth="300px"
+          >
+            <Filter.Header className="text-[18px] font-bold" />
+            <Filter.Modal pos="left">
+              {courseList.map(course => (
+                <Filter.Item key={course.id} item={course} />
+              ))}
+            </Filter.Modal>
+          </Filter>
+          <div className="flex gap-[16px]">
+            <Filter value={sortType} onChange={setSortType}>
+              <Filter.Header />
+              <Filter.Modal>
+                {sort.map(item => (
+                  <Filter.Item key={item.id} item={item} />
+                ))}
+              </Filter.Modal>
+            </Filter>
+            <Filter value={statusType} onChange={setStatusType}>
+              <Filter.Header />
+              <Filter.Modal>
+                {status.map(item => (
+                  <Filter.Item key={item.id} item={item} />
+                ))}
+              </Filter.Modal>
+            </Filter>
+          </div>
+        </div>
         {assignmentList === null ? (
           <div className="flex justify-center items-center flex-grow">
             <p className="text-gray-400">잠시만 기다려주세요 :)</p>
@@ -61,8 +94,8 @@ const ContentModal = (
             assignmentList={assignmentList}
             courseList={courseList}
             selectedCourseId={selectedCourse.id}
-            sortType={sortType}
-            statusType={statusType}
+            sortType={sortType.name}
+            statusType={statusType.name}
           />
         )}
         <div className="flex justify-end items-center mt-5">

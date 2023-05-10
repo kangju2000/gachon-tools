@@ -19,8 +19,8 @@ const AssignmentItem = ({ assignment, courseName }: Props) => {
   const { title, deadline, isDone, link } = assignment;
 
   return (
-    <a href={link} target="_blank" rel="noreferrer" className="w-full text-[#0E0D46]">
-      <div className="flex justify-between items-center w-full h-[70px] p-[16px] rounded-[24px] bg-white hover:bg-[#FAF2FE]">
+    <a href={link} target="_blank" rel="noreferrer" className="w-full">
+      <div className="flex justify-between items-center w-full h-[70px] p-[16px] rounded-[24px] text-[#0E0D46] bg-white hover:bg-[#FAF2FE]">
         <div className="flex items-center">
           <Icon type={isDone ? 'check' : 'x'} />
           <div className="w-[160px] ml-[20px]">

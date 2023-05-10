@@ -5,27 +5,23 @@ import { ReactComponent as DropdownIcon } from '@/assets/dropdown.svg';
 import { ReactComponent as DropupIcon } from '@/assets/dropup.svg';
 import Modal from '@/components/uis/Modal';
 
-type FilterProps<T> = {
-  value: T;
+type valueType = { name: string; [key: string]: any };
+
+type FilterProps = {
+  value: valueType;
   children: React.ReactNode;
   maxWidth?: string;
   hasBorder?: boolean;
-  onChange?: React.Dispatch<React.SetStateAction<T>>;
+  onChange?: React.Dispatch<React.SetStateAction<valueType>>;
 };
 
-const FilterDataContext = createContext<Pick<FilterProps<unknown>, 'value'> | null>(null);
+const FilterDataContext = createContext<Pick<FilterProps, 'value'> | null>(null);
 
 const OpenClosedContext = createContext<{ isOpen: boolean; toggleModal: () => void } | null>(null);
 
-let handleChange: React.Dispatch<React.SetStateAction<unknown>> | undefined;
+let handleChange: React.Dispatch<React.SetStateAction<valueType>> | undefined;
 
-const Filter = <T extends object | string>({
-  value,
-  maxWidth,
-  onChange,
-  children,
-  hasBorder = true,
-}: FilterProps<T>) => {
+const Filter = ({ value, maxWidth, onChange, children, hasBorder = true }: FilterProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleModal = () => {
@@ -58,12 +54,12 @@ const Filter = <T extends object | string>({
 };
 
 type FilterHeaderProps = {
-  name: string;
   className?: string;
 };
 
-const FilterHeader = ({ name, className }: FilterHeaderProps) => {
-  return <h3 className={`single-line-ellipsis text-[14px] ${className}`}>{name}</h3>;
+const FilterHeader = ({ className }: FilterHeaderProps) => {
+  const { value } = useContext(FilterDataContext);
+  return <h3 className={`single-line-ellipsis text-[14px] ${className}`}>{value.name}</h3>;
 };
 
 type FilterModalProps = {
@@ -86,14 +82,12 @@ const FilterModal = ({ children, pos = 'right' }: FilterModalProps) => {
     )
   );
 };
-type FilterItemProps<T> = {
-  item: T;
-  children: React.ReactNode;
+type FilterItemProps = {
+  item: valueType;
 };
 
-const FilterItem = <T extends object | string>({ item, children }: FilterItemProps<T>) => {
+const FilterItem = ({ item }: FilterItemProps) => {
   const { value } = useContext(FilterDataContext);
-
   const isChecked = value === item;
 
   const handleClick = () => {
@@ -112,7 +106,7 @@ const FilterItem = <T extends object | string>({ item, children }: FilterItemPro
       ) : (
         <div className="w-[16px] h-[16px] flex-shrink-0"></div>
       )}
-      <p className="pl-[5px] text-[14px] single-line-ellipsis">{children}</p>
+      <p className="pl-[5px] text-[14px] single-line-ellipsis">{item.name}</p>
     </div>
   );
 };
