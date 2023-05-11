@@ -17,12 +17,12 @@ jobs:
           yarn install
           yarn build
       - name: Make zip file
-        run: zip -r ./$GITHUB_SHA.zip ./dist
+        run: zip -r ./build.zip ./dist
         shell: bash
       - name: Upload & release
         uses: mnao305/chrome-extension-upload@v4.0.1
         with:
-          file-path: dist/file.zip
+          file-path: ./build.zip
           extension-id: 'ogldncimhepjdfadhjjhkchknloncnmg'
           client-id: ${{ secrets.CLIENT_ID }}
           client-secret: ${{ secrets.CLIENT_SECRET }}
