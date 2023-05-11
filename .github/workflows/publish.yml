@@ -16,6 +16,9 @@ jobs:
         run: |
           yarn install
           yarn build
+      - name: Make zip file
+        run: zip -r ./$GITHUB_SHA.zip ./dist
+      shell: bash
       - name: Upload & release
         uses: mnao305/chrome-extension-upload@v4.0.1
         with:
