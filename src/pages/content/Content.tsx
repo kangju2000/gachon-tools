@@ -115,17 +115,16 @@ export default function Content() {
         onClick={() => setIsModalOpen(prev => !prev)}
       ></motion.div>
       <Portal elementId="modal">
-        {isModalOpen && (
-          <ContentModal
-            ref={modalRef}
-            onClick={event => {
-              if (event.target === modalRef.current) setIsModalOpen(false);
-            }}
-            assignmentList={assignmentList}
-            courseList={courseList}
-            handleRefresh={handleRefresh}
-          />
-        )}
+        <ContentModal
+          ref={modalRef}
+          onClick={event => {
+            if (event.target === modalRef.current) setIsModalOpen(false);
+          }}
+          isOpen={isModalOpen}
+          assignmentList={assignmentList}
+          courseList={courseList}
+          handleRefresh={handleRefresh}
+        />
       </Portal>
     </div>
   );

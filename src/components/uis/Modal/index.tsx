@@ -11,27 +11,30 @@ const Modal = ({ className, children }: ModalProps) => {
 };
 
 type ModalBackgroundProps = {
+  isOpen: boolean;
   children: React.ReactNode;
   className?: string;
   onClick?: (e: React.MouseEvent) => void;
 };
 
 const ModalBackground = (
-  { children, className, onClick }: ModalBackgroundProps,
+  { isOpen, children, className, onClick }: ModalBackgroundProps,
   ref: React.RefObject<HTMLDivElement>,
 ) => {
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className={className}
-        onClick={onClick}
-        ref={ref}
-      >
-        {children}
-      </motion.div>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className={className}
+          onClick={onClick}
+          ref={ref}
+        >
+          {children}
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 };

@@ -9,37 +9,26 @@ type valueType = { name: string; [key: string]: any };
 
 type FilterProps = {
   value: valueType;
+  onChange: React.Dispatch<React.SetStateAction<valueType>>;
   children: React.ReactNode;
   maxWidth?: string;
   hasBorder?: boolean;
-  onChange?: React.Dispatch<React.SetStateAction<valueType>>;
 };
 
-const FilterDataContext = createContext<Pick<FilterProps, 'value'> | null>(null);
-
-const OpenClosedContext = createContext<{ isOpen: boolean; toggleModal: () => void } | null>(null);
-
-let handleChange: React.Dispatch<React.SetStateAction<valueType>> | undefined;
+const FilterDataContext = createContext<Pick<FilterProps, 'value' | 'onChange'> | null>(null);
+const OpenClosedContext = createContext<{ isOpen: boolean } | null>(null);
 
 const Filter = ({ value, maxWidth, onChange, children, hasBorder = true }: FilterProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleModal = () => {
-    setIsOpen(prev => !prev);
-  };
-
-  if (onChange) {
-    handleChange = onChange;
-  }
-
   return (
-    <OpenClosedContext.Provider value={{ isOpen, toggleModal }}>
-      <FilterDataContext.Provider value={{ value }}>
+    <OpenClosedContext.Provider value={{ isOpen }}>
+      <FilterDataContext.Provider value={{ value, onChange }}>
         <div
           className={`relative flex items-center p-[12px]
         ${hasBorder && 'border-[#C7CCDE] border-solid border-[1px] rounded-[8px]'}`}
           style={{ maxWidth }}
-          onClick={toggleModal}
+          onClick={() => setIsOpen(prev => !prev)}
         >
           {children}
           {isOpen ? (
@@ -71,15 +60,14 @@ const FilterModal = ({ children, pos = 'right' }: FilterModalProps) => {
   const { isOpen } = useContext(OpenClosedContext);
 
   return (
-    isOpen && (
-      <Modal.Background
-        className={`absolute top-[55px] z-10 ${pos === 'left' ? 'left-0' : 'right-0'}`}
-      >
-        <Modal className="flex flex-col justify-center max-w-[200px] p-[8px] rounded-[16px] shadow-modal-sm">
-          {children}
-        </Modal>
-      </Modal.Background>
-    )
+    <Modal.Background
+      className={`absolute top-[55px] z-10 ${pos === 'left' ? 'left-0' : 'right-0'}`}
+      isOpen={isOpen}
+    >
+      <Modal className="flex flex-col justify-center max-w-[200px] p-[8px] rounded-[16px] shadow-modal-sm">
+        {children}
+      </Modal>
+    </Modal.Background>
   );
 };
 type FilterItemProps = {
@@ -87,13 +75,12 @@ type FilterItemProps = {
 };
 
 const FilterItem = ({ item }: FilterItemProps) => {
-  const { value } = useContext(FilterDataContext);
+  const { value, onChange } = useContext(FilterDataContext);
   const isChecked = value === item;
 
   const handleClick = () => {
     if (isChecked) return;
-
-    handleChange(item);
+    onChange(item);
   };
 
   return (

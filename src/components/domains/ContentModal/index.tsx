@@ -8,12 +8,6 @@ import AssignmentList from '@/components/domains/AssignmentList';
 import Filter from '@/components/uis/Filter';
 import Modal from '@/components/uis/Modal';
 
-type Props = {
-  assignmentList: Assignment[] | null;
-  courseList: Course[];
-  onClick: (event: React.MouseEvent) => void;
-  handleRefresh: () => void;
-};
 const sort = [
   { id: 1, name: '마감일 순' },
   { id: 2, name: '최신 순' },
@@ -24,8 +18,16 @@ const status = [
   { id: 2, name: '모든 과제' },
 ];
 
+type Props = {
+  isOpen: boolean;
+  assignmentList: Assignment[] | null;
+  courseList: Course[];
+  onClick: (event: React.MouseEvent) => void;
+  handleRefresh: () => void;
+};
+
 const ContentModal = (
-  { assignmentList, courseList, onClick, handleRefresh }: Props,
+  { isOpen, assignmentList, courseList, onClick, handleRefresh }: Props,
   ref: React.Ref<HTMLDivElement>,
 ) => {
   const [selectedCourse, setSelectedCourse] = useState<Course>(courseList[0]);
@@ -48,6 +50,7 @@ const ContentModal = (
   return (
     <Modal.Background
       className="fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.5)] z-[1999]"
+      isOpen={isOpen}
       onClick={onClick}
       ref={ref}
     >
