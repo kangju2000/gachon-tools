@@ -1,7 +1,7 @@
 {
   "name": "Gachon Tools - 사이버캠퍼스 확장프로그램",
   "description": "가천대학교 사이버캠퍼스 확장프로그램",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 3,
   "action": {
     "default_title": "popup",
