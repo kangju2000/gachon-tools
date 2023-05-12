@@ -35,6 +35,7 @@ const ContentModal = (
   const [statusType, setStatusType] = useState<{ id: number; name: string }>(status[0]);
 
   useEffect(() => {
+    if (!isOpen) return;
     document.body.style.cssText = `
       position: fixed; 
       top: -${window.scrollY}px;
@@ -45,7 +46,7 @@ const ContentModal = (
       document.body.style.cssText = '';
       window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
     };
-  }, []);
+  }, [isOpen]);
 
   return (
     <Modal.Background
