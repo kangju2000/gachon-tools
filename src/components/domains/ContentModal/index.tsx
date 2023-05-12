@@ -9,13 +9,13 @@ import Filter from '@/components/uis/Filter';
 import Modal from '@/components/uis/Modal';
 
 const sort = [
-  { id: 1, name: '마감일 순' },
-  { id: 2, name: '최신 순' },
+  { id: 1, title: '마감일 순' },
+  { id: 2, title: '최신 순' },
 ];
 
 const status = [
-  { id: 1, name: '진행중인 과제' },
-  { id: 2, name: '모든 과제' },
+  { id: 1, title: '진행중인 과제' },
+  { id: 2, title: '모든 과제' },
 ];
 
 type Props = {
@@ -31,8 +31,8 @@ const ContentModal = (
   ref: React.Ref<HTMLDivElement>,
 ) => {
   const [selectedCourse, setSelectedCourse] = useState<Course>(courseList[0]);
-  const [sortType, setSortType] = useState<{ id: number; name: string }>(sort[0]);
-  const [statusType, setStatusType] = useState<{ id: number; name: string }>(status[0]);
+  const [sortType, setSortType] = useState<{ id: number; title: string }>(sort[0]);
+  const [statusType, setStatusType] = useState<{ id: number; title: string }>(status[0]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -98,8 +98,8 @@ const ContentModal = (
             assignmentList={assignmentList}
             courseList={courseList}
             selectedCourseId={selectedCourse.id}
-            sortType={sortType.name}
-            statusType={statusType.name}
+            sortType={sortType.title}
+            statusType={statusType.title}
           />
         )}
         <div className="flex justify-end items-center mt-5">

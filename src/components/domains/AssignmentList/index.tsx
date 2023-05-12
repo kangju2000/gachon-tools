@@ -18,19 +18,17 @@ const AssignmentList = ({
   sortType,
   statusType,
 }: Props) => {
-  const filterAssignmentList = (assignmentList: Assignment[], courseId: string) => {
-    if (courseId === '-1') {
+  const filterAssignmentList = (assignmentList: Assignment[], id: string) => {
+    if (id === '-1') {
       return assignmentList;
     }
 
-    return assignmentList.filter(assignment => assignment.courseId === courseId);
+    return assignmentList.filter(assignment => assignment.courseId === id);
   };
 
   const sortAssignmentList = (assignmentList: Assignment[], type: string) => {
     if (type === '마감일 순') {
-      return assignmentList.sort(
-        (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime(),
-      );
+      return assignmentList.sort((a, b) => a.endAt.getTime() - b.endAt.getTime());
     }
 
     return assignmentList.sort((a, b) => Number(b.id) - Number(a.id));
@@ -38,9 +36,7 @@ const AssignmentList = ({
 
   const filterAssignmentStatus = (assignmentList: Assignment[], type: string) => {
     if (type === '진행중인 과제') {
-      return assignmentList.filter(
-        assignment => new Date(assignment.deadline).getTime() > new Date().getTime(),
-      );
+      return assignmentList.filter(assignment => assignment.endAt.getTime() > new Date().getTime());
     }
 
     return assignmentList;
@@ -69,7 +65,7 @@ const AssignmentList = ({
         <AssignmentItem
           key={assignment.id}
           assignment={assignment}
-          courseName={courseList.find(course => course.id === assignment.courseId).name}
+          courseName={courseList.find(course => course.id === assignment.courseId).title}
         />
       ))}
     </div>

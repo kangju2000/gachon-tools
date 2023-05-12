@@ -1,6 +1,6 @@
-function timeFormat(deadline: string) {
+function timeFormat(endAt: Date) {
   const curDate = new Date();
-  const dueDate = new Date(deadline);
+  const dueDate = endAt;
   const timeDiff = dueDate.getTime() - curDate.getTime();
   const day = Math.floor(Math.abs(timeDiff) / (1000 * 60 * 60 * 24));
   if (timeDiff > 0 && day === 0) return 'D-day';

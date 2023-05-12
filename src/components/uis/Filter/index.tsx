@@ -5,7 +5,7 @@ import { ReactComponent as DropdownIcon } from '@/assets/dropdown.svg';
 import { ReactComponent as DropupIcon } from '@/assets/dropup.svg';
 import Modal from '@/components/uis/Modal';
 
-type valueType = { name: string; [key: string]: any };
+type valueType = { title: string; [key: string]: any };
 
 type FilterProps = {
   value: valueType;
@@ -48,7 +48,7 @@ type FilterHeaderProps = {
 
 const FilterHeader = ({ className }: FilterHeaderProps) => {
   const { value } = useContext(FilterDataContext);
-  return <h3 className={`single-line-ellipsis text-[14px] ${className}`}>{value.name}</h3>;
+  return <h3 className={`single-line-ellipsis text-[14px] ${className}`}>{value.title}</h3>;
 };
 
 type FilterModalProps = {
@@ -70,6 +70,7 @@ const FilterModal = ({ children, pos = 'right' }: FilterModalProps) => {
     </Modal.Background>
   );
 };
+
 type FilterItemProps = {
   item: valueType;
 };
@@ -93,7 +94,7 @@ const FilterItem = ({ item }: FilterItemProps) => {
       ) : (
         <div className="w-[16px] h-[16px] flex-shrink-0"></div>
       )}
-      <p className="pl-[5px] text-[14px] single-line-ellipsis">{item.name}</p>
+      <p className="pl-[5px] text-[14px] single-line-ellipsis">{item.title}</p>
     </div>
   );
 };
