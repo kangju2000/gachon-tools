@@ -1,7 +1,6 @@
 {
   "name": "gachon-extension",
-  "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
