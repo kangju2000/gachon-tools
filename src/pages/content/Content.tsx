@@ -16,7 +16,6 @@ export default function Content() {
   ]);
 
   const modalRef = useRef();
-
   const handleRefresh = () => {
     if (assignmentList === null) return;
     setAssignmentList(null);
