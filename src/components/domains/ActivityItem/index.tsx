@@ -1,11 +1,11 @@
-import type { Assignment } from '@/types';
+import type { ActivityType } from '@/types';
 
 import { ReactComponent as CheckIcon } from '@/assets/circle_check.svg';
 import { ReactComponent as XMarkIcon } from '@/assets/circle_x.svg';
 import { timeFormat } from '@/utils';
 
 type Props = {
-  assignment: Assignment;
+  activity: ActivityType;
   courseName: string;
 };
 
@@ -15,8 +15,8 @@ const Icon = ({ type }: { type: 'check' | 'x' }) =>
     x: <XMarkIcon width={38} height={38} />,
   }[type]);
 
-const AssignmentItem = ({ assignment, courseName }: Props) => {
-  const { title, startAt, endAt, id } = assignment;
+const ActivityItem = ({ activity, courseName }: Props) => {
+  const { title, startAt, endAt, id } = activity;
 
   return (
     <a
@@ -43,4 +43,4 @@ const AssignmentItem = ({ assignment, courseName }: Props) => {
   );
 };
 
-export default AssignmentItem;
+export default ActivityItem;

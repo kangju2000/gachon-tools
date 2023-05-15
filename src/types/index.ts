@@ -1,37 +1,20 @@
-// export interface Assignment {
-//   id: string;
-//   courseId: string;
-//   title: string;
-//   link: string;
-//   deadline: string;
-//   isDone: boolean;
-// }
-
-// export interface Course {
-//   id: string;
-//   name: string;
-//   professor: string;
-// }
-
+interface Activity {
+  id: string;
+  courseId: string;
+  title: string;
+  startAt: Date;
+  endAt: Date;
+  hasSubmitted: boolean;
+}
 export interface Course {
   id: string;
   title: string;
-  professor: string;
 }
 
-export interface Assignment {
-  id: string;
-  courseId: string;
-  title: string;
-  startAt: Date;
-  endAt: Date;
-}
+export interface Assignment extends Activity {}
 
-export interface Video {
-  id: string;
-  courseId: string;
-  title: string;
-  startAt: Date;
-  endAt: Date;
+export interface Video extends Activity {
   timeInfo: string;
 }
+
+export type ActivityType = Assignment | Video;

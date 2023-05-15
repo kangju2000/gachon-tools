@@ -1,10 +1,10 @@
 import { forwardRef, useEffect, useState } from 'react';
 import { Tooltip } from 'react-tooltip';
 
-import type { Assignment, Course } from '@/types';
+import type { Assignment, Course, Video } from '@/types';
 
 import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg';
-import AssignmentList from '@/components/domains/AssignmentList';
+import ActivityList from '@/components/domains/ActivityList';
 import Filter from '@/components/uis/Filter';
 import Modal from '@/components/uis/Modal';
 import { getActivities, getCourses } from '@/services';
@@ -25,25 +25,31 @@ type Props = {
 };
 
 const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>) => {
-  const [assignmentList, setAssignmentList] = useState<Assignment[] | null>(null);
-  const [courseList, setCourseList] = useState<Course[]>([
-    { id: '-1', title: '전체', professor: '' },
-  ]);
+  const [courseList, setCourseList] = useState<Course[]>([{ id: '-1', title: '전체' }]);
   const [selectedCourse, setSelectedCourse] = useState<Course>(courseList[0]);
   const [sortType, setSortType] = useState<{ id: number; title: string }>(sort[0]);
   const [statusType, setStatusType] = useState<{ id: number; title: string }>(status[0]);
   const [isRefresh, setIsRefresh] = useState(true);
 
+  const [assignList, setAssignList] = useState<Assignment[]>([]);
+  const [videoList, setVideoList] = useState<Video[]>([]);
+
   const getData = async () => {
     const courses = await getCourses();
     const activities = await Promise.all(courses.map(course => getActivities(course.id)));
-
-    setCourseList(prev => [...prev, ...courses]);
-    setAssignmentList(
-      activities.reduce((list, activity) => {
-        return [...list, ...activity.assign];
-      }, []),
+    const [assignments, videos] = activities.reduce(
+      ([assignments, videos], activity) => {
+        return [
+          [...assignments, ...activity.assign],
+          [...videos, ...activity.video],
+        ];
+      },
+      [[], []],
     );
+
+    setCourseList([{ id: '-1', title: '전체' }, ...courses]);
+    setAssignList(assignments);
+    setVideoList(videos);
     setIsRefresh(false);
   };
 
@@ -112,8 +118,8 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
             <p className="text-gray-400">잠시만 기다려주세요 :)</p>
           </div>
         ) : (
-          <AssignmentList
-            assignmentList={assignmentList}
+          <ActivityList
+            activityList={[...videoList, ...assignList]}
             courseList={courseList}
             selectedCourseId={selectedCourse.id}
             sortType={sortType.title}
