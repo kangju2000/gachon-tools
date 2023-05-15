@@ -30,7 +30,6 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
   const [sortType, setSortType] = useState<{ id: number; title: string }>(sort[0]);
   const [statusType, setStatusType] = useState<{ id: number; title: string }>(status[0]);
   const [isRefresh, setIsRefresh] = useState(true);
-
   const [assignList, setAssignList] = useState<Assignment[]>([]);
   const [videoList, setVideoList] = useState<Video[]>([]);
 
