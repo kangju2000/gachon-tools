@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import type { Assignment, Course } from '@/types';
 
 import ContentModal from '@/components/domains/ContentModal';
-import { assignmentData, courseData } from '@/data/dummyData';
 import Portal from '@/helpers/portal';
 import { getActivities, getCourses } from '@/services';
 
@@ -16,6 +15,7 @@ export default function Content() {
   ]);
 
   const modalRef = useRef();
+
   const handleRefresh = () => {
     if (assignmentList === null) return;
     setAssignmentList(null);
@@ -35,21 +35,18 @@ export default function Content() {
   };
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') {
-      setCourseList(prev => [...prev, ...courseData]);
-      setAssignmentList(assignmentData);
-      return;
-    }
-
     getCourses().then(courseList => {
       setCourseList(prev => [...prev, ...courseList]);
-      courseList.forEach(course => {
-        getActivities(course.id).then(({ assign }) => {
-          setAssignmentList(prev => {
-            if (prev === null) return assign;
-            return [...prev, ...assign];
-          });
-        });
+      Promise.all(
+        courseList.map(course => {
+          return getActivities(course.id);
+        }),
+      ).then(assignList => {
+        setAssignmentList(
+          assignList.reduce((prev, cur) => {
+            return [...prev, ...cur.assign];
+          }, []),
+        );
       });
     });
   }, []);

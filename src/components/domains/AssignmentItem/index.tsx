@@ -20,7 +20,7 @@ const AssignmentItem = ({ assignment, courseName }: Props) => {
 
   return (
     <a
-      href={`https://cyber.gachon.ac.kr/course/view.php?id=${id}`}
+      href={`https://cyber.gachon.ac.kr/mod/assign/view.php?id=${id}`} // TODO: 과제 타입에 따라 링크 변경
       target="_blank"
       rel="noreferrer"
       className="w-full"

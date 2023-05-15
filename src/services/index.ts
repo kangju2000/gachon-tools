@@ -24,6 +24,9 @@ export const getCourses = async () => {
     const id = getLinkId($(el).attr('href'));
     const title = $(el)
       .find('h3')
+      .children()
+      .remove()
+      .end()
       .text()
       .replace(/ \((\d{5}_\d{3})\)/, '');
     const professor = $(el).find('.prof').text();
@@ -39,13 +42,13 @@ export const getCourses = async () => {
 };
 
 /**
- * 모든 activity를 가져온다.
+ * 강의의 모든 activity를 가져온다.
  * @param id course id
  */
 export const getActivities = async (courseId: string) => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`);
 
-  const assign = $('.activity.assign').map((i, el) => {
+  const assign = $('.total_sections .activity.assign').map((i, el) => {
     const id = getLinkId($(el).find('a').attr('href'));
     const title = $(el).find('.instancename').text();
     const [startAt, endAt] = $(el)
@@ -67,7 +70,7 @@ export const getActivities = async (courseId: string) => {
     };
   });
 
-  const vod = $('.activity.vod').map((i, el) => {
+  const vod = $('.total_sections .activity.vod').map((i, el) => {
     const id = getLinkId($(el).find('a').attr('href'));
     const title = $(el).find('.instancename').text();
     const [startAt, endAt, timeInfo] = $(el)
@@ -92,8 +95,8 @@ export const getActivities = async (courseId: string) => {
       timeInfo,
     };
   });
-
   console.log(assign.get(), vod.get());
+
   return {
     assign: assign.get(),
     vod: vod.get(),
