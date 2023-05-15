@@ -7,6 +7,7 @@ import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg';
 import AssignmentList from '@/components/domains/AssignmentList';
 import Filter from '@/components/uis/Filter';
 import Modal from '@/components/uis/Modal';
+import { getActivities, getCourses } from '@/services';
 
 const sort = [
   { id: 1, title: '마감일 순' },
@@ -20,19 +21,36 @@ const status = [
 
 type Props = {
   isOpen: boolean;
-  assignmentList: Assignment[] | null;
-  courseList: Course[];
   onClick: (event: React.MouseEvent) => void;
-  handleRefresh: () => void;
 };
 
-const ContentModal = (
-  { isOpen, assignmentList, courseList, onClick, handleRefresh }: Props,
-  ref: React.Ref<HTMLDivElement>,
-) => {
+const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>) => {
+  const [assignmentList, setAssignmentList] = useState<Assignment[] | null>(null);
+  const [courseList, setCourseList] = useState<Course[]>([
+    { id: '-1', title: '전체', professor: '' },
+  ]);
   const [selectedCourse, setSelectedCourse] = useState<Course>(courseList[0]);
   const [sortType, setSortType] = useState<{ id: number; title: string }>(sort[0]);
   const [statusType, setStatusType] = useState<{ id: number; title: string }>(status[0]);
+  const [isRefresh, setIsRefresh] = useState(true);
+
+  const getData = async () => {
+    const courses = await getCourses();
+    const activities = await Promise.all(courses.map(course => getActivities(course.id)));
+
+    setCourseList(prev => [...prev, ...courses]);
+    setAssignmentList(
+      activities.reduce((list, activity) => {
+        return [...list, ...activity.assign];
+      }, []),
+    );
+    setIsRefresh(false);
+  };
+
+  useEffect(() => {
+    if (!isRefresh) return;
+    getData();
+  }, [isRefresh]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -89,7 +107,7 @@ const ContentModal = (
             </Filter>
           </div>
         </div>
-        {assignmentList === null ? (
+        {isRefresh ? (
           <div className="flex justify-center items-center flex-grow">
             <p className="text-gray-400">잠시만 기다려주세요 :)</p>
           </div>
@@ -104,7 +122,7 @@ const ContentModal = (
         )}
         <div className="flex justify-end items-center mt-5">
           <RefreshIcon
-            onClick={handleRefresh}
+            onClick={() => setIsRefresh(true)}
             className="cursor-pointer"
             data-tooltip-id="refresh"
           />

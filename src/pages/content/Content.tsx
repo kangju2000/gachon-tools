@@ -1,55 +1,13 @@
 import { motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
-
-import type { Assignment, Course } from '@/types';
+import { useRef, useState } from 'react';
 
 import ContentModal from '@/components/domains/ContentModal';
 import Portal from '@/helpers/portal';
-import { getActivities, getCourses } from '@/services';
 
 export default function Content() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [assignmentList, setAssignmentList] = useState<Assignment[] | null>(null);
-  const [courseList, setCourseList] = useState<Course[]>([
-    { id: '-1', title: '전체', professor: '' },
-  ]);
 
   const modalRef = useRef();
-
-  const handleRefresh = () => {
-    if (assignmentList === null) return;
-    setAssignmentList(null);
-    setCourseList([{ id: '-1', title: '전체', professor: '' }]);
-
-    getCourses().then(courseList => {
-      setCourseList(prev => [...prev, ...courseList]);
-      courseList.forEach(course => {
-        getActivities(course.id).then(({ assign }) => {
-          setAssignmentList(prev => {
-            if (prev === null) return assign;
-            return [...prev, ...assign];
-          });
-        });
-      });
-    });
-  };
-
-  useEffect(() => {
-    getCourses().then(courseList => {
-      setCourseList(prev => [...prev, ...courseList]);
-      Promise.all(
-        courseList.map(course => {
-          return getActivities(course.id);
-        }),
-      ).then(assignList => {
-        setAssignmentList(
-          assignList.reduce((prev, cur) => {
-            return [...prev, ...cur.assign];
-          }, []),
-        );
-      });
-    });
-  }, []);
 
   return (
     <div className="fixed bottom-[25px] left-1/2 translate-x-[-50%]">
@@ -65,9 +23,6 @@ export default function Content() {
             if (event.target === modalRef.current) setIsModalOpen(false);
           }}
           isOpen={isModalOpen}
-          assignmentList={assignmentList}
-          courseList={courseList}
-          handleRefresh={handleRefresh}
         />
       </Portal>
     </div>
