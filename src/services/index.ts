@@ -36,83 +36,55 @@ export const getCourses = async () => {
 };
 
 /**
- * 강의의 모든 activity를 가져온다.
+ * 강의의 activity들을 가져온다.
  * @param courseId course id
  */
 export const getActivities = async (courseId: string) => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`);
 
-  const assign = $('.total_sections .activity.assign')
+  const video = $('.total_sections .activity.vod')
     .map((i, el) => {
       const id = getLinkId($(el).find('a').attr('href'));
       const title = $(el).find('.instancename').text();
-      const [startAt, endAt] = $(el)
-        .find('.displayoptions')
-        .text()
-        .split(' ~ ')
-        .map(date => new Date(date));
-
-      if (isNaN(startAt.getTime()) || isNaN(endAt.getTime())) {
-        return;
-      }
-      return {
-        id,
-        courseId,
-        title,
-        startAt,
-        endAt,
-        hasSubmitted: false,
-      };
-    })
-    .get();
-
-  const vod = $('.total_sections .activity.vod')
-    .map((i, el) => {
-      const id = getLinkId($(el).find('a').attr('href'));
-      const title = $(el).find('.instancename').text();
-      const [startAt, endAt, timeInfo] = $(el)
+      const [, endAt, timeInfo] = $(el)
         .find('.displayoptions')
         .text()
         .split(/ ~ |,/)
-        .map(str => {
-          const time = str.trim();
-          const date = new Date(time);
-          if (isNaN(date.getTime())) {
-            return time;
-          }
-          return date;
-        });
+        .map(str => str.trim());
 
       return {
+        type: 'video',
+        hasSubmitted: false,
         id,
         courseId,
         title,
-        startAt,
         endAt,
         timeInfo,
-        hasSubmitted: false,
       };
     })
     .get();
 
-  const assignments = await getAssignments(courseId);
-  const videos = await getVideos(courseId);
+  const assign = await getAssignments(courseId);
 
-  const combinedAssignments = assignments.reduce((acc, cur, idx) => {
-    return acc.map((a, i) => (i === idx ? { ...a, ...cur } : a));
-  }, assign);
+  if (!video.length) return { assign, video };
 
-  const combinedVideos = videos.reduce((acc, cur, idx) => {
-    return acc.map((a, i) => (i === idx ? { ...a, ...cur } : a));
-  }, vod);
+  const isVideoSubmittedArray = await getVideoSubmitted(courseId);
+
+  video.forEach((v, i) => {
+    v.hasSubmitted = isVideoSubmittedArray[i].hasSubmitted;
+  });
 
   return {
-    assign: combinedAssignments,
-    video: combinedVideos,
+    assign,
+    video,
   };
 };
 
-export const getAssignments = async (courseId: string) => {
+/**
+ * 강의의 과제들을 가져온다.
+ * @param courseId course id
+ */
+const getAssignments = async (courseId: string) => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${courseId}`);
 
   return $('tbody tr')
@@ -121,31 +93,36 @@ export const getAssignments = async (courseId: string) => {
       if (!aTag.length) return;
       const id = getLinkId(aTag.attr('href'));
       const title = aTag.text();
+      const endAt = $(el).find('.c2').text();
       const hasSubmitted = $(el).find('.c3').text() === '제출 완료';
 
       return {
+        type: 'assignment',
+        hasSubmitted,
         id,
         courseId,
         title,
-        hasSubmitted,
+        endAt,
       };
     })
     .get();
 };
 
-export const getVideos = async (courseId: string) => {
+/**
+ * 강의의 비디오 제출 여부를 가져온다.
+ * @param courseId course id
+ */
+const getVideoSubmitted = async (courseId: string) => {
   const $ = await fetchDocument(
-    `https://cyber.gachon.ac.kr/report/ubcompletion/user_progress_a.php?id=${courseId}`,
+    `https://cyber.gachon.ac.kr/report/ubcompletion/user_progress.php?id=${courseId}`,
   );
 
-  return $('.user_progress_table tbody tr')
+  return $('.user_progress tbody tr')
     .map((i, el) => {
-      const title = $(el).find('td:nth-child(2)').text().trim();
       const requiredTime = $(el).find('td:nth-child(3)').text();
       const totalStudyTime = $(el).find('td:nth-child(4)').text();
-      const hasSubmitted = new Date(totalStudyTime) > new Date(requiredTime);
+      const hasSubmitted = requiredTime.replace(/:/g, '') <= totalStudyTime.replace(/:/g, '');
       return {
-        title,
         hasSubmitted,
       };
     })

@@ -28,7 +28,7 @@ const ActivityList = ({
 
   const sortAcitivityList = (activityList: ActivityType[], type: string) => {
     if (type === '마감일 순') {
-      return activityList.sort((a, b) => a.endAt.getTime() - b.endAt.getTime());
+      return activityList.sort((a, b) => new Date(a.endAt).getTime() - new Date(b.endAt).getTime());
     }
 
     return activityList.sort((a, b) => Number(b.id) - Number(a.id));
@@ -36,7 +36,9 @@ const ActivityList = ({
 
   const filterActivityStatus = (activityList: ActivityType[], type: string) => {
     if (type === '진행중인 과제') {
-      return activityList.filter(activity => activity.endAt.getTime() > new Date().getTime());
+      return activityList.filter(
+        activity => new Date(activity.endAt).getTime() > new Date().getTime(),
+      );
     }
 
     return activityList;

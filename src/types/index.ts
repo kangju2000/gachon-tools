@@ -2,8 +2,7 @@ interface Activity {
   id: string;
   courseId: string;
   title: string;
-  startAt: Date;
-  endAt: Date;
+  endAt: string;
   hasSubmitted: boolean;
 }
 export interface Course {
@@ -11,9 +10,12 @@ export interface Course {
   title: string;
 }
 
-export interface Assignment extends Activity {}
+export interface Assignment extends Activity {
+  type: 'assignment';
+}
 
 export interface Video extends Activity {
+  type: 'video';
   timeInfo: string;
 }
 
