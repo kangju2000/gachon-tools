@@ -2,6 +2,7 @@ import type { ActivityType } from '@/types';
 
 import { ReactComponent as CheckIcon } from '@/assets/circle_check.svg';
 import { ReactComponent as XMarkIcon } from '@/assets/circle_x.svg';
+import { ReactComponent as StopwatchIcon } from '@/assets/stopwatch.svg';
 import { convertDateTime, timeFormat } from '@/utils';
 
 type Props = {
@@ -9,10 +10,11 @@ type Props = {
   courseName: string;
 };
 
-const Icon = ({ type }: { type: 'check' | 'x' }) =>
+const Icon = ({ type }: { type: 'check' | 'x' | 'stopwatch' }) =>
   ({
     check: <CheckIcon width={38} height={38} />,
     x: <XMarkIcon width={38} height={38} />,
+    stopwatch: <StopwatchIcon width={38} height={38} />,
   }[type]);
 
 const ActivityItem = ({ activity, courseName }: Props) => {
@@ -36,7 +38,7 @@ const ActivityItem = ({ activity, courseName }: Props) => {
           <Icon type={activity.hasSubmitted ? 'check' : 'x'} />
           <div className="w-[160px] ml-[20px]">
             <h4 className="text-[14px] font-bold single-line-ellipsis">{title}</h4>
-            <p className="text-[12px] opacity-70 ">{courseName}</p>
+            <p className="text-[12px] opacity-70 single-line-ellipsis">{courseName}</p>
           </div>
           <div className="ml-[30px]">
             <h4 className="text-[14px]">{convertDateTime(endAt)}</h4>

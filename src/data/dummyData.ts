@@ -1,43 +1,35 @@
 export const courseData = [
   {
-    id: '-1',
-    title: '전체',
-    professor: '',
-  },
-  {
     id: '89469',
     title: '2023년 폭력예방교육 (글로벌 재학생 2학년)~5학년 대상)',
-    professor: '이윤우',
+  },
+  {
+    id: '76094',
+    title: '고객가치와 영업역량',
   },
   {
     id: '84611',
     title: '소프트웨어공학',
-    professor: '오상엽',
   },
   {
     id: '85153',
     title: '알고리즘',
-    professor: '이상홍',
   },
   {
     id: '86856',
     title: 'IT특강',
-    professor: '김진우',
   },
   {
     id: '87877',
     title: '디지털콘텐츠기획',
-    professor: '오기성',
   },
   {
     id: '88519',
     title: '스마트기기시스템',
-    professor: '이병문',
   },
   {
     id: '89376',
     title: '[2023-1]학습공동체(G)',
-    professor: '원영권',
   },
 ];
 

@@ -34,9 +34,7 @@ function generateNewElement(data: string) {
 }
 
 function getLinkId(link: string) {
-  const queryString = link.substring(link.indexOf('?') + 1);
-  const urlParams = new URLSearchParams(queryString);
-  return urlParams.get('id');
+  return new URL(link).searchParams.get('id');
 }
 
 function pipe<T>(value: T, ...funcs: ((value: T) => T)[]) {

@@ -43,9 +43,9 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
       progress => setPos(progress),
     );
 
+    setCourseList([{ id: '-1', title: '전체' }, ...courses]);
+    setActivityList(activities.reduce((acc, cur) => [...acc, ...cur], []));
     setTimeout(() => {
-      setCourseList([{ id: '-1', title: '전체' }, ...courses]);
-      setActivityList(activities.reduce((acc, cur) => [...acc, ...cur], []));
       setIsRefresh(false);
       setPos(0);
 
@@ -78,6 +78,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
 
         const diff = new Date().getTime() - updateAt;
         const isOverRefreshTime = diff > REFRESH_TIME;
+
         if (!isOverRefreshTime) {
           setCourseList([{ id: '-1', title: '전체' }, ...courses]);
           setActivityList(activities);

@@ -48,7 +48,7 @@ type FilterHeaderProps = {
 
 const FilterHeader = ({ className }: FilterHeaderProps) => {
   const { value } = useContext(FilterDataContext);
-  return <h3 className={`single-line-ellipsis text-[14px] ${className}`}>{value.title}</h3>;
+  return <h3 className={`single-line-ellipsis text-[14px] ${className ?? ''}`}>{value.title}</h3>;
 };
 
 type FilterModalProps = {

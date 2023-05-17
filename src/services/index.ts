@@ -44,15 +44,17 @@ export const getCourses = async () => {
 export const getActivities = async (courseId: string): Promise<(Assignment | Video)[]> => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`);
   const assign = await getAssignments(courseId);
-  const video = getVideoAtCourseDocument($, courseId);
+  const videoAtCourseDocument = getVideoAtCourseDocument($, courseId);
 
-  if (!video.length) return assign;
+  if (!videoAtCourseDocument.length) return assign;
 
   const isVideoSubmittedArray = await getVideoSubmitted(courseId);
 
-  video.forEach((v, i) => {
-    v.hasSubmitted = isVideoSubmittedArray[i].hasSubmitted;
-  });
+  const video = videoAtCourseDocument.reduce((acc, cur) => {
+    const findVideo = isVideoSubmittedArray.find(v => v.title === cur.title);
+    if (findVideo) return [...acc, Object.assign({}, cur, findVideo)];
+    return acc;
+  }, []);
 
   return [...assign, ...video];
 };
@@ -64,10 +66,10 @@ export const getActivities = async (courseId: string): Promise<(Assignment | Vid
 const getAssignments = async (courseId: string) => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${courseId}`);
 
-  return $('tbody tr')
+  return $('tbody tr:nth-child(odd)')
     .map((i, el) => {
       const aTag = $(el).find('a');
-      if (!aTag.length) return;
+      if (!aTag.length || !aTag.attr('href')) return;
       const id = getLinkId(aTag.attr('href'));
       const title = aTag.text();
       const endAt = $(el).find('.c2').text();
@@ -93,10 +95,12 @@ const getAssignments = async (courseId: string) => {
  * @param courseId
  */
 const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
-  return $('.total_sections .activity.vod')
+  return $('.total_sections .activity.vod .activityinstance')
     .map((i, el) => {
-      const id = getLinkId($(el).find('a').attr('href'));
-      const title = $(el).find('.instancename').text();
+      const link = $(el).find('a').attr('href');
+      if (!link) return;
+      const id = getLinkId(link);
+      const title = $(el).find('.instancename').clone().children().remove().end().text().trim();
       const [, endAt, timeInfo] = $(el)
         .find('.displayoptions')
         .text()
@@ -129,10 +133,13 @@ const getVideoSubmitted = async (courseId: string) => {
 
   return $('.user_progress tbody tr')
     .map((i, el) => {
-      const requiredTime = $(el).find('td:nth-child(3)').text();
-      const totalStudyTime = $(el).find('td:nth-child(4)').text();
+      const std = $(el).find('.text-center.hidden-xs.hidden-sm');
+      const title = std.prev().text().trim();
+      const requiredTime = std.text();
+      const totalStudyTime = std.next().clone().children().remove().end().text();
       const hasSubmitted = requiredTime.replace(/:/g, '') <= totalStudyTime.replace(/:/g, '');
       return {
+        title,
         hasSubmitted,
       };
     })
