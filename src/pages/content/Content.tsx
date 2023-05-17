@@ -6,7 +6,6 @@ import Portal from '@/helpers/portal';
 
 export default function Content() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const modalRef = useRef();
 
   return (

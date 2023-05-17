@@ -25,6 +25,7 @@ export default defineManifest(async env => ({
   },
   background: {
     service_worker: 'src/pages/background/index.ts',
+    type: 'module',
   },
   content_scripts: [
     {
@@ -39,5 +40,7 @@ export default defineManifest(async env => ({
       matches: ['*://*/*'],
     },
   ],
+  host_permissions: ['*://*/*'],
   options_page: 'src/pages/options/index.html',
+  permissions: ['storage', 'scripting', 'tabs'],
 }));

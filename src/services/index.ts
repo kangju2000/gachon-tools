@@ -1,6 +1,8 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
+import type { Assignment, Video } from '@/types';
+
 import { getLinkId } from '@/utils';
 
 const fetchDocument = async (url: string) => {
@@ -39,34 +41,12 @@ export const getCourses = async () => {
  * 강의의 activity들을 가져온다.
  * @param courseId course id
  */
-export const getActivities = async (courseId: string) => {
+export const getActivities = async (courseId: string): Promise<(Assignment | Video)[]> => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`);
-
-  const video = $('.total_sections .activity.vod')
-    .map((i, el) => {
-      const id = getLinkId($(el).find('a').attr('href'));
-      const title = $(el).find('.instancename').text();
-      const [, endAt, timeInfo] = $(el)
-        .find('.displayoptions')
-        .text()
-        .split(/ ~ |,/)
-        .map(str => str.trim());
-
-      return {
-        type: 'video',
-        hasSubmitted: false,
-        id,
-        courseId,
-        title,
-        endAt,
-        timeInfo,
-      };
-    })
-    .get();
-
   const assign = await getAssignments(courseId);
+  const video = getVideoAtCourseDocument($, courseId);
 
-  if (!video.length) return { assign, video };
+  if (!video.length) return assign;
 
   const isVideoSubmittedArray = await getVideoSubmitted(courseId);
 
@@ -74,10 +54,7 @@ export const getActivities = async (courseId: string) => {
     v.hasSubmitted = isVideoSubmittedArray[i].hasSubmitted;
   });
 
-  return {
-    assign,
-    video,
-  };
+  return [...assign, ...video];
 };
 
 /**
@@ -96,7 +73,7 @@ const getAssignments = async (courseId: string) => {
       const endAt = $(el).find('.c2').text();
       const hasSubmitted = $(el).find('.c3').text() === '제출 완료';
 
-      return {
+      const assignment: Assignment = {
         type: 'assignment',
         hasSubmitted,
         id,
@@ -104,6 +81,39 @@ const getAssignments = async (courseId: string) => {
         title,
         endAt,
       };
+
+      return assignment;
+    })
+    .get();
+};
+
+/**
+ * 강의 페이지의 document에서 비디오를 가져온다.
+ * @param $
+ * @param courseId
+ */
+const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
+  return $('.total_sections .activity.vod')
+    .map((i, el) => {
+      const id = getLinkId($(el).find('a').attr('href'));
+      const title = $(el).find('.instancename').text();
+      const [, endAt, timeInfo] = $(el)
+        .find('.displayoptions')
+        .text()
+        .split(/ ~ |,/)
+        .map(str => str.trim());
+
+      const v: Video = {
+        type: 'video',
+        hasSubmitted: false,
+        id,
+        courseId,
+        title,
+        endAt,
+        timeInfo,
+      };
+
+      return v;
     })
     .get();
 };

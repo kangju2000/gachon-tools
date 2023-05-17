@@ -1,12 +1,13 @@
 import { forwardRef, useEffect, useState } from 'react';
 import { Tooltip } from 'react-tooltip';
 
-import type { Assignment, Course, Video } from '@/types';
+import type { ActivityType, Course } from '@/types';
 
 import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg';
 import ActivityList from '@/components/domains/ActivityList';
 import Filter from '@/components/uis/Filter';
 import Modal from '@/components/uis/Modal';
+import { REFRESH_TIME } from '@/constants';
 import { getActivities, getCourses } from '@/services';
 
 const sort = [
@@ -26,30 +27,28 @@ type Props = {
 
 const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>) => {
   const [courseList, setCourseList] = useState<Course[]>([{ id: '-1', title: '전체' }]);
+  const [activityList, setActivityList] = useState<ActivityType[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<Course>(courseList[0]);
   const [sortType, setSortType] = useState<{ id: number; title: string }>(sort[0]);
   const [statusType, setStatusType] = useState<{ id: number; title: string }>(status[0]);
-  const [isRefresh, setIsRefresh] = useState(true);
-  const [assignList, setAssignList] = useState<Assignment[]>([]);
-  const [videoList, setVideoList] = useState<Video[]>([]);
+  const [isRefresh, setIsRefresh] = useState(false);
 
   const getData = async () => {
     const courses = await getCourses();
-    const activities = await Promise.all(courses.map(course => getActivities(course.id)));
-    const [assignments, videos] = activities.reduce(
-      ([assignments, videos], activity) => {
-        return [
-          [...assignments, ...activity.assign],
-          [...videos, ...activity.video],
-        ];
-      },
-      [[], []],
+    const activities = await Promise.all(courses.map(course => getActivities(course.id))).then(
+      activities => activities.flat(),
     );
 
     setCourseList([{ id: '-1', title: '전체' }, ...courses]);
-    setAssignList(assignments);
-    setVideoList(videos);
+    setActivityList(activities);
     setIsRefresh(false);
+
+    const updateAt = new Date().getTime();
+    chrome.storage.local.set({
+      updateAt,
+      courses,
+      activities,
+    });
   };
 
   useEffect(() => {
@@ -70,6 +69,25 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
       window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    chrome.storage.local.get(
+      ['updateAt', 'courses', 'activities'],
+      ({ updateAt, courses, activities }) => {
+        if (!updateAt || !courses || !activities) return setIsRefresh(true);
+
+        const diff = new Date().getTime() - updateAt;
+        const isOverRefreshTime = diff > REFRESH_TIME;
+        if (!isOverRefreshTime) {
+          setCourseList([{ id: '-1', title: '전체' }, ...courses]);
+          setActivityList(activities);
+          setIsRefresh(false);
+        } else {
+          setIsRefresh(true);
+        }
+      },
+    );
+  }, []);
 
   return (
     <Modal.Background
@@ -118,7 +136,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
           </div>
         ) : (
           <ActivityList
-            activityList={[...videoList, ...assignList]}
+            activityList={activityList}
             courseList={courseList}
             selectedCourseId={selectedCourse.id}
             sortType={sortType.title}
