@@ -16,7 +16,6 @@ chrome.runtime.onInstalled.addListener(async () => {
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  console.log(changes, areaName);
   if (areaName === 'local') {
     for (const [key, { newValue }] of Object.entries(changes)) {
       console.log(`storage.local.${key} changed from ${newValue}`);

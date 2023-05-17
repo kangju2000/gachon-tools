@@ -40,7 +40,7 @@ export default defineManifest(async env => ({
       matches: ['*://*/*'],
     },
   ],
-  host_permissions: ['*://*/*'],
+  host_permissions: ['https://cyber.gachon.ac.kr/*'],
   options_page: 'src/pages/options/index.html',
-  permissions: ['storage', 'scripting', 'tabs'],
+  permissions: ['storage', 'scripting', 'activeTab'],
 }));
