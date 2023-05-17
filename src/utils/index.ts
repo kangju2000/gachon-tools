@@ -1,3 +1,15 @@
+function allProgress<T>(proms: Promise<T>[], progress_cb: (progress: number) => void) {
+  let d = 0;
+  progress_cb(0);
+  for (const p of proms) {
+    p.then(() => {
+      d++;
+      progress_cb((d * 100) / proms.length);
+    });
+  }
+  return Promise.all(proms);
+}
+
 function timeFormat(endAt: string) {
   const curDate = new Date();
   const dueDate = new Date(endAt);
@@ -35,4 +47,4 @@ function pipe<T>(value: T, ...funcs: ((value: T) => T)[]) {
   return acc;
 }
 
-export { timeFormat, convertDateTime, generateNewElement, getLinkId, pipe };
+export { allProgress, timeFormat, convertDateTime, generateNewElement, getLinkId, pipe };

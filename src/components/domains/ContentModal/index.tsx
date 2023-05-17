@@ -7,8 +7,10 @@ import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg';
 import ActivityList from '@/components/domains/ActivityList';
 import Filter from '@/components/uis/Filter';
 import Modal from '@/components/uis/Modal';
+import ProgressBar from '@/components/uis/ProgressBar';
 import { REFRESH_TIME } from '@/constants';
 import { getActivities, getCourses } from '@/services';
+import { allProgress } from '@/utils';
 
 const sort = [
   { id: 1, title: '마감일 순' },
@@ -32,23 +34,28 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
   const [sortType, setSortType] = useState<{ id: number; title: string }>(sort[0]);
   const [statusType, setStatusType] = useState<{ id: number; title: string }>(status[0]);
   const [isRefresh, setIsRefresh] = useState(false);
+  const [pos, setPos] = useState(0);
 
   const getData = async () => {
     const courses = await getCourses();
-    const activities = await Promise.all(courses.map(course => getActivities(course.id))).then(
-      activities => activities.flat(),
+    const activities = await allProgress(
+      courses.map(course => getActivities(course.id)),
+      progress => setPos(progress),
     );
 
-    setCourseList([{ id: '-1', title: '전체' }, ...courses]);
-    setActivityList(activities);
-    setIsRefresh(false);
+    setTimeout(() => {
+      setCourseList([{ id: '-1', title: '전체' }, ...courses]);
+      setActivityList(activities.reduce((acc, cur) => [...acc, ...cur], []));
+      setIsRefresh(false);
+      setPos(0);
 
-    const updateAt = new Date().getTime();
-    chrome.storage.local.set({
-      updateAt,
-      courses,
-      activities,
-    });
+      const updateAt = new Date().getTime();
+      chrome.storage.local.set({
+        updateAt,
+        courses,
+        activities,
+      });
+    }, 500);
   };
 
   useEffect(() => {
@@ -63,14 +70,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
       top: -${window.scrollY}px;
       overflow-y: scroll;
       width: 100%;`;
-    return () => {
-      const scrollY = document.body.style.top;
-      document.body.style.cssText = '';
-      window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
-    };
-  }, [isOpen]);
 
-  useEffect(() => {
     chrome.storage.local.get(
       ['updateAt', 'courses', 'activities'],
       ({ updateAt, courses, activities }) => {
@@ -87,7 +87,13 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
         }
       },
     );
-  }, []);
+
+    return () => {
+      const scrollY = document.body.style.top;
+      document.body.style.cssText = '';
+      window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
+    };
+  }, [isOpen]);
 
   return (
     <Modal.Background
@@ -131,8 +137,9 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
           </div>
         </div>
         {isRefresh ? (
-          <div className="flex justify-center items-center flex-grow">
+          <div className="flex flex-col gap-2 justify-center items-center flex-grow">
             <p className="text-gray-400">잠시만 기다려주세요 :)</p>
+            <ProgressBar pos={pos} />
           </div>
         ) : (
           <ActivityList
