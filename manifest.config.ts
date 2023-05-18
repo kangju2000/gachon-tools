@@ -3,7 +3,7 @@ import { defineManifest } from '@crxjs/vite-plugin';
 import packageJson from './package.json';
 const { version } = packageJson;
 
-const [major, minor, patch] = version.replace(/[^\d.-]+/g, '').split(/[.-]/);
+const [major, minor, patch, label = '0'] = version.replace(/[^\d.-]+/g, '').split(/[.-]/);
 
 export default defineManifest(async env => ({
   manifest_version: 3,
@@ -12,7 +12,7 @@ export default defineManifest(async env => ({
       ? '[INTERNAL] Gachon Tools - 사이버캠퍼스 확장프로그램'
       : 'Gachon Tools - 사이버캠퍼스 확장프로그램',
   description: '가천대학교 사이버캠퍼스 확장프로그램',
-  version: `${major}.${minor}.${patch}`,
+  version: label === '0' ? `${major}.${minor}.${patch}` : `${major}.${minor}.${patch}.${label}`,
   version_name: version,
   action: {
     default_title: 'popup',
