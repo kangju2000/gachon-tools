@@ -29,8 +29,6 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 
 #root h1,
@@ -71,7 +69,17 @@
 }
 
 #modal ::-webkit-scrollbar {
-  display: none;
+  width: 5px;
+}
+
+#modal ::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  background: #0e0d46;
+}
+
+#modal ::-webkit-scrollbar-track {
+  border-radius: 2px;
+  background: #eee;
 }
 
 * {

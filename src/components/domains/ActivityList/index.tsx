@@ -7,7 +7,6 @@ type Props = {
   activityList: ActivityType[];
   courseList: Course[];
   selectedCourseId: string;
-  sortType: string;
   statusType: string;
 };
 
@@ -15,7 +14,7 @@ const ActivityList = ({
   activityList,
   courseList,
   selectedCourseId,
-  sortType,
+  // sortType,
   statusType,
 }: Props) => {
   const filterActivityList = (activityList: ActivityType[], id: string) => {
@@ -26,12 +25,8 @@ const ActivityList = ({
     return activityList.filter(activity => activity.courseId === id);
   };
 
-  const sortAcitivityList = (activityList: ActivityType[], type: string) => {
-    if (type === '마감일 순') {
-      return activityList.sort((a, b) => new Date(a.endAt).getTime() - new Date(b.endAt).getTime());
-    }
-
-    return activityList.sort((a, b) => Number(b.id) - Number(a.id));
+  const sortAcitivityList = (activityList: ActivityType[]) => {
+    return activityList.sort((a, b) => new Date(a.endAt).getTime() - new Date(b.endAt).getTime());
   };
 
   const filterActivityStatus = (activityList: ActivityType[], type: string) => {
@@ -47,13 +42,13 @@ const ActivityList = ({
   const filteredActivityList = pipe(
     activityList,
     activityList => filterActivityList(activityList, selectedCourseId),
-    activityList => sortAcitivityList(activityList, sortType),
+    activityList => sortAcitivityList(activityList),
     activityList => filterActivityStatus(activityList, statusType),
   );
 
   if (!filteredActivityList.length)
     return (
-      <div className="flex flex-col items-center flex-grow mt-4 p-[5px] overflow-hidden overflow-y-scroll">
+      <div className="flex flex-col items-center justify-center flex-grow mt-4 p-[5px] overflow-hidden overflow-y-scroll">
         <p className="text-gray-400">과제가 없습니다.</p>
       </div>
     );

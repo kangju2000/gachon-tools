@@ -12,11 +12,6 @@ import { REFRESH_TIME } from '@/constants';
 import { getActivities, getCourses } from '@/services';
 import { allProgress } from '@/utils';
 
-const sort = [
-  { id: 1, title: '마감일 순' },
-  { id: 2, title: '최신 순' },
-];
-
 const status = [
   { id: 1, title: '진행중인 과제' },
   { id: 2, title: '모든 과제' },
@@ -31,9 +26,9 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
   const [courseList, setCourseList] = useState<Course[]>([{ id: '-1', title: '전체' }]);
   const [activityList, setActivityList] = useState<ActivityType[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<Course>(courseList[0]);
-  const [sortType, setSortType] = useState<{ id: number; title: string }>(sort[0]);
   const [statusType, setStatusType] = useState<{ id: number; title: string }>(status[0]);
   const [isRefresh, setIsRefresh] = useState(false);
+  const [updateAt, setUpdateAt] = useState(0);
   const [pos, setPos] = useState(0);
 
   const getData = async () => {
@@ -43,13 +38,15 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
       progress => setPos(progress),
     ).then(activities => activities.flat());
 
+    const updateAt = new Date().getTime();
     setCourseList([{ id: '-1', title: '전체' }, ...courses]);
     setActivityList(activities);
+    setUpdateAt(updateAt);
+
     setTimeout(() => {
       setIsRefresh(false);
       setPos(0);
 
-      const updateAt = new Date().getTime();
       chrome.storage.local.set({
         updateAt,
         courses,
@@ -82,6 +79,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
         if (!isOverRefreshTime) {
           setCourseList([{ id: '-1', title: '전체' }, ...courses]);
           setActivityList(activities);
+          setUpdateAt(updateAt);
           setIsRefresh(false);
         } else {
           setIsRefresh(true);
@@ -119,14 +117,6 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
             </Filter.Modal>
           </Filter>
           <div className="flex gap-[16px]">
-            <Filter value={sortType} onChange={setSortType}>
-              <Filter.Header />
-              <Filter.Modal>
-                {sort.map(item => (
-                  <Filter.Item key={item.id} item={item} />
-                ))}
-              </Filter.Modal>
-            </Filter>
             <Filter value={statusType} onChange={setStatusType}>
               <Filter.Header />
               <Filter.Modal>
@@ -147,15 +137,19 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
             activityList={activityList}
             courseList={courseList}
             selectedCourseId={selectedCourse.id}
-            sortType={sortType.title}
             statusType={statusType.title}
           />
         )}
         <div className="flex justify-end items-center mt-5">
+          <p className="text-[12px] mr-3">
+            {updateAt !== 0 && new Date(updateAt).toLocaleString()} 업데이트
+          </p>
           <RefreshIcon
             onClick={() => setIsRefresh(true)}
             className="cursor-pointer"
             data-tooltip-id="refresh"
+            width={16}
+            height={16}
           />
           <Tooltip id="refresh">새로고침</Tooltip>
         </div>
