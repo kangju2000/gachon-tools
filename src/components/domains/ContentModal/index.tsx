@@ -41,10 +41,10 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
     const activities = await allProgress(
       courses.map(course => getActivities(course.id)),
       progress => setPos(progress),
-    );
+    ).then(activities => activities.flat());
 
     setCourseList([{ id: '-1', title: '전체' }, ...courses]);
-    setActivityList(activities.reduce((acc, cur) => [...acc, ...cur], []));
+    setActivityList(activities);
     setTimeout(() => {
       setIsRefresh(false);
       setPos(0);
