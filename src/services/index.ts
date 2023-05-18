@@ -73,7 +73,7 @@ const getAssignments = async (courseId: string) => {
       const id = getLinkId(aTag.attr('href'));
       const title = aTag.text();
       const endAt = $(el).find('.c2').text();
-      const hasSubmitted = $(el).find('.c3').text() === '제출 완료';
+      const hasSubmitted = /(Submitted for grading)|(제출 완료)/.test($(el).find('.c3').text());
 
       const assignment: Assignment = {
         type: 'assignment',
