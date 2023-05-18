@@ -26,15 +26,15 @@ const Filter = ({ value, maxWidth, onChange, children, hasBorder = true }: Filte
       <FilterDataContext.Provider value={{ value, onChange }}>
         <div
           className={`relative flex items-center p-[12px]
-        ${hasBorder && 'border-[#C7CCDE] border-solid border-[1px] rounded-[8px]'}`}
+        ${hasBorder && 'rounded-[8px] border-[1px] border-solid border-[#C7CCDE]'}`}
           style={{ maxWidth }}
           onClick={() => setIsOpen(prev => !prev)}
         >
           {children}
           {isOpen ? (
-            <DropupIcon className="flex-shrink-0 ml-[5px]" />
+            <DropupIcon className="ml-[5px] flex-shrink-0" />
           ) : (
-            <DropdownIcon className="flex-shrink-0 ml-[5px]" />
+            <DropdownIcon className="ml-[5px] flex-shrink-0" />
           )}
         </div>
       </FilterDataContext.Provider>
@@ -64,7 +64,7 @@ const FilterModal = ({ children, pos = 'right' }: FilterModalProps) => {
       className={`absolute top-[55px] z-10 ${pos === 'left' ? 'left-0' : 'right-0'}`}
       isOpen={isOpen}
     >
-      <Modal className="flex flex-col justify-center max-w-[200px] p-[8px] rounded-[16px] shadow-modal-sm">
+      <Modal className="flex max-w-[200px] flex-col justify-center rounded-[16px] p-[8px] shadow-modal-sm">
         {children}
       </Modal>
     </Modal.Background>
@@ -86,15 +86,15 @@ const FilterItem = ({ item }: FilterItemProps) => {
 
   return (
     <div
-      className="flex items-center p-[8px] rounded-[8px] bg-white hover:bg-[#FBF7FF]"
+      className="flex items-center rounded-[8px] bg-white p-[8px] hover:bg-[#FBF7FF]"
       onClick={handleClick}
     >
       {isChecked ? (
         <CheckIcon className="flex-shrink-0" width={16} height={16} />
       ) : (
-        <div className="w-[16px] h-[16px] flex-shrink-0"></div>
+        <div className="h-[16px] w-[16px] flex-shrink-0"></div>
       )}
-      <p className="pl-[5px] text-[14px] single-line-ellipsis">{item.title}</p>
+      <p className="single-line-ellipsis pl-[5px] text-[14px]">{item.title}</p>
     </div>
   );
 };

@@ -96,13 +96,13 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
 
   return (
     <Modal.Background
-      className="fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.5)] z-[1999]"
+      className="fixed left-0 top-0 z-[1999] h-screen w-screen bg-[rgba(0,0,0,0.5)]"
       isOpen={isOpen}
       onClick={onClick}
       ref={ref}
     >
-      <Modal className="fixed bottom-1/2 left-1/2 translate-x-[-50%] translate-y-1/2 flex flex-col w-[770px] h-[500px] min-w-[500px]  px-[60px] py-[50px] rounded-[36px] shadow-modal-lg">
-        <div className="flex justify-between items-center text-[#0E0D46]">
+      <Modal className="fixed bottom-1/2 left-1/2 flex h-[500px] w-[770px] min-w-[500px] translate-x-[-50%] translate-y-1/2 flex-col  rounded-[36px] px-[60px] py-[50px] shadow-modal-lg">
+        <div className="flex items-center justify-between text-[#0E0D46]">
           <Filter
             value={selectedCourse}
             onChange={setSelectedCourse}
@@ -128,8 +128,8 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
           </div>
         </div>
         {isRefresh ? (
-          <div className="flex flex-col gap-2 justify-center items-center flex-grow">
-            <p className="text-gray-400">잠시만 기다려주세요 :)</p>
+          <div className="flex flex-grow flex-col items-center justify-center gap-2">
+            <p className="opacity-700">잠시만 기다려주세요 :)</p>
             <ProgressBar pos={pos} />
           </div>
         ) : (
@@ -140,13 +140,15 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
             statusType={statusType.title}
           />
         )}
-        <div className="flex justify-end items-center mt-5">
-          <p className="text-[12px] mr-3">
-            {updateAt !== 0 && new Date(updateAt).toLocaleString()} 업데이트
+        <div className="mt-5 flex items-center justify-end opacity-70">
+          <p className="text-[12px]">
+            {isRefresh
+              ? '업데이트 중...'
+              : `마지막 업데이트: ${new Date(updateAt).toLocaleString()}`}
           </p>
           <RefreshIcon
             onClick={() => setIsRefresh(true)}
-            className="cursor-pointer"
+            className="ml-[5px] cursor-pointer"
             data-tooltip-id="refresh"
             width={16}
             height={16}

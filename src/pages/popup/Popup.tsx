@@ -6,7 +6,7 @@ import { ReactComponent as GithubIcon } from '@/assets/github.svg';
 
 function App() {
   return (
-    <div className="flex flex-col items-center w-[300px] h-[250px] bg-white p-[10px]">
+    <div className="flex h-[250px] w-[300px] flex-col items-center bg-white p-[10px]">
       <GachonIcon width={50} height={50} />
       <h1 className="text-2xl font-bold">Gachon Tools</h1>
       <p>가천대학교 사이버캠퍼스 확장 프로그램</p>

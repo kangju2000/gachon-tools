@@ -48,7 +48,7 @@ const ActivityList = ({
 
   if (!filteredActivityList.length)
     return (
-      <div className="flex flex-col items-center justify-center flex-grow mt-4 p-[5px] overflow-hidden overflow-y-scroll">
+      <div className="mt-4 flex flex-grow flex-col items-center justify-center p-[5px]">
         <p className="text-gray-400">과제가 없습니다.</p>
       </div>
     );
@@ -56,7 +56,7 @@ const ActivityList = ({
   return (
     <div
       id="activity-list"
-      className="flex flex-col items-center gap-2 flex-grow min-w-[500px] mt-4 p-[5px] overflow-hidden overflow-y-scroll"
+      className="mt-4 flex min-w-[500px] flex-grow flex-col items-center gap-2 overflow-hidden overflow-y-scroll p-[5px]"
     >
       {filteredActivityList.map(activity => (
         <ActivityItem

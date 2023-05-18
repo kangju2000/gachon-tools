@@ -13,7 +13,7 @@ export default function Content() {
       <motion.div
         initial={{ width: '40px', height: '40px' }}
         whileHover={{ width: '100px', height: '50px' }}
-        className=" rounded-[50px] bg-[#2F6EA2] shadow-md shadow-[#2F6EA2] cursor-pointer"
+        className="cursor-pointer rounded-[50px] bg-[#2F6EA2] shadow-md shadow-[#2F6EA2]"
         onClick={() => setIsModalOpen(prev => !prev)}
       ></motion.div>
       <Portal elementId="modal">

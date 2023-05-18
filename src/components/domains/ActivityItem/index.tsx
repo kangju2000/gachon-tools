@@ -33,12 +33,12 @@ const ActivityItem = ({ activity, courseName }: Props) => {
       rel="noreferrer"
       className="w-full"
     >
-      <div className="flex justify-between items-center w-full h-[70px] p-[16px] rounded-[24px] text-[#0E0D46] bg-white hover:bg-[#FAF2FE]">
+      <div className="flex h-[70px] w-full items-center justify-between rounded-[24px] bg-white p-[16px] text-[#0E0D46] hover:bg-[#FAF2FE]">
         <div className="flex items-center">
           <Icon type={activity.hasSubmitted ? 'check' : 'x'} />
-          <div className="w-[160px] ml-[20px]">
-            <h4 className="text-[14px] font-bold single-line-ellipsis">{title}</h4>
-            <p className="text-[12px] opacity-70 single-line-ellipsis">{courseName}</p>
+          <div className="ml-[20px] w-[160px]">
+            <h4 className="single-line-ellipsis text-[14px] font-bold">{title}</h4>
+            <p className="single-line-ellipsis text-[12px] opacity-70">{courseName}</p>
           </div>
           <div className="ml-[30px]">
             <h4 className="text-[14px]">{convertDateTime(endAt)}</h4>
