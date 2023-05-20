@@ -10,6 +10,7 @@ import Modal from '@/components/uis/Modal';
 import ProgressBar from '@/components/uis/ProgressBar';
 import { REFRESH_TIME } from '@/constants';
 import useError from '@/hooks/useError';
+import useScrollLock from '@/hooks/useScrollLock';
 import { getActivities, getCourses } from '@/services';
 import { allProgress } from '@/utils';
 
@@ -32,6 +33,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
   const [updateAt, setUpdateAt] = useState(0);
   const [pos, setPos] = useState(0);
   const setError = useError();
+  const { scrollLock, scrollUnlock } = useScrollLock();
 
   const getData = async () => {
     const courses = await getCourses();
@@ -64,11 +66,9 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
 
   useEffect(() => {
     if (!isOpen) return;
-    document.body.style.cssText = `
-      position: fixed; 
-      top: -${window.scrollY}px;
-      overflow-y: scroll;
-      width: 100%;`;
+
+    scrollLock();
+
     chrome.storage.local.get(
       ['updateAt', 'courses', 'activities'],
       ({ updateAt, courses, activities }) => {
@@ -88,11 +88,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
       },
     );
 
-    return () => {
-      const scrollY = document.body.style.top;
-      document.body.style.cssText = '';
-      window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
-    };
+    return scrollUnlock;
   }, [isOpen]);
 
   return (
