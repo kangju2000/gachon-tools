@@ -61,7 +61,7 @@ const FilterModal = ({ children, pos = 'right' }: FilterModalProps) => {
 
   return (
     <Modal.Background
-      className={`absolute top-[55px] z-10 ${pos === 'left' ? 'left-0' : 'right-0'}`}
+      className={`absolute top-[55px] z-10 bg-white ${pos === 'left' ? 'left-0' : 'right-0'}`}
       isOpen={isOpen}
     >
       <Modal className="flex max-w-[200px] flex-col justify-center rounded-[16px] p-[8px] shadow-modal-sm">

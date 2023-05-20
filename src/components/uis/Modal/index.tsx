@@ -7,7 +7,7 @@ type ModalProps = {
 };
 
 const Modal = ({ className, children }: ModalProps) => {
-  return <div className={`bg-white ${className}`}>{children}</div>;
+  return <div className={`${className ?? ''}`}>{children}</div>;
 };
 
 type ModalBackgroundProps = {

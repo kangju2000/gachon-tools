@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useRef, useState } from 'react';
 
 import ContentModal from '@/components/domains/ContentModal';
+import Toast from '@/components/uis/Toast';
 import Portal from '@/helpers/portal';
 
 export default function App() {
@@ -21,11 +22,11 @@ export default function App() {
         className="cursor-pointer rounded-[50px] bg-[#2F6EA2] shadow-md shadow-[#2F6EA2]"
         onClick={() => setIsModalOpen(prev => !prev)}
       ></motion.div>
-      <ErrorBoundary fallback={<></>}>
-        <Portal elementId="modal">
+      <Portal elementId="modal">
+        <ErrorBoundary fallback={<Toast message="에러가 발생했습니다." type="error" />}>
           <ContentModal ref={modalRef} onClick={handleModalClick} isOpen={isModalOpen} />
-        </Portal>
-      </ErrorBoundary>
+        </ErrorBoundary>
+      </Portal>
     </div>
   );
 }
