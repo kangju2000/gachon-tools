@@ -1,12 +1,17 @@
+import { ErrorBoundary } from '@sentry/react';
 import { motion } from 'framer-motion';
 import { useRef, useState } from 'react';
 
 import ContentModal from '@/components/domains/ContentModal';
 import Portal from '@/helpers/portal';
 
-export default function Content() {
+export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef();
+
+  const handleModalClick = (event: React.MouseEvent) => {
+    if (event.target === modalRef.current) setIsModalOpen(false);
+  };
 
   return (
     <div className="fixed bottom-[25px] left-1/2 translate-x-[-50%]">
@@ -16,15 +21,11 @@ export default function Content() {
         className="cursor-pointer rounded-[50px] bg-[#2F6EA2] shadow-md shadow-[#2F6EA2]"
         onClick={() => setIsModalOpen(prev => !prev)}
       ></motion.div>
-      <Portal elementId="modal">
-        <ContentModal
-          ref={modalRef}
-          onClick={event => {
-            if (event.target === modalRef.current) setIsModalOpen(false);
-          }}
-          isOpen={isModalOpen}
-        />
-      </Portal>
+      <ErrorBoundary fallback={<></>}>
+        <Portal elementId="modal">
+          <ContentModal ref={modalRef} onClick={handleModalClick} isOpen={isModalOpen} />
+        </Portal>
+      </ErrorBoundary>
     </div>
   );
 }

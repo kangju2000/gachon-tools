@@ -9,6 +9,7 @@ import Filter from '@/components/uis/Filter';
 import Modal from '@/components/uis/Modal';
 import ProgressBar from '@/components/uis/ProgressBar';
 import { REFRESH_TIME } from '@/constants';
+import useError from '@/hooks/useError';
 import { getActivities, getCourses } from '@/services';
 import { allProgress } from '@/utils';
 
@@ -30,6 +31,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
   const [isRefresh, setIsRefresh] = useState(false);
   const [updateAt, setUpdateAt] = useState(0);
   const [pos, setPos] = useState(0);
+  const setError = useError();
 
   const getData = async () => {
     const courses = await getCourses();
@@ -57,7 +59,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
 
   useEffect(() => {
     if (!isRefresh) return;
-    getData();
+    getData().catch(error => setError(error));
   }, [isRefresh]);
 
   useEffect(() => {
@@ -67,7 +69,6 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
       top: -${window.scrollY}px;
       overflow-y: scroll;
       width: 100%;`;
-
     chrome.storage.local.get(
       ['updateAt', 'courses', 'activities'],
       ({ updateAt, courses, activities }) => {
