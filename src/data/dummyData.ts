@@ -12,20 +12,16 @@ export const courseData = [
     title: '교양수학',
   },
   {
-    id: '86856',
-    title: 'IT특강',
+    id: '79655',
+    title: '데이터베이스',
   },
   {
     id: '50420',
     title: 'C언어',
   },
   {
-    id: '49200',
-    title: '생명과 나눔',
-  },
-  {
-    id: '88519',
-    title: '스마트기기시스템',
+    id: '82194',
+    title: 'JAVA',
   },
   {
     id: '89376',

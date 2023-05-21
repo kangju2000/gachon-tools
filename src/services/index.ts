@@ -67,8 +67,9 @@ export const getActivities = async (courseId: string): Promise<(Assignment | Vid
 const getAssignments = async (courseId: string) => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${courseId}`);
 
-  return $('tbody tr:nth-child(odd)')
+  return $('tbody tr')
     .map((i, el) => {
+      if ($(el).find('.tabledivider').length) return;
       const aTag = $(el).find('a');
       if (!aTag.length || !aTag.attr('href')) {
         return;
@@ -163,9 +164,6 @@ const getVideoSubmitted = async (courseId: string) => {
       const hasSubmitted =
         Number(requiredTime.replace(/:/g, '')) <= Number(totalStudyTime.replace(/:/g, ''));
 
-      if (courseId === '45828') {
-        console.log(title, requiredTime);
-      }
       return {
         title,
         hasSubmitted,
