@@ -3,11 +3,11 @@ import { useState } from 'react';
 const useError = () => {
   const [error, setError] = useState<Error | null>(null);
 
-  if (error) {
-    throw error;
-  }
+  const catchAsyncError = (error: Error) => {
+    setError(error);
+  };
 
-  return setError;
+  return { error, catchAsyncError };
 };
 
 export default useError;

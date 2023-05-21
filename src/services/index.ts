@@ -18,49 +18,6 @@ const fetchDocument = async (url: string) => {
 };
 
 /**
- * 모든 course를 가져온다.
- */
-export const getCourses = async () => {
-  const $ = await fetchDocument('https://cyber.gachon.ac.kr/local/ubion/user');
-
-  const courses = $('.coursefullname').map((i, el) => {
-    const id = getLinkId($(el).attr('href'));
-    const title = $(el)
-      .text()
-      .replace(/ \((\d{5}_\d{3})\)/, '');
-
-    return {
-      id,
-      title,
-    };
-  });
-
-  return courses.get();
-};
-
-/**
- * 강의의 activity들을 가져온다.
- * @param courseId course id
- */
-export const getActivities = async (courseId: string): Promise<(Assignment | Video)[]> => {
-  const $ = await fetchDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`);
-  const assign = await getAssignments(courseId);
-  const videoAtCourseDocument = getVideoAtCourseDocument($, courseId);
-
-  if (!videoAtCourseDocument.length) return assign;
-
-  const isVideoSubmittedArray = await getVideoSubmitted(courseId);
-
-  const video = videoAtCourseDocument.reduce((acc, cur) => {
-    const findVideo = isVideoSubmittedArray.find(v => v.title === cur.title);
-    if (findVideo) return [...acc, Object.assign({}, cur, findVideo)];
-    return acc;
-  }, []);
-
-  return [...assign, ...video];
-};
-
-/**
  * 강의의 과제들을 가져온다.
  * @param courseId course id
  */
@@ -164,4 +121,47 @@ const getVideoSubmitted = async (courseId: string) => {
       };
     })
     .get();
+};
+
+/**
+ * 모든 course를 가져온다.
+ */
+export const getCourses = async () => {
+  const $ = await fetchDocument('https://cyber.gachon.ac.kr/local/ubion/user');
+
+  const courses = $('.coursefullname').map((i, el) => {
+    const id = getLinkId($(el).attr('href'));
+    const title = $(el)
+      .text()
+      .replace(/ \((\d{5}_\d{3})\)/, '');
+
+    return {
+      id,
+      title,
+    };
+  });
+
+  return courses.get();
+};
+
+/**
+ * 강의의 activity들을 가져온다.
+ * @param courseId course id
+ */
+export const getActivities = async (courseId: string): Promise<(Assignment | Video)[]> => {
+  const $ = await fetchDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`);
+  const assign = await getAssignments(courseId);
+  const videoAtCourseDocument = getVideoAtCourseDocument($, courseId);
+
+  if (!videoAtCourseDocument.length) return assign;
+
+  const isVideoSubmittedArray = await getVideoSubmitted(courseId);
+
+  const video = videoAtCourseDocument.reduce((acc, cur) => {
+    const findVideo = isVideoSubmittedArray.find(v => v.title === cur.title);
+    if (findVideo) return [...acc, Object.assign({}, cur, findVideo)];
+    return acc;
+  }, []);
+
+  return [...assign, ...video];
 };

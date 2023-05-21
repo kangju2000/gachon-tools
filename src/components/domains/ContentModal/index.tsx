@@ -1,18 +1,18 @@
 import { forwardRef, useEffect, useState } from 'react';
 import { Tooltip } from 'react-tooltip';
 
-import type { ActivityType, Course } from '@/types';
+import type { Course } from '@/types';
 
 import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg';
 import ActivityList from '@/components/domains/ActivityList';
+import useFetchData from '@/components/domains/ContentModal/hooks/useFetchData';
 import Filter from '@/components/uis/Filter';
 import Modal from '@/components/uis/Modal';
 import ProgressBar from '@/components/uis/ProgressBar';
 import { REFRESH_TIME } from '@/constants';
 import useError from '@/hooks/useError';
 import useScrollLock from '@/hooks/useScrollLock';
-import { getActivities, getCourses } from '@/services';
-import { allProgress } from '@/utils';
+import filteredActivities from '@/services/filteredActivityList';
 
 const status = [
   { id: 1, title: '진행중인 과제' },
@@ -25,68 +25,44 @@ type Props = {
 };
 
 const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>) => {
-  const [courseList, setCourseList] = useState<Course[]>([{ id: '-1', title: '전체' }]);
-  const [activityList, setActivityList] = useState<ActivityType[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<Course>(courseList[0]);
+  const [selectedCourse, setSelectedCourse] = useState<Course>({ id: '-1', title: '전체' });
   const [statusType, setStatusType] = useState<{ id: number; title: string }>(status[0]);
   const [isRefresh, setIsRefresh] = useState(false);
-  const [updateAt, setUpdateAt] = useState(0);
-  const [pos, setPos] = useState(0);
-  const setError = useError();
+
+  const { catchAsyncError } = useError();
   const { scrollLock, scrollUnlock } = useScrollLock();
+  const [getData, getLocalData, data, pos] = useFetchData();
 
-  const getData = async () => {
-    const courses = await getCourses();
-    const activities = await allProgress(
-      courses.map(course => getActivities(course.id)),
-      progress => setPos(progress),
-    ).then(activities => activities.flat());
-
-    const updateAt = new Date().getTime();
-    setCourseList([{ id: '-1', title: '전체' }, ...courses]);
-    setActivityList(activities);
-    setUpdateAt(updateAt);
-
-    setTimeout(() => {
-      setIsRefresh(false);
-      setPos(0);
-
-      chrome.storage.local.set({
-        updateAt,
-        courses,
-        activities,
-      });
-    }, 500);
-  };
+  const { courseList, activityList, updateAt } = data;
+  const filteredActivityList = filteredActivities(
+    activityList,
+    selectedCourse.id,
+    statusType.title,
+  );
 
   useEffect(() => {
     if (!isRefresh) return;
-    getData().catch(error => setError(error));
+    getData()
+      .then(() => setIsRefresh(false))
+      .catch(error => catchAsyncError(error));
   }, [isRefresh]);
 
   useEffect(() => {
     if (!isOpen) return;
-
     scrollLock();
-
-    chrome.storage.local.get(
-      ['updateAt', 'courses', 'activities'],
-      ({ updateAt, courses, activities }) => {
-        if (!updateAt || !courses || !activities) return setIsRefresh(true);
+    if (!isRefresh)
+      chrome.storage.local.get(['updateAt'], ({ updateAt }) => {
+        if (!updateAt) return setIsRefresh(true);
 
         const diff = new Date().getTime() - updateAt;
         const isOverRefreshTime = diff > REFRESH_TIME;
 
         if (!isOverRefreshTime) {
-          setCourseList([{ id: '-1', title: '전체' }, ...courses]);
-          setActivityList(activities);
-          setUpdateAt(updateAt);
-          setIsRefresh(false);
+          getLocalData();
         } else {
           setIsRefresh(true);
         }
-      },
-    );
+      });
 
     return scrollUnlock;
   }, [isOpen]);
@@ -130,12 +106,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
             <ProgressBar pos={pos} />
           </div>
         ) : (
-          <ActivityList
-            activityList={activityList}
-            courseList={courseList}
-            selectedCourseId={selectedCourse.id}
-            statusType={statusType.title}
-          />
+          <ActivityList filteredActivityList={filteredActivityList} courseList={courseList} />
         )}
         <div className="mt-5 flex items-center justify-end opacity-70">
           <p className="text-[12px]">
