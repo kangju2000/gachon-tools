@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
@@ -69,7 +70,17 @@ const getAssignments = async (courseId: string) => {
   return $('tbody tr:nth-child(odd)')
     .map((i, el) => {
       const aTag = $(el).find('a');
-      if (!aTag.length || !aTag.attr('href')) return;
+      if (!aTag.length || !aTag.attr('href')) {
+        captureException(
+          new Error(`
+        과제 링크가 없습니다.
+        courseId: ${courseId}
+        aTag: ${aTag}
+        `),
+        );
+        return null;
+      }
+
       const id = getLinkId(aTag.attr('href'));
       const title = aTag.text();
       const endAt = $(el).find('.c2').text();
@@ -98,7 +109,11 @@ const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
   return $('.total_sections .activity.vod .activityinstance')
     .map((i, el) => {
       const link = $(el).find('a').attr('href');
-      if (!link) return;
+      if (!link) {
+        captureException(new Error(`동영상 링크가 없습니다. courseId: ${courseId}`));
+        return;
+      }
+
       const id = getLinkId(link);
       const title = $(el).find('.instancename').clone().children().remove().end().text().trim();
       const [, endAt, timeInfo] = $(el)
@@ -138,6 +153,11 @@ const getVideoSubmitted = async (courseId: string) => {
       const requiredTime = std.text();
       const totalStudyTime = std.next().clone().children().remove().end().text();
       const hasSubmitted = requiredTime.replace(/:/g, '') <= totalStudyTime.replace(/:/g, '');
+
+      if (!title) captureException(new Error(`동영상 제목이 없습니다. courseId: ${courseId}`));
+      if (!requiredTime)
+        captureException(new Error(`동영상 출석 요구 시간이 없습니다. courseId: ${courseId}`));
+
       return {
         title,
         hasSubmitted,

@@ -30,7 +30,11 @@ export default defineManifest(async env => ({
   content_scripts: [
     {
       matches: ['https://cyber.gachon.ac.kr/*'],
-      exclude_matches: ['https://cyber.gachon.ac.kr/login.php*'],
+      exclude_matches: [
+        'https://cyber.gachon.ac.kr/login.php*',
+        'https://cyber.gachon.ac.kr/mod/ubfile/viewer.php*',
+        'https://cyber.gachon.ac.kr/mod/vod/viewer.php*',
+      ],
       js: ['src/pages/content/main.tsx'],
     },
   ],
