@@ -7,6 +7,7 @@ import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg';
 import ActivityList from '@/components/domains/ActivityList';
 import useFetchData from '@/components/domains/ContentModal/hooks/useFetchData';
 import Filter from '@/components/uis/Filter';
+import FlexCenterDiv from '@/components/uis/FlexCenterDiv';
 import Modal from '@/components/uis/Modal';
 import ProgressBar from '@/components/uis/ProgressBar';
 import { REFRESH_TIME } from '@/constants';
@@ -101,10 +102,10 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
           </div>
         </div>
         {isRefresh ? (
-          <div className="flex flex-grow flex-col items-center justify-center gap-2">
+          <FlexCenterDiv className="flex-grow flex-col gap-2">
             <p className="opacity-700">잠시만 기다려주세요 :)</p>
             <ProgressBar pos={pos} />
-          </div>
+          </FlexCenterDiv>
         ) : (
           <ActivityList filteredActivityList={filteredActivityList} courseList={courseList} />
         )}

@@ -1,6 +1,7 @@
 import type { ActivityType, Course } from '@/types';
 
 import ActivityItem from '@/components/domains/ActivityItem';
+import FlexCenterDiv from '@/components/uis/FlexCenterDiv';
 
 type Props = {
   filteredActivityList: ActivityType[];
@@ -10,9 +11,9 @@ type Props = {
 const ActivityList = ({ filteredActivityList, courseList }: Props) => {
   if (!filteredActivityList.length)
     return (
-      <div className="mt-4 flex flex-grow flex-col items-center justify-center p-[5px]">
+      <FlexCenterDiv className="mt-4 flex-grow p-[5px]">
         <p className="text-gray-400">과제가 없습니다.</p>
-      </div>
+      </FlexCenterDiv>
     );
 
   return (
