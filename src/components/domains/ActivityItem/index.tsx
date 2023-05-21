@@ -1,3 +1,5 @@
+import { captureException } from '@sentry/react';
+
 import type { ActivityType } from '@/types';
 
 import { ReactComponent as CheckIcon } from '@/assets/circle_check.svg';
@@ -19,6 +21,10 @@ const Icon = ({ type }: { type: 'check' | 'x' | 'stopwatch' }) =>
 
 const ActivityItem = ({ activity, courseName }: Props) => {
   const { type, title, endAt, id } = activity;
+
+  if (!title) captureException(new Error('Activity title is empty'));
+  if (!endAt) captureException(new Error('Activity endAt is empty'));
+  if (!id) captureException(new Error('Activity id is empty'));
 
   const isAssignment = type === 'assignment';
 
