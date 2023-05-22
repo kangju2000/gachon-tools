@@ -1,14 +1,14 @@
 export default function allProgress<T>(
-  proms: Promise<T>[],
-  progress_cb: (progress: number) => void,
+  promise: Promise<T>[],
+  callback: (progress: number) => void,
 ) {
   let d = 0;
-  progress_cb(0);
-  for (const p of proms) {
+  callback(0);
+  for (const p of promise) {
     p.then(() => {
       d++;
-      progress_cb((d * 100) / proms.length);
+      callback((d * 100) / promise.length);
     });
   }
-  return Promise.all(proms);
+  return Promise.all(promise);
 }

@@ -13,7 +13,7 @@ import ProgressBar from '@/components/uis/ProgressBar';
 import { REFRESH_TIME } from '@/constants';
 import useError from '@/hooks/useError';
 import useScrollLock from '@/hooks/useScrollLock';
-import filteredActivities from '@/services/filteredActivityList';
+import filteredActivities from '@/utils/filteredActivityList';
 
 const status = [
   { id: 1, title: '진행중인 과제' },
