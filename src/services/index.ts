@@ -44,99 +44,146 @@ export const getCourses = async () => {
  */
 export const getActivities = async (courseId: string): Promise<(Assignment | Video)[]> => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`);
-  const assign = await getAssignments(courseId);
+  const assignmentAtCourseDocument = getAssignmentAtCourseDocument($, courseId);
   const videoAtCourseDocument = getVideoAtCourseDocument($, courseId);
 
-  if (!videoAtCourseDocument.length) return assign;
+  const assignmentSubmittedArray = await getAssignmentSubmitted(courseId);
+  const videoSubmittedArray = await getVideoSubmitted(courseId);
 
-  const isVideoSubmittedArray = await getVideoSubmitted(courseId);
+  const assignment = assignmentAtCourseDocument.reduce((acc, cur) => {
+    const findAssignment = assignmentSubmittedArray.find(a => a.title === cur.title);
+    if (findAssignment) return [...acc, Object.assign({}, cur, findAssignment)];
 
-  const video = videoAtCourseDocument.reduce((acc, cur) => {
-    const findVideo = isVideoSubmittedArray.find(v => v.title === cur.title);
-    if (findVideo) return [...acc, Object.assign({}, cur, findVideo)];
+    console.log('assignment', cur.title);
+    captureException(new Error(`getActivities에서 findAssignment 없음. ${cur.title}`));
     return acc;
   }, []);
 
-  return [...assign, ...video];
+  const video = videoAtCourseDocument.reduce((acc, cur) => {
+    const findVideo = videoSubmittedArray.find(v => v.title === cur.title);
+    if (findVideo) return [...acc, Object.assign({}, cur, findVideo)];
+
+    console.log('video', cur.title);
+    captureException(new Error(`getActivities에서 findVideo 없음. ${cur.title}`));
+    return acc;
+  }, []);
+
+  return [...assignment, ...video];
 };
 
 /**
- * 강의의 과제들을 가져온다.
- * @param courseId course id
+ * 강의 페이지의 document에서 과제를 가져온다.
+ * @param $
+ * @param courseId
  */
-const getAssignments = async (courseId: string) => {
-  const $ = await fetchDocument(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${courseId}`);
+const getAssignmentAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
+  const sectionOne = $('#section-0 .modtype_assign .activityinstance').map((i, el) => {
+    const link = $(el).find('a').attr('href');
 
-  return $('tbody tr')
-    .map((i, el) => {
-      if ($(el).find('.tabledivider').length) return;
-      const aTag = $(el).find('a');
-      if (!aTag.length || !aTag.attr('href')) {
-        return;
-      }
+    const id = getLinkId(link);
+    const title = $(el).find('.instancename').clone().children().remove().end().text().trim();
 
-      const id = getLinkId(aTag.attr('href'));
-      const title = aTag.text();
-      const endAt = $(el).find('.c2').text();
-      const hasSubmitted = /(Submitted for grading)|(제출 완료)/.test($(el).find('.c3').text());
+    const assignment: Assignment = {
+      type: 'assignment',
+      hasSubmitted: false,
+      id,
+      courseId,
+      title,
+      startAt: '',
+      endAt: '',
+    };
 
-      if (!endAt) {
-        captureException(new Error(`endAt 없음. courseId: ${courseId}`));
-        return;
-      }
+    return assignment;
+  });
+  const sectionTwo = $('.total_sections .modtype_assign .activityinstance').map((i, el) => {
+    const link = $(el).find('a').attr('href'); // 링크 없는 과제도 존재
 
-      const assignment: Assignment = {
-        type: 'assignment',
-        hasSubmitted,
-        id,
-        courseId,
-        title,
-        endAt,
-      };
+    const id = getLinkId(link);
+    const title = $(el).find('.instancename').clone().children().remove().end().text().trim();
+    const [startAt, endAt] = $(el)
+      .find('.displayoptions')
+      .text()
+      .split(' ~ ')
+      .map(t => t.trim());
 
-      return assignment;
-    })
-    .get();
+    const assignment: Assignment = {
+      type: 'assignment',
+      hasSubmitted: false,
+      id,
+      courseId,
+      title,
+      startAt,
+      endAt,
+    };
+
+    return assignment;
+  });
+
+  return [...sectionOne.get(), ...sectionTwo.get()];
 };
 
 /**
- * 강의 페이지의 document에서 비디오를 가져온다.
+ * 강의 페이지의 document에서 동영상 과제를 가져온다.
  * @param $
  * @param courseId
  */
 const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
   return $('.total_sections .activity.vod .activityinstance')
     .map((i, el) => {
-      const link = $(el).find('a').attr('href');
-      if (!link) {
-        captureException(new Error(`동영상 링크가 없습니다. courseId: ${courseId}`));
-        return;
-      }
+      const link = $(el).find('a').attr('href'); // 링크 없는 과제도 존재
 
       const id = getLinkId(link);
       const title = $(el).find('.instancename').clone().children().remove().end().text().trim();
-      const [, endAt, timeInfo] = $(el)
-        .find('.displayoptions')
+      const [startAt, endAt] = $(el)
+        .find('.displayoptions .text-ubstrap')
+        .clone()
+        .children()
+        .remove()
+        .end()
         .text()
-        .split(/ ~ |,/)
-        .map(str => str.trim());
+        .split(' ~ ')
+        .map(t => t.trim());
+      const timeInfo = $(el).find('.displayoptions .time-info').text();
 
-      if (!endAt) {
-        captureException(new Error(`endAt 없음. courseId: ${courseId}`));
-        return;
+      if (!id) {
+        captureException(
+          new Error(`getVideoAtCourseDocument에서 id 없음. ${title} / ${startAt} / ${endAt}`),
+        );
       }
 
-      const v: Video = {
+      return {
         type: 'video',
         hasSubmitted: false,
         id,
         courseId,
         title,
+        startAt,
         endAt,
         timeInfo,
       };
+    })
+    .get();
+};
 
-      return v;
+/**
+ * 강의의 과제 제출 여부를 가져온다.
+ * @param courseId course id
+ */
+const getAssignmentSubmitted = async (courseId: string) => {
+  const $ = await fetchDocument(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${courseId}`);
+
+  return $('tbody tr')
+    .map((i, el) => {
+      if ($(el).find('.tabledivider').length) return;
+      const title = $(el).find('a').text().trim();
+      const hasSubmitted = /(Submitted for grading)|(제출 완료)/.test($(el).find('.c3').text());
+      const endAt = $(el).find('.c2').text().trim() + ':00';
+
+      return {
+        title,
+        hasSubmitted,
+        endAt,
+      };
     })
     .get();
 };
