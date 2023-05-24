@@ -29,6 +29,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
   const [selectedCourse, setSelectedCourse] = useState<Course>({ id: '-1', title: '전체' });
   const [statusType, setStatusType] = useState<{ id: number; title: string }>(status[0]);
   const [isRefresh, setIsRefresh] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   const { catchAsyncError } = useError();
   const { scrollLock, scrollUnlock } = useScrollLock();
@@ -39,6 +40,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
     activityList,
     selectedCourse.id,
     statusType.title,
+    isChecked,
   );
 
   useEffect(() => {
@@ -76,7 +78,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
       ref={ref}
     >
       <Modal className="fixed bottom-1/2 left-1/2 flex h-[500px] w-[770px] min-w-[500px] translate-x-[-50%] translate-y-1/2 flex-col rounded-[36px]  bg-white px-[60px] py-[50px] shadow-modal-lg">
-        <div className="flex items-center justify-between text-[#0E0D46]">
+        <div className="relative flex justify-between text-[#0E0D46]">
           <Filter
             value={selectedCourse}
             onChange={setSelectedCourse}
@@ -90,7 +92,16 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
               ))}
             </Filter.Modal>
           </Filter>
-          <div className="flex gap-[16px]">
+          <label className="absolute -top-7 right-0 flex items-center">
+            <input
+              type="checkbox"
+              className="mr-1"
+              checked={isChecked}
+              onChange={() => setIsChecked(!isChecked)}
+            />
+            <p className="text-[12px]">미제출 과제만 보기</p>
+          </label>
+          <div className="flex flex-col">
             <Filter value={statusType} onChange={setStatusType}>
               <Filter.Header />
               <Filter.Modal>

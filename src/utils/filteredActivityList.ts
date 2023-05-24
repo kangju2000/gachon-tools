@@ -24,16 +24,25 @@ const activityListByStatus = (activityList: ActivityType[], status: string) => {
   return activityList;
 };
 
+const activityListBySubmitted = (activityList: ActivityType[], isChecked: boolean) => {
+  if (isChecked) {
+    return activityList.filter(activity => !activity.hasSubmitted);
+  }
+  return activityList;
+};
+
 const filteredActivities = (
   activityList: ActivityType[],
   selectedCourseId: string,
   status: string,
+  isChecked: boolean,
 ) =>
   pipe(
     activityList,
     activityList => activityListByCourse(activityList, selectedCourseId),
     activityList => sortAcitivityList(activityList),
     activityList => activityListByStatus(activityList, status),
+    activityList => activityListBySubmitted(activityList, isChecked),
   );
 
 export default filteredActivities;

@@ -30,7 +30,8 @@ describe('filteredActivityList 테스트', () => {
     const activityList = ActivityData;
     const selectedCourseId = '-1';
     const status = '진행중인 과제';
-    const filteredList = filteredActivities(activityList, selectedCourseId, status);
+    const isChecked = false;
+    const filteredList = filteredActivities(activityList, selectedCourseId, status, isChecked);
 
     expect(filteredList.length).toBe(26);
   });
@@ -39,7 +40,8 @@ describe('filteredActivityList 테스트', () => {
     const activityList = ActivityData;
     const selectedCourseId = '82194'; // 알고리즘 강의
     const status = '전체 과제';
-    const filteredList = filteredActivities(activityList, selectedCourseId, status);
+    const isChecked = false;
+    const filteredList = filteredActivities(activityList, selectedCourseId, status, isChecked);
 
     expect(filteredList.length).toBe(16);
   });
@@ -48,9 +50,20 @@ describe('filteredActivityList 테스트', () => {
     const activityList = ActivityData;
     const selectedCourseId = '82194'; // 알고리즘 강의
     const status = '진행중인 과제';
-    const filteredList = filteredActivities(activityList, selectedCourseId, status);
+    const isChecked = false;
+    const filteredList = filteredActivities(activityList, selectedCourseId, status, isChecked);
 
     expect(filteredList.length).toBe(9);
+  });
+
+  test('특정 과제 선택, 미제출 과제로 올바르게 필터링 되는지 확인한다.', () => {
+    const activityList = ActivityData;
+    const selectedCourseId = '82194'; // 알고리즘 강의
+    const status = '전체 과제';
+    const isChecked = true;
+    const filteredList = filteredActivities(activityList, selectedCourseId, status, isChecked);
+
+    expect(filteredList.length).toBe(2);
   });
 });
 

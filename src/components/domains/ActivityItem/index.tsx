@@ -5,6 +5,7 @@ import type { ActivityType } from '@/types';
 import { ReactComponent as CheckIcon } from '@/assets/circle_check.svg';
 import { ReactComponent as XMarkIcon } from '@/assets/circle_x.svg';
 import { ReactComponent as StopwatchIcon } from '@/assets/stopwatch.svg';
+import ActivityTag from '@/components/domains/ActivityTag';
 import { convertDateTime, timeFormat } from '@/utils';
 
 type Props = {
@@ -22,9 +23,9 @@ const Icon = ({ type }: { type: 'check' | 'x' | 'stopwatch' }) =>
 const ActivityItem = ({ activity, courseName }: Props) => {
   const { type, title, endAt, id } = activity;
 
-  if (!title) captureException(new Error('Activity title is empty'));
-  if (!endAt) captureException(new Error('Activity endAt is empty'));
-  if (!id) captureException(new Error('Activity id is empty'));
+  if (!title) captureException(new Error('[Warning] Activity title is empty'));
+  if (!endAt) captureException(new Error('[Warning] Activity endAt is empty'));
+  if (!id) captureException(new Error('[Warning] Activity id is empty'));
 
   const isAssignment = type === 'assignment';
 
@@ -39,10 +40,11 @@ const ActivityItem = ({ activity, courseName }: Props) => {
       rel="noreferrer"
       className="w-full"
     >
-      <div className="flex h-[70px] w-full items-center justify-between rounded-[24px] bg-white p-[16px] text-[#0E0D46] hover:bg-[#FAF2FE]">
+      <div className="flex h-[90px] w-full items-center justify-between rounded-[24px] bg-white p-[16px] text-[#0E0D46] hover:bg-[#FAF2FE]">
         <div className="flex items-center">
           <Icon type={activity.hasSubmitted ? 'check' : 'x'} />
-          <div className="ml-[20px] w-[160px]">
+          <div className="relative ml-[20px] w-[160px]">
+            <ActivityTag type={activity.type} />
             <h4 className="single-line-ellipsis text-[14px] font-bold">{title}</h4>
             <p className="single-line-ellipsis text-[12px] opacity-70">{courseName}</p>
           </div>

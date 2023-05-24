@@ -54,7 +54,6 @@ export const getActivities = async (courseId: string): Promise<(Assignment | Vid
     const findAssignment = assignmentSubmittedArray.find(a => a.title === cur.title);
     if (findAssignment) return [...acc, Object.assign({}, cur, findAssignment)];
 
-    console.log('assignment', cur.title);
     captureException(new Error(`getActivities에서 findAssignment 없음. ${cur.title}`));
     return acc;
   }, []);
@@ -63,7 +62,6 @@ export const getActivities = async (courseId: string): Promise<(Assignment | Vid
     const findVideo = videoSubmittedArray.find(v => v.title === cur.title);
     if (findVideo) return [...acc, Object.assign({}, cur, findVideo)];
 
-    console.log('video', cur.title);
     captureException(new Error(`getActivities에서 findVideo 없음. ${cur.title}`));
     return acc;
   }, []);
