@@ -50,10 +50,6 @@
   font-weight: 500;
   line-height: 1.1;
 }
-#root body,
-#modal body {
-  box-sizing: border-box;
-}
 
 #root a,
 #modal a {

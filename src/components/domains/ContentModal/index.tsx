@@ -4,6 +4,7 @@ import { Tooltip } from 'react-tooltip';
 import type { Course } from '@/types';
 
 import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg';
+import { ReactComponent as SettingIcon } from '@/assets/setting.svg';
 import ActivityList from '@/components/domains/ActivityList';
 import useFetchData from '@/components/domains/ContentModal/hooks/useFetchData';
 import Filter from '@/components/uis/Filter';
@@ -92,7 +93,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
               ))}
             </Filter.Modal>
           </Filter>
-          <label className="absolute -top-7 right-0 flex items-center">
+          <label className="absolute -top-7 right-0 ml-3 flex items-center">
             <input
               type="checkbox"
               className="mr-1"
@@ -101,16 +102,22 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
             />
             <p className="text-[12px]">미제출 과제만 보기</p>
           </label>
-          <div className="flex flex-col">
-            <Filter value={statusType} onChange={setStatusType}>
-              <Filter.Header />
-              <Filter.Modal>
-                {status.map(item => (
-                  <Filter.Item key={item.id} item={item} />
-                ))}
-              </Filter.Modal>
-            </Filter>
-          </div>
+          <Filter value={statusType} onChange={setStatusType}>
+            <Filter.Header />
+            <Filter.Modal>
+              {status.map(item => (
+                <Filter.Item key={item.id} item={item} />
+              ))}
+            </Filter.Modal>
+          </Filter>
+          <SettingIcon
+            className="absolute -left-6 bottom-5 cursor-pointer"
+            onClick={() =>
+              window.open(
+                'chrome-extension://dpdiiendbhbnamlapijppnihdeibbjmj/src/pages/options/index.html',
+              )
+            }
+          />
         </div>
         {isRefresh ? (
           <FlexCenterDiv className="flex-grow flex-col gap-2">
