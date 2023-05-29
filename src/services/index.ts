@@ -51,18 +51,20 @@ export const getActivities = async (courseId: string): Promise<(Assignment | Vid
   const videoSubmittedArray = await getVideoSubmitted(courseId);
 
   const assignment = assignmentAtCourseDocument.reduce((acc, cur) => {
-    const findAssignment = assignmentSubmittedArray.find(a => a.title === cur.title);
+    const findAssignment = assignmentSubmittedArray.find(
+      a => a.sectionTitle === cur.sectionTitle && a.title === cur.title,
+    );
     if (findAssignment) return [...acc, Object.assign({}, cur, findAssignment)];
 
-    captureException(new Error(`getActivities에서 findAssignment 없음. ${cur.title}`));
     return acc;
   }, []);
 
   const video = videoAtCourseDocument.reduce((acc, cur) => {
-    const findVideo = videoSubmittedArray.find(v => v.title === cur.title);
+    const findVideo = videoSubmittedArray.find(
+      v => v.sectionTitle === cur.sectionTitle && v.title === cur.title,
+    );
     if (findVideo) return [...acc, Object.assign({}, cur, findVideo)];
 
-    captureException(new Error(`getActivities에서 findVideo 없음. ${cur.title}`));
     return acc;
   }, []);
 
@@ -81,40 +83,46 @@ const getAssignmentAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) 
     const id = getLinkId(link);
     const title = $(el).find('.instancename').clone().children().remove().end().text().trim();
 
-    const assignment: Assignment = {
+    const assignment = {
       type: 'assignment',
-      hasSubmitted: false,
       id,
       courseId,
       title,
+      sectionTitle: '',
       startAt: '',
       endAt: '',
     };
 
     return assignment;
   });
-  const sectionTwo = $('.total_sections .modtype_assign .activityinstance').map((i, el) => {
-    const link = $(el).find('a').attr('href'); // 링크 없는 과제도 존재
 
-    const id = getLinkId(link);
-    const title = $(el).find('.instancename').clone().children().remove().end().text().trim();
-    const [startAt, endAt] = $(el)
-      .find('.displayoptions')
-      .text()
-      .split(' ~ ')
-      .map(t => t.trim());
+  const sectionTwo = $('.total_sections .content').map((i, el) => {
+    const sectionTitle = $(el).find('.sectionname').text().trim();
 
-    const assignment: Assignment = {
-      type: 'assignment',
-      hasSubmitted: false,
-      id,
-      courseId,
-      title,
-      startAt,
-      endAt,
-    };
+    return $(el)
+      .find('.modtype_assign .activityinstance')
+      .map((i, el) => {
+        const link = $(el).find('a').attr('href'); // 링크 없는 과제도 존재
 
-    return assignment;
+        const id = getLinkId(link);
+        const title = $(el).find('.instancename').clone().children().remove().end().text().trim();
+        const [startAt, endAt] = $(el)
+          .find('.displayoptions')
+          .text()
+          .split(' ~ ')
+          .map(t => t.trim());
+
+        return {
+          type: 'assignment',
+          id,
+          courseId,
+          title,
+          sectionTitle,
+          startAt,
+          endAt,
+        };
+      })
+      .get();
   });
 
   return [...sectionOne.get(), ...sectionTwo.get()];
@@ -126,39 +134,45 @@ const getAssignmentAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) 
  * @param courseId
  */
 const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
-  return $('.total_sections .activity.vod .activityinstance')
+  return $('.total_sections .content')
     .map((i, el) => {
-      const link = $(el).find('a').attr('href'); // 링크 없는 과제도 존재
+      const sectionTitle = $(el).find('.sectionname').text().trim();
 
-      const id = getLinkId(link);
-      const title = $(el).find('.instancename').clone().children().remove().end().text().trim();
-      const [startAt, endAt] = $(el)
-        .find('.displayoptions .text-ubstrap')
-        .clone()
-        .children()
-        .remove()
-        .end()
-        .text()
-        .split(' ~ ')
-        .map(t => t.trim());
-      const timeInfo = $(el).find('.displayoptions .time-info').text();
+      return $(el)
+        .find('.activity.vod .activityinstance')
+        .map((i, el) => {
+          const link = $(el).find('a').attr('href'); // 링크 없는 과제도 존재
+          const id = getLinkId(link);
+          const title = $(el).find('.instancename').clone().children().remove().end().text().trim();
+          const [startAt, endAt] = $(el)
+            .find('.displayoptions .text-ubstrap')
+            .clone()
+            .children()
+            .remove()
+            .end()
+            .text()
+            .split(' ~ ')
+            .map(t => t.trim());
+          const timeInfo = $(el).find('.displayoptions .time-info').text();
 
-      if (!id) {
-        captureException(
-          new Error(`getVideoAtCourseDocument에서 id 없음. ${title} / ${startAt} / ${endAt}`),
-        );
-      }
+          if (!id) {
+            captureException(
+              new Error(`getVideoAtCourseDocument에서 id 없음. ${title} / ${startAt} / ${endAt}`),
+            );
+          }
 
-      return {
-        type: 'video',
-        hasSubmitted: false,
-        id,
-        courseId,
-        title,
-        startAt,
-        endAt,
-        timeInfo,
-      };
+          return {
+            type: 'video',
+            id,
+            courseId,
+            title,
+            startAt,
+            endAt,
+            timeInfo,
+            sectionTitle,
+          };
+        })
+        .get();
     })
     .get();
 };
@@ -170,17 +184,23 @@ const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
 const getAssignmentSubmitted = async (courseId: string) => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${courseId}`);
 
+  let currentSectionTitle = '';
   return $('tbody tr')
     .map((i, el) => {
       if ($(el).find('.tabledivider').length) return;
-      const title = $(el).find('a').text().trim();
-      const hasSubmitted = /(Submitted for grading)|(제출 완료)/.test($(el).find('.c3').text());
+
+      const sectionTitle = $(el).find('.c0').text().trim();
+      if (sectionTitle !== '') currentSectionTitle = sectionTitle;
+
+      const title = $(el).find('.c1 a').text().trim();
       const endAt = $(el).find('.c2').text().trim() + ':00';
+      const hasSubmitted = /(Submitted for grading)|(제출 완료)/.test($(el).find('.c3').text());
 
       return {
         title,
-        hasSubmitted,
+        sectionTitle: currentSectionTitle,
         endAt,
+        hasSubmitted,
       };
     })
     .get();
@@ -200,18 +220,23 @@ const getVideoSubmitted = async (courseId: string) => {
       ? '.user_progress_table tbody tr'
       : '.user_progress tbody tr';
 
+  let currentSectionTitle = '';
+
   return $(className)
     .map((i, el) => {
+      if ($(el).find('.sectiontitle').length)
+        currentSectionTitle = $(el).find('.sectiontitle').attr('title');
       const std = $(el).find('.text-center.hidden-xs.hidden-sm');
       const title = std.prev().text().trim();
-      const requiredTime = std.text();
-      const totalStudyTime = std.next().clone().children().remove().end().text();
+      const requiredTime = std.text().trim();
+      const totalStudyTime = std.next().clone().children().remove().end().text().trim();
       const hasSubmitted =
         Number(requiredTime.replace(/:/g, '')) <= Number(totalStudyTime.replace(/:/g, ''));
 
       return {
         title,
         hasSubmitted,
+        sectionTitle: currentSectionTitle,
       };
     })
     .get();

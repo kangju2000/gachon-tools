@@ -1,11 +1,11 @@
-name: Playwright Tests
+name: CI Tests
 on:
   push:
     branches:
-      - master
+      - develop
   pull_request:
     branches:
-      - master
+      - develop
 jobs:
   test:
     timeout-minutes: 60
@@ -19,6 +19,8 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
+      - name: Jest tests
+        run: yarn test
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
       - name: Run Playwright tests
