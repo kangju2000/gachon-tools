@@ -13,6 +13,10 @@ export const courseData: Course[] = [
     id: '89376',
     title: '[2023-1]학습공동체(G)',
   },
+  {
+    id: '76094',
+    title: '고객가치',
+  },
 ];
 
 export const ActivityData: ActivityType[] = [
