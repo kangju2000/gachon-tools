@@ -78,7 +78,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
       onClick={onClick}
       ref={ref}
     >
-      <Modal className="fixed bottom-1/2 left-1/2 flex h-[500px] w-[770px] min-w-[500px] translate-x-[-50%] translate-y-1/2 flex-col rounded-[36px]  bg-white px-[60px] py-[50px] shadow-modal-lg">
+      <Modal className="fixed bottom-1/2 left-1/2 flex h-[500px] w-[770px] min-w-[500px] translate-x-[-50%] translate-y-1/2 flex-col rounded-[36px] bg-white px-[40px] py-[50px] shadow-modal-lg">
         <div className="relative flex justify-between text-[#0E0D46]">
           <Filter
             value={selectedCourse}
