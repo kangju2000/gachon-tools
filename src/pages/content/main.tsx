@@ -1,4 +1,4 @@
-import { ChakraProvider } from '@chakra-ui/react'
+import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import * as Sentry from '@sentry/react'
 import { createRoot } from 'react-dom/client'
 
@@ -32,8 +32,19 @@ const modal = document.createElement('div')
 modal.id = 'modal'
 document.body.append(modal)
 
+const theme = extendTheme({
+  styles: {
+    global: {
+      p: {
+        margin: 0,
+        padding: 0,
+      },
+    },
+  },
+})
+
 createRoot(root).render(
-  <ChakraProvider>
+  <ChakraProvider theme={theme}>
     <App />
   </ChakraProvider>,
 )

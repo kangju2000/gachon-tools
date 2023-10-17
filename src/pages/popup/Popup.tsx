@@ -1,8 +1,8 @@
-import { Tooltip } from 'react-tooltip';
+import { Tooltip } from 'react-tooltip'
 
-import { ReactComponent as FeedbackIcon } from '@/assets/feedback.svg';
-import { ReactComponent as GachonIcon } from '@/assets/gachon.svg';
-import { ReactComponent as GithubIcon } from '@/assets/github.svg';
+import { ReactComponent as FeedbackIcon } from '@/assets/feedback.svg'
+import { ReactComponent as GachonIcon } from '@/assets/gachon.svg'
+import { ReactComponent as GithubIcon } from '@/assets/github.svg'
 
 function App() {
   return (
@@ -36,7 +36,7 @@ function App() {
         </Tooltip>
       </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

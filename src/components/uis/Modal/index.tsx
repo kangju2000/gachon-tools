@@ -1,21 +1,21 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import { forwardRef } from 'react';
+import { AnimatePresence, motion } from 'framer-motion'
+import { forwardRef } from 'react'
 
 type ModalProps = {
-  children: React.ReactNode;
-  className?: string;
-};
+  children: React.ReactNode
+  className?: string
+}
 
 const Modal = ({ className, children }: ModalProps) => {
-  return <div className={`${className ?? ''}`}>{children}</div>;
-};
+  return <div className={`${className ?? ''}`}>{children}</div>
+}
 
 type ModalBackgroundProps = {
-  isOpen: boolean;
-  children: React.ReactNode;
-  className?: string;
-  onClick?: (e: React.MouseEvent) => void;
-};
+  isOpen: boolean
+  children: React.ReactNode
+  className?: string
+  onClick?: (e: React.MouseEvent) => void
+}
 
 const ModalBackground = (
   { isOpen, children, className, onClick }: ModalBackgroundProps,
@@ -36,9 +36,9 @@ const ModalBackground = (
         </motion.div>
       )}
     </AnimatePresence>
-  );
-};
+  )
+}
 
-Modal.Background = forwardRef(ModalBackground);
+Modal.Background = forwardRef(ModalBackground)
 
-export default Modal;
+export default Modal

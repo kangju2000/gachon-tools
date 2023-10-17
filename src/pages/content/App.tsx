@@ -1,32 +1,32 @@
-import { ErrorBoundary } from '@sentry/react';
-import { motion } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { Box, useDisclosure } from '@chakra-ui/react'
+import { AnimatePresence } from 'framer-motion'
 
-import ContentModal from '@/components/domains/ContentModal';
-import Toast from '@/components/uis/Toast';
-import Portal from '@/helpers/portal';
+import ChakraMotion from '@/components/ChakraMotion'
+import ContentModal from '@/components/ContentModal'
 
 export default function App() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const modalRef = useRef();
-
-  const handleModalClick = (event: React.MouseEvent) => {
-    if (event.target === modalRef.current) setIsModalOpen(false);
-  };
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
-    <div className="fixed bottom-[25px] left-1/2 translate-x-[-50%]">
-      <motion.div
-        initial={{ width: '40px', height: '40px' }}
-        whileHover={{ width: '100px', height: '50px' }}
-        className="cursor-pointer rounded-[50px] bg-[#2F6EA2] shadow-md shadow-[#2F6EA2]"
-        onClick={() => setIsModalOpen(prev => !prev)}
-      ></motion.div>
-      <Portal elementId="modal">
-        <ErrorBoundary fallback={<Toast message="에러가 발생했습니다." type="error" />}>
-          <ContentModal ref={modalRef} onClick={handleModalClick} isOpen={isModalOpen} />
-        </ErrorBoundary>
-      </Portal>
-    </div>
-  );
+    <Box pos="fixed" w="100vw" display="flex" bottom="25px" justifyContent="center" zIndex="9999">
+      <AnimatePresence>
+        {!isOpen && (
+          <ChakraMotion
+            initial={{ width: '0px', height: '0px' }}
+            animate={{ width: '40px', height: '40px' }}
+            exit={{ width: '0px', height: '0px' }}
+            whileHover={{ width: '100px', height: '50px' }}
+            w="40px"
+            h="40px"
+            bg="#2F6EA2"
+            boxShadow="dark-lg"
+            rounded="full"
+            cursor="pointer"
+            onClick={onOpen}
+          />
+        )}
+      </AnimatePresence>
+      <ContentModal isOpen={isOpen} onClose={onClose} />
+    </Box>
+  )
 }

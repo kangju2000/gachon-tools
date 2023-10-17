@@ -1,25 +1,25 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react'
 
-import { ReactComponent as CheckIcon } from '@/assets/check.svg';
-import { ReactComponent as DropdownIcon } from '@/assets/dropdown.svg';
-import { ReactComponent as DropupIcon } from '@/assets/dropup.svg';
-import Modal from '@/components/uis/Modal';
+import { ReactComponent as CheckIcon } from '@/assets/check.svg'
+import { ReactComponent as DropdownIcon } from '@/assets/dropdown.svg'
+import { ReactComponent as DropupIcon } from '@/assets/dropup.svg'
+import Modal from '@/components/uis/Modal'
 
-type valueType = { title: string; [key: string]: any };
+type valueType = { title: string; [key: string]: any }
 
 type FilterProps = {
-  value: valueType;
-  onChange: React.Dispatch<React.SetStateAction<valueType>>;
-  children: React.ReactNode;
-  maxWidth?: string;
-  hasBorder?: boolean;
-};
+  value: valueType
+  onChange: React.Dispatch<React.SetStateAction<valueType>>
+  children: React.ReactNode
+  maxWidth?: string
+  hasBorder?: boolean
+}
 
-const FilterDataContext = createContext<Pick<FilterProps, 'value' | 'onChange'> | null>(null);
-const OpenClosedContext = createContext<{ isOpen: boolean } | null>(null);
+const FilterDataContext = createContext<Pick<FilterProps, 'value' | 'onChange'> | null>(null)
+const OpenClosedContext = createContext<{ isOpen: boolean } | null>(null)
 
 const Filter = ({ value, maxWidth, onChange, children, hasBorder = true }: FilterProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <OpenClosedContext.Provider value={{ isOpen }}>
@@ -39,25 +39,25 @@ const Filter = ({ value, maxWidth, onChange, children, hasBorder = true }: Filte
         </div>
       </FilterDataContext.Provider>
     </OpenClosedContext.Provider>
-  );
-};
+  )
+}
 
 type FilterHeaderProps = {
-  className?: string;
-};
+  className?: string
+}
 
 const FilterHeader = ({ className }: FilterHeaderProps) => {
-  const { value } = useContext(FilterDataContext);
-  return <h3 className={`single-line-ellipsis text-[14px] ${className ?? ''}`}>{value.title}</h3>;
-};
+  const { value } = useContext(FilterDataContext)
+  return <h3 className={`single-line-ellipsis text-[14px] ${className ?? ''}`}>{value.title}</h3>
+}
 
 type FilterModalProps = {
-  children: React.ReactNode;
-  pos?: 'left' | 'right';
-};
+  children: React.ReactNode
+  pos?: 'left' | 'right'
+}
 
 const FilterModal = ({ children, pos = 'right' }: FilterModalProps) => {
-  const { isOpen } = useContext(OpenClosedContext);
+  const { isOpen } = useContext(OpenClosedContext)
 
   return (
     <Modal.Background
@@ -68,21 +68,21 @@ const FilterModal = ({ children, pos = 'right' }: FilterModalProps) => {
         {children}
       </Modal>
     </Modal.Background>
-  );
-};
+  )
+}
 
 type FilterItemProps = {
-  item: valueType;
-};
+  item: valueType
+}
 
 const FilterItem = ({ item }: FilterItemProps) => {
-  const { value, onChange } = useContext(FilterDataContext);
-  const isChecked = value === item;
+  const { value, onChange } = useContext(FilterDataContext)
+  const isChecked = value === item
 
   const handleClick = () => {
-    if (isChecked) return;
-    onChange(item);
-  };
+    if (isChecked) return
+    onChange(item)
+  }
 
   return (
     <div
@@ -96,11 +96,11 @@ const FilterItem = ({ item }: FilterItemProps) => {
       )}
       <p className="single-line-ellipsis pl-[5px] text-[14px]">{item.title}</p>
     </div>
-  );
-};
+  )
+}
 
-Filter.Header = FilterHeader;
-Filter.Modal = FilterModal;
-Filter.Item = FilterItem;
+Filter.Header = FilterHeader
+Filter.Modal = FilterModal
+Filter.Item = FilterItem
 
-export default Filter;
+export default Filter

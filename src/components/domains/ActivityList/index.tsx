@@ -1,12 +1,12 @@
-import type { ActivityType, Course } from '@/types';
+import type { ActivityType, Course } from '@/types'
 
-import ActivityItem from '@/components/domains/ActivityItem';
-import FlexCenterDiv from '@/components/uis/FlexCenterDiv';
+import ActivityItem from '@/components/domains/ActivityItem'
+import FlexCenterDiv from '@/components/uis/FlexCenterDiv'
 
 type Props = {
-  filteredActivityList: ActivityType[];
-  courseList: Course[];
-};
+  filteredActivityList: ActivityType[]
+  courseList: Course[]
+}
 
 const ActivityList = ({ filteredActivityList, courseList }: Props) => {
   if (!filteredActivityList.length)
@@ -14,7 +14,7 @@ const ActivityList = ({ filteredActivityList, courseList }: Props) => {
       <FlexCenterDiv className="mt-4 flex-grow p-[5px]">
         <p className="text-gray-400">과제가 없습니다.</p>
       </FlexCenterDiv>
-    );
+    )
 
   return (
     <div
@@ -29,7 +29,7 @@ const ActivityList = ({ filteredActivityList, courseList }: Props) => {
         />
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default ActivityList;
+export default ActivityList

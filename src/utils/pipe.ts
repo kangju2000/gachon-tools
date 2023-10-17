@@ -1,7 +1,7 @@
 export default function pipe<T>(value: T, ...funcs: ((value: T) => T)[]) {
-  let acc = value;
+  let acc = value
   for (const f of funcs) {
-    acc = f(acc);
+    acc = f(acc)
   }
-  return acc;
+  return acc
 }

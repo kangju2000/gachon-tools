@@ -1,5 +1,5 @@
-import Chrome from 'chrome';
+import Chrome from 'chrome'
 
 declare namespace chrome {
-  export default Chrome;
+  export default Chrome
 }

@@ -1,4 +1,4 @@
-import type { ActivityType, Course } from '@/types';
+import type { ActivityType, Course } from '@/types'
 
 export const courseData: Course[] = [
   {
@@ -17,7 +17,7 @@ export const courseData: Course[] = [
     id: '76094',
     title: '고객가치',
   },
-];
+]
 
 export const ActivityData: ActivityType[] = [
   {
@@ -399,4 +399,4 @@ export const ActivityData: ActivityType[] = [
     title: '성적제출',
     type: 'assignment',
   },
-];
+]

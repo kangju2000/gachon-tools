@@ -1,26 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 
-import Modal from '../Modal';
+import Modal from '../Modal'
 
 type Props = {
-  message: string;
-  type: 'success' | 'error';
-  delay?: number;
-};
+  message: string
+  type: 'success' | 'error'
+  delay?: number
+}
 
 const Toast = ({ message, type, delay = 3000 }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
   const toastColor = {
     success: 'bg-green-500',
     error: 'bg-red-500',
-  };
+  }
 
   useEffect(() => {
-    setIsOpen(true);
-    const timer = setTimeout(() => setIsOpen(false), delay);
-    return () => clearTimeout(timer);
-  }, []);
+    setIsOpen(true)
+    const timer = setTimeout(() => setIsOpen(false), delay)
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
     <Modal.Background isOpen={isOpen} className="fixed left-0 top-0 z-[1999]">
@@ -30,7 +30,7 @@ const Toast = ({ message, type, delay = 3000 }: Props) => {
         <p>{message}</p>
       </Modal>
     </Modal.Background>
-  );
-};
+  )
+}
 
-export default Toast;
+export default Toast

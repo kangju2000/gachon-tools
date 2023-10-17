@@ -1,75 +1,75 @@
-import { forwardRef, useEffect, useState } from 'react';
-import { Tooltip } from 'react-tooltip';
+import { forwardRef, useEffect, useState } from 'react'
+import { Tooltip } from 'react-tooltip'
 
-import type { Course } from '@/types';
+import type { Course } from '@/types'
 
-import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg';
-import { ReactComponent as SettingIcon } from '@/assets/setting.svg';
-import ActivityList from '@/components/domains/ActivityList';
-import useFetchData from '@/components/domains/ContentModal/hooks/useFetchData';
-import Filter from '@/components/uis/Filter';
-import FlexCenterDiv from '@/components/uis/FlexCenterDiv';
-import Modal from '@/components/uis/Modal';
-import ProgressBar from '@/components/uis/ProgressBar';
-import { REFRESH_TIME } from '@/constants';
-import useError from '@/hooks/useError';
-import useScrollLock from '@/hooks/useScrollLock';
-import filteredActivities from '@/utils/filteredActivityList';
+import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg'
+import { ReactComponent as SettingIcon } from '@/assets/setting.svg'
+import ActivityList from '@/components/domains/ActivityList'
+import useFetchData from '@/components/domains/ContentModal/hooks/useFetchData'
+import Filter from '@/components/uis/Filter'
+import FlexCenterDiv from '@/components/uis/FlexCenterDiv'
+import Modal from '@/components/uis/Modal'
+import ProgressBar from '@/components/uis/ProgressBar'
+import { REFRESH_TIME } from '@/constants'
+import useError from '@/hooks/useError'
+import useScrollLock from '@/hooks/useScrollLock'
+import filteredActivities from '@/utils/filteredActivityList'
 
 const status = [
   { id: 1, title: '진행중인 과제' },
   { id: 2, title: '모든 과제' },
-];
+]
 
 type Props = {
-  isOpen: boolean;
-  onClick: (event: React.MouseEvent) => void;
-};
+  isOpen: boolean
+  onClick: (event: React.MouseEvent) => void
+}
 
 const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>) => {
-  const [selectedCourse, setSelectedCourse] = useState<Course>({ id: '-1', title: '전체' });
-  const [statusType, setStatusType] = useState<{ id: number; title: string }>(status[0]);
-  const [isRefresh, setIsRefresh] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<Course>({ id: '-1', title: '전체' })
+  const [statusType, setStatusType] = useState<{ id: number; title: string }>(status[0])
+  const [isRefresh, setIsRefresh] = useState(false)
+  const [isChecked, setIsChecked] = useState(false)
 
-  const { catchAsyncError } = useError();
-  const { scrollLock, scrollUnlock } = useScrollLock();
-  const [getData, getLocalData, data, pos] = useFetchData();
+  const { catchAsyncError } = useError()
+  const { scrollLock, scrollUnlock } = useScrollLock()
+  const [getData, getLocalData, data, pos] = useFetchData()
 
-  const { courseList, activityList, updateAt } = data;
+  const { courseList, activityList, updateAt } = data
   const filteredActivityList = filteredActivities(
     activityList,
     selectedCourse.id,
     statusType.title,
     isChecked,
-  );
+  )
 
   useEffect(() => {
-    if (!isRefresh) return;
+    if (!isRefresh) return
     getData()
       .then(() => setIsRefresh(false))
-      .catch(error => catchAsyncError(error));
-  }, [isRefresh]);
+      .catch(error => catchAsyncError(error))
+  }, [isRefresh])
 
   useEffect(() => {
-    if (!isOpen) return;
-    scrollLock();
+    if (!isOpen) return
+    scrollLock()
     if (!isRefresh)
       chrome.storage.local.get(['updateAt'], ({ updateAt }) => {
-        if (!updateAt) return setIsRefresh(true);
+        if (!updateAt) return setIsRefresh(true)
 
-        const diff = new Date().getTime() - updateAt;
-        const isOverRefreshTime = diff > REFRESH_TIME;
+        const diff = new Date().getTime() - updateAt
+        const isOverRefreshTime = diff > REFRESH_TIME
 
         if (!isOverRefreshTime) {
-          getLocalData();
+          getLocalData()
         } else {
-          setIsRefresh(true);
+          setIsRefresh(true)
         }
-      });
+      })
 
-    return scrollUnlock;
-  }, [isOpen]);
+    return scrollUnlock
+  }, [isOpen])
 
   return (
     <Modal.Background
@@ -100,7 +100,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
               checked={isChecked}
               onChange={() => setIsChecked(!isChecked)}
             />
-            <p className="text-[12px]">미제출 과제만 보기</p>
+            <p className="text-[12px]">미제출 과제만</p>
           </label>
           <Filter value={statusType} onChange={setStatusType}>
             <Filter.Header />
@@ -144,7 +144,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
         </div>
       </Modal>
     </Modal.Background>
-  );
-};
+  )
+}
 
-export default forwardRef(ContentModal);
+export default forwardRef(ContentModal)

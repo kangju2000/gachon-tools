@@ -4,16 +4,16 @@ const useScrollLock = () => {
       position: fixed; 
       top: -${window.scrollY}px;
       overflow-y: scroll;
-      width: 100%;`;
-  };
+      width: 100%;`
+  }
 
   const scrollUnlock = () => {
-    const scrollY = document.body.style.top;
-    document.body.style.cssText = '';
-    window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
-  };
+    const scrollY = document.body.style.top
+    document.body.style.cssText = ''
+    window.scrollTo(0, parseInt(scrollY || '0', 10) * -1)
+  }
 
-  return { scrollLock, scrollUnlock };
-};
+  return { scrollLock, scrollUnlock }
+}
 
-export default useScrollLock;
+export default useScrollLock

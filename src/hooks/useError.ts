@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState } from 'react'
 
 const useError = () => {
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<Error | null>(null)
 
   const catchAsyncError = (error: Error) => {
-    setError(error);
-  };
+    setError(error)
+  }
 
-  return { error, catchAsyncError };
-};
+  return { error, catchAsyncError }
+}
 
-export default useError;
+export default useError

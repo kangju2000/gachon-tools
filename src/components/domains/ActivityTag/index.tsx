@@ -1,5 +1,5 @@
 interface ActivityTagProps {
-  type: 'assignment' | 'video';
+  type: 'assignment' | 'video'
 }
 const ActivityTag = ({ type }: ActivityTagProps) => {
   const status = {
@@ -11,7 +11,7 @@ const ActivityTag = ({ type }: ActivityTagProps) => {
       color: 'bg-black',
       text: '녹화강의',
     },
-  }[type];
+  }[type]
 
   return (
     <span
@@ -19,7 +19,7 @@ const ActivityTag = ({ type }: ActivityTagProps) => {
     >
       {status.text}
     </span>
-  );
-};
+  )
+}
 
-export default ActivityTag;
+export default ActivityTag

@@ -1,6 +1,6 @@
-import packageJson from '../../../package.json';
+import packageJson from '../../../package.json'
 
-const { version } = packageJson;
+const { version } = packageJson
 
 function Options() {
   return (
@@ -17,7 +17,7 @@ function Options() {
       </div>
       <p className="absolute bottom-5 right-5 text-[12px]">version: {version}</p>
     </div>
-  );
+  )
 }
 
-export default Options;
+export default Options

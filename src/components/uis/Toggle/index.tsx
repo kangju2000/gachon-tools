@@ -1,8 +1,8 @@
-import { motion } from 'framer-motion';
+import { motion } from 'framer-motion'
 
 interface ToggleProps {
-  isOn: boolean;
-  toggleSwitch: () => void;
+  isOn: boolean
+  toggleSwitch: () => void
 }
 
 const Toggle = ({ isOn, toggleSwitch }: ToggleProps) => {
@@ -10,7 +10,7 @@ const Toggle = ({ isOn, toggleSwitch }: ToggleProps) => {
     type: 'spring',
     stiffness: 700,
     damping: 30,
-  };
+  }
 
   return (
     <div
@@ -25,7 +25,7 @@ const Toggle = ({ isOn, toggleSwitch }: ToggleProps) => {
         transition={spring}
       ></motion.div>
     </div>
-  );
-};
+  )
+}
 
-export default Toggle;
+export default Toggle

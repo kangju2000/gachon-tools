@@ -4,23 +4,23 @@ chrome.runtime.onInstalled.addListener(async () => {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         files: cs.js,
-      });
+      })
       cs.css?.forEach(css => {
         chrome.scripting.insertCSS({
           target: { tabId: tab.id },
           files: [css],
-        });
-      });
+        })
+      })
     }
   }
-});
+})
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === 'local') {
     for (const key of Object.keys(changes)) {
-      console.log(`storage.local.${key} changed`);
+      console.log(`storage.local.${key} changed`)
     }
   }
-});
+})
 
-export {};
+export {}

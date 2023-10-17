@@ -1,33 +1,33 @@
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/react'
 
-import type { ActivityType } from '@/types';
+import type { ActivityType } from '@/types'
 
-import { ReactComponent as CheckIcon } from '@/assets/circle_check.svg';
-import { ReactComponent as XMarkIcon } from '@/assets/circle_x.svg';
-import { ReactComponent as StopwatchIcon } from '@/assets/stopwatch.svg';
-import ActivityTag from '@/components/domains/ActivityTag';
-import { convertDateTime, timeFormat } from '@/utils';
+import { ReactComponent as CheckIcon } from '@/assets/circle_check.svg'
+import { ReactComponent as XMarkIcon } from '@/assets/circle_x.svg'
+import { ReactComponent as StopwatchIcon } from '@/assets/stopwatch.svg'
+import ActivityTag from '@/components/domains/ActivityTag'
+import { convertDateTime, timeFormat } from '@/utils'
 
 type Props = {
-  activity: ActivityType;
-  courseName: string;
-};
+  activity: ActivityType
+  courseName: string
+}
 
 const Icon = ({ type }: { type: 'check' | 'x' | 'stopwatch' }) =>
   ({
     check: <CheckIcon width={38} height={38} />,
     x: <XMarkIcon width={38} height={38} />,
     stopwatch: <StopwatchIcon width={38} height={38} />,
-  }[type]);
+  }[type])
 
 const ActivityItem = ({ activity, courseName }: Props) => {
-  const { type, title, endAt, id } = activity;
+  const { type, title, endAt, id } = activity
 
-  if (!title) captureException(new Error('[Warning] Activity title is empty'));
-  if (!endAt) captureException(new Error('[Warning] Activity endAt is empty'));
-  if (!id) captureException(new Error('[Warning] Activity id is empty'));
+  if (!title) captureException(new Error('[Warning] Activity title is empty'))
+  if (!endAt) captureException(new Error('[Warning] Activity endAt is empty'))
+  if (!id) captureException(new Error('[Warning] Activity id is empty'))
 
-  const isAssignment = type === 'assignment';
+  const isAssignment = type === 'assignment'
 
   return (
     <a
@@ -55,7 +55,7 @@ const ActivityItem = ({ activity, courseName }: Props) => {
         <div className="text-[14px]">{timeFormat(endAt)}</div>
       </div>
     </a>
-  );
-};
+  )
+}
 
-export default ActivityItem;
+export default ActivityItem
