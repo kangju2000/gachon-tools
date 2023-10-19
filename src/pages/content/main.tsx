@@ -6,7 +6,6 @@ import packageJson from './../../../package.json'
 
 import App from '@/pages/content/App'
 
-import '@/styles/globals.css'
 import 'react-tooltip/dist/react-tooltip.css'
 
 const { version } = packageJson
@@ -33,9 +32,9 @@ modal.id = 'modal'
 document.body.append(modal)
 
 const theme = extendTheme({
-  styles: {
-    global: {
-      p: {
+  components: {
+    Text: {
+      baseStyle: {
         margin: 0,
         padding: 0,
       },
@@ -44,7 +43,7 @@ const theme = extendTheme({
 })
 
 createRoot(root).render(
-  <ChakraProvider theme={theme}>
+  <ChakraProvider resetCSS={false} theme={theme}>
     <App />
   </ChakraProvider>,
 )
