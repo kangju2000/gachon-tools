@@ -22,3 +22,9 @@ export interface Video extends Activity {
 }
 
 export type ActivityType = Assignment | Video
+
+export type Contents = {
+  courseList: Course[]
+  activityList: ActivityType[]
+  updateAt: number
+}
