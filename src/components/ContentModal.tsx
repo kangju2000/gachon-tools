@@ -1,4 +1,5 @@
 import {
+  Box,
   Divider,
   Modal,
   ModalBody,
@@ -7,12 +8,21 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Text,
 } from '@chakra-ui/react'
 import { ko } from 'date-fns/locale'
 
+import ActivityItem from './ActivityItem'
 import { RefreshIcon } from './Icons'
 
+import useGetContents from '@/hooks/useGetContents'
+import filteredActivities from '@/utils/filteredActivityList'
 import foramtDate from '@/utils/formatDate'
 
 type Props = {
@@ -21,6 +31,11 @@ type Props = {
 }
 
 const ContentModal = ({ isOpen, onClose }: Props) => {
+  const {
+    data: { courseList, activityList, updateAt },
+    pos,
+  } = useGetContents({ enabled: isOpen, local: true })
+
   return (
     <Modal isCentered isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -50,7 +65,56 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
           />
         </ModalHeader>
         <Divider m="0" />
-        <ModalBody>하이</ModalBody>
+        <ModalBody display="flex" p="0" overflow="hidden">
+          <Stack spacing="16px" w="200px" p="24px" bg="gray.200" overflowY="scroll"></Stack>
+          <Box flex="1" overflowY="scroll" px="24px">
+            <Tabs>
+              <TabList position="sticky" top="0" zIndex="1" bg="white" pt="16px">
+                <Tab
+                  fontSize="14px"
+                  borderRadius="none"
+                  border="none"
+                  outline="none !important"
+                  _focus={{ outline: 'none', bg: 'none', border: 'none' }}
+                  _active={{ outline: 'none', bg: 'none' }}
+                  _selected={{ color: 'blue.600', borderBottom: '2px solid' }}
+                >
+                  진행중인 과제
+                </Tab>
+                <Tab
+                  fontSize="14px"
+                  borderRadius="none"
+                  border="none"
+                  outline="none !important"
+                  _focus={{ outline: 'none', bg: 'none', border: 'none' }}
+                  _active={{ outline: 'none', bg: 'none' }}
+                  _selected={{ color: 'blue.600', borderBottom: '2px solid' }}
+                >
+                  모든 과제
+                </Tab>
+              </TabList>
+
+              <TabPanels>
+                <TabPanel>
+                  <Stack spacing="16px">
+                    {filteredActivities(activityList, '-1', '진행중인 과제', false).map(
+                      activity => (
+                        <ActivityItem key={activity.id} activity={activity} />
+                      ),
+                    )}
+                  </Stack>
+                </TabPanel>
+                <TabPanel>
+                  <Stack spacing="16px">
+                    {activityList.map(activity => (
+                      <ActivityItem key={activity.id} activity={activity} />
+                    ))}
+                  </Stack>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Box>
+        </ModalBody>
         <Divider m="0" />
         <ModalFooter h="60px" px="24px">
           <Text fontSize="12px" color="gray.600" mr="4px">
