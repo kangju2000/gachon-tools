@@ -1,6 +1,7 @@
 interface Activity {
   id: string
   courseId: string
+  courseTitle: string
   title: string
   sectionTitle: string
   startAt: string // 시작 날짜 없는 과제도 존재 ex) No time limit

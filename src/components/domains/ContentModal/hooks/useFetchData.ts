@@ -22,7 +22,7 @@ const useFetchData = () => {
   const getData = async () => {
     const courses = await getCourses()
     const activities = await allProgress(
-      courses.map(course => getActivities(course.id)),
+      courses.map(course => getActivities(course.title, course.id)),
       progress => setPos(progress),
     ).then(activities => activities.flat())
 

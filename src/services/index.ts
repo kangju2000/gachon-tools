@@ -2,7 +2,7 @@ import { captureException } from '@sentry/react'
 import axios from 'axios'
 import * as cheerio from 'cheerio'
 
-import type { Assignment, Video } from '@/types'
+import type { ActivityType, Course } from '@/types'
 
 import { getLinkId } from '@/utils'
 
@@ -20,7 +20,7 @@ const fetchDocument = async (url: string) => {
 /**
  * 모든 course를 가져온다.
  */
-export const getCourses = async () => {
+export const getCourses = async (): Promise<Course[]> => {
   const $ = await fetchDocument('https://cyber.gachon.ac.kr/local/ubion/user')
 
   const courses = $('.coursefullname').map((i, el) => {
@@ -42,7 +42,10 @@ export const getCourses = async () => {
  * 강의의 activity들을 가져온다.
  * @param courseId course id
  */
-export const getActivities = async (courseId: string): Promise<(Assignment | Video)[]> => {
+export const getActivities = async (
+  courseTitle: string,
+  courseId: string,
+): Promise<ActivityType[]> => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`)
   const assignmentAtCourseDocument = getAssignmentAtCourseDocument($, courseId)
   const videoAtCourseDocument = getVideoAtCourseDocument($, courseId)
@@ -54,7 +57,7 @@ export const getActivities = async (courseId: string): Promise<(Assignment | Vid
     const findAssignment = assignmentSubmittedArray.find(
       a => a.sectionTitle === cur.sectionTitle && a.title === cur.title,
     )
-    if (findAssignment) return [...acc, Object.assign({}, cur, findAssignment)]
+    if (findAssignment) return [...acc, Object.assign({}, cur, findAssignment, { courseTitle })]
 
     return acc
   }, [])
@@ -63,7 +66,7 @@ export const getActivities = async (courseId: string): Promise<(Assignment | Vid
     const findVideo = videoSubmittedArray.find(
       v => v.sectionTitle === cur.sectionTitle && v.title === cur.title,
     )
-    if (findVideo) return [...acc, Object.assign({}, cur, findVideo)]
+    if (findVideo) return [...acc, Object.assign({}, cur, findVideo, { courseTitle })]
 
     return acc
   }, [])
