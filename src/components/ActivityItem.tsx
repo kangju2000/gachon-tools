@@ -1,7 +1,7 @@
 import { Badge, Box, Card, CardBody, Flex, Text } from '@chakra-ui/react'
 import { format } from 'date-fns'
 
-import { CheckIcon } from './Icons'
+import { CheckIcon, XMarkIcon } from './Icons'
 
 import type { ActivityType } from '@/types'
 
@@ -24,7 +24,7 @@ const ActivityItem = ({ activity }: Props) => {
     >
       <CardBody display="flex" alignItems="center" justifyContent="space-between" px="16px">
         <Flex align="center" gap="8px">
-          <CheckIcon />
+          {activity.hasSubmitted ? <CheckIcon /> : <XMarkIcon />}
           <Box>
             <Flex align="center" gap="4px">
               <ActivityBadge type={activity.type} />
