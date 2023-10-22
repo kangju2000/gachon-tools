@@ -9,7 +9,6 @@ import {
   PopoverFooter,
   PopoverHeader,
   PopoverTrigger,
-  Portal,
   Stack,
   Text,
   useColorMode,
@@ -25,8 +24,6 @@ type Props = {
 
 const PopoverOptions = ({ triggerElement }: Props) => {
   const { colorMode, setColorMode } = useColorMode()
-
-  console.log(colorMode)
 
   return (
     <Popover placement="top-start">
@@ -51,7 +48,7 @@ const PopoverOptions = ({ triggerElement }: Props) => {
               m="0"
               size="lg"
               isChecked={colorMode === 'light'}
-              onChange={e => setColorMode('light')}
+              onChange={() => setColorMode('light')}
             >
               Light
             </Checkbox>
@@ -59,7 +56,7 @@ const PopoverOptions = ({ triggerElement }: Props) => {
               m="0"
               size="lg"
               isChecked={colorMode === 'dark'}
-              onChange={e => setColorMode('dark')}
+              onChange={() => setColorMode('dark')}
             >
               Dark
             </Checkbox>
