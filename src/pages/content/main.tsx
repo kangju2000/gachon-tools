@@ -1,4 +1,4 @@
-import { ChakraProvider, extendTheme, type ThemeConfig } from '@chakra-ui/react'
+import { ChakraProvider, ColorModeScript, extendTheme, type ThemeConfig } from '@chakra-ui/react'
 import * as Sentry from '@sentry/react'
 import { createRoot } from 'react-dom/client'
 
@@ -47,7 +47,10 @@ const theme = extendTheme({
 })
 
 createRoot(root).render(
-  <ChakraProvider resetCSS={false} theme={theme}>
-    <App />
-  </ChakraProvider>,
+  <>
+    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+    <ChakraProvider resetCSS={false} theme={theme}>
+      <App />
+    </ChakraProvider>
+  </>,
 )

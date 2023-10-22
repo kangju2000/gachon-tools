@@ -40,14 +40,19 @@ const ActivityItem = ({ activity }: Props) => {
                 {activity.title}
               </Text>
             </Flex>
-            <Text fontSize="12px" color="gray.500" noOfLines={1}>
+            <Text
+              fontSize="12px"
+              noOfLines={1}
+              _light={{ color: 'gray.500' }}
+              _dark={{ color: 'gray.400' }}
+            >
               {activity.courseTitle}
             </Text>
           </Box>
         </Flex>
         <Box textAlign="end" flexShrink="0">
           <Text fontSize="14px">{dDay} 마감</Text>
-          <Text fontSize="12px" color="gray.500">
+          <Text fontSize="12px" _light={{ color: 'gray.500' }} _dark={{ color: 'gray.400' }}>
             ~{format(new Date(activity.endAt), 'yyyy.MM.dd HH:mm')}
           </Text>
         </Box>

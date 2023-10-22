@@ -1,5 +1,6 @@
 import {
   Box,
+  Center,
   Divider,
   Modal,
   ModalBody,
@@ -8,6 +9,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spacer,
   Stack,
   Tab,
   TabList,
@@ -22,9 +24,10 @@ import { useState } from 'react'
 
 import ActivityItem from './ActivityItem'
 import ChakraMotion from './ChakraMotion'
-import { RefreshIcon } from './Icons'
+import { RefreshIcon, SettingIcon } from './Icons'
 import ItemList from './ItemList'
 import LoadingProgress from './LoadingProgress'
+import PopoverOptions from './PopoverOptions'
 
 import useGetContents from '@/hooks/useGetContents'
 import filteredActivities from '@/utils/filteredActivityList'
@@ -43,6 +46,10 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
     refetch,
     isLoading,
   } = useGetContents({ enabled: isOpen })
+
+  const handleSettingClick = () => {
+    chrome.runtime.openOptionsPage()
+  }
 
   return (
     <Modal isCentered isOpen={isOpen} onClose={onClose}>
@@ -200,20 +207,36 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
         </ModalBody>
         <Divider m="0" />
         <ModalFooter h="60px" px="24px">
-          <Text
-            fontSize="12px"
-            _light={{ color: 'gray.500' }}
-            _dark={{ color: 'gray.400' }}
-            mr="4px"
-            cursor="pointer"
-          >
-            {isLoading ? '불러오는 중...' : `${foramtDate(ko, updateAt)} 업데이트`}
-          </Text>
-          <RefreshIcon
-            _light={{ color: 'gray.500' }}
-            _dark={{ color: 'gray.400' }}
-            onClick={refetch}
+          <PopoverOptions
+            triggerElement={
+              <Center cursor="pointer">
+                <SettingIcon
+                  _light={{ color: 'gray.600' }}
+                  _dark={{ color: 'gray.400' }}
+                  mr="4px"
+                />
+                <Text fontSize="12px" _light={{ color: 'gray.600' }} _dark={{ color: 'gray.400' }}>
+                  설정
+                </Text>
+              </Center>
+            }
           />
+          <Spacer />
+          <Center cursor="pointer">
+            <Text
+              fontSize="12px"
+              _light={{ color: 'gray.600' }}
+              _dark={{ color: 'gray.400' }}
+              mr="4px"
+            >
+              {isLoading ? '불러오는 중...' : `${foramtDate(ko, updateAt)} 업데이트`}
+            </Text>
+            <RefreshIcon
+              _light={{ color: 'gray.600' }}
+              _dark={{ color: 'gray.400' }}
+              onClick={refetch}
+            />
+          </Center>
         </ModalFooter>
       </ModalContent>
     </Modal>
