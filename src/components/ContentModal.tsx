@@ -42,7 +42,7 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
     pos,
     refetch,
     isLoading,
-  } = useGetContents({ enabled: isOpen, local: true })
+  } = useGetContents({ enabled: isOpen })
 
   return (
     <Modal isCentered isOpen={isOpen} onClose={onClose}>

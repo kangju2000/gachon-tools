@@ -6,14 +6,12 @@ import { getActivities, getCourses } from '@/services'
 import { allProgress } from '@/utils'
 
 type Options = {
-  local?: boolean
   enabled?: boolean
   refreshTime?: number
 }
 
 const useGetContents = (options: Options) => {
   const _options = {
-    local: false,
     enabled: true,
     refreshTime: 1000 * 60 * 20, // 20분
     ...options,
@@ -52,6 +50,11 @@ const useGetContents = (options: Options) => {
 
   const getLocalData = () => {
     chrome.storage.local.get(({ updateAt, courses, activities }) => {
+      if (!updateAt || !courses || !activities) {
+        setIsLoading(true)
+        return getData()
+      }
+
       setData({
         courseList: [{ id: '-1', title: '전체' }, ...courses],
         activityList: activities,
@@ -70,16 +73,13 @@ const useGetContents = (options: Options) => {
 
   useEffect(() => {
     if (_options.enabled) {
-      setIsLoading(true)
-      _options.local ? getLocalData() : getData()
+      if (_options.refreshTime < new Date().getTime() - new Date(data.updateAt).getTime()) {
+        refetch()
+      } else {
+        getLocalData()
+      }
     }
   }, [_options.enabled])
-
-  useEffect(() => {
-    if (_options.refreshTime < new Date().getTime() - new Date(data.updateAt).getTime()) {
-      refetch()
-    }
-  }, [data])
 
   return { data, pos, isLoading, refetch }
 }

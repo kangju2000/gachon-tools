@@ -1,41 +1,33 @@
-import { Tooltip } from 'react-tooltip'
+import { Center, Flex, Text, Tooltip } from '@chakra-ui/react'
 
-import { ReactComponent as FeedbackIcon } from '@/assets/feedback.svg'
-import { ReactComponent as GachonIcon } from '@/assets/gachon.svg'
-import { ReactComponent as GithubIcon } from '@/assets/github.svg'
+import { FeedbackIcon, GachonLogoIcon, GithubIcon } from '@/components/Icons'
 
 function App() {
   return (
-    <div className="flex h-[250px] w-[300px] flex-col items-center bg-white p-[10px]">
-      <GachonIcon width={50} height={50} />
-      <h1 className="text-2xl font-bold">Gachon Tools</h1>
-      <p>가천대학교 사이버캠퍼스 확장 프로그램</p>
+    <Center flexDirection="column" h="250px" w="250px" bg="white" p="10px">
+      <GachonLogoIcon w="50px" h="50px" />
+      <Text as="h1" fontSize="24px" fontWeight="bold">
+        Gachon Tools
+      </Text>
+      <Text fontSize="14px">가천대학교 사이버캠퍼스 확장 프로그램</Text>
       <div className="flex-grow"></div>
-      <div className="flex gap-[5px]">
-        <a
-          href="https://www.github.com/kangju2000/gachon-extension"
-          target="_blank"
-          rel="noreferrer"
-          data-tooltip-id="github"
-        >
-          <GithubIcon />
-        </a>
-        <Tooltip id="github">
-          <span>깃허브</span>
+      <Flex gap="5px">
+        <Tooltip label="깃허브">
+          <a
+            href="https://www.github.com/kangju2000/gachon-extension"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <GithubIcon cursor="pointer" />
+          </a>
         </Tooltip>
-        <a
-          href="https://forms.gle/uM8M6ghS2ABme5s5A"
-          target="_blank"
-          rel="noreferrer"
-          data-tooltip-id="feedback"
-        >
-          <FeedbackIcon className="cursor-pointer" />
-        </a>
-        <Tooltip id="feedback">
-          <span>피드백</span>
+        <Tooltip label="피드백">
+          <a href="https://forms.gle/uM8M6ghS2ABme5s5A" target="_blank" rel="noreferrer">
+            <FeedbackIcon cursor="pointer" bg="red.300" />
+          </a>
         </Tooltip>
-      </div>
-    </div>
+      </Flex>
+    </Center>
   )
 }
 

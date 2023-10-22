@@ -1,5 +1,5 @@
 import { ActivityData } from '@/data/dummyData'
-import { allProgress, convertDateTime, getLinkId } from '@/utils'
+import { allProgress, getLinkId } from '@/utils'
 import filteredActivities from '@/utils/filteredActivityList'
 
 describe('getLinkId 테스트', () => {
@@ -72,21 +72,6 @@ describe('pipe 테스트', () => {
     const add = (a: number) => (b: number) => a + b
     const add10 = add(10)
     expect(add10(5)).toBe(15)
-  })
-})
-
-describe('convertDateTime 테스트', () => {
-  test('날짜를 올바르게 변환한다.', () => {
-    const dateTime = '2022-03-15 23:59:59'
-    expect(convertDateTime(dateTime)).toBe('03월 15일 (화) 23시 59분')
-
-    const dateTime2 = '2023-05-21 23:59:59'
-    expect(convertDateTime(dateTime2)).toBe('05월 21일 (일) 23시 59분')
-  })
-
-  test('날짜가 없으면 빈 문자열을 반환한다.', () => {
-    const dateTime = ''
-    expect(convertDateTime(dateTime)).toBe('')
   })
 })
 

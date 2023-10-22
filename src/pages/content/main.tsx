@@ -6,8 +6,6 @@ import packageJson from './../../../package.json'
 
 import App from '@/pages/content/App'
 
-import 'react-tooltip/dist/react-tooltip.css'
-
 const { version } = packageJson
 
 Sentry.init({
@@ -32,7 +30,7 @@ modal.id = 'modal'
 document.body.append(modal)
 
 const config: ThemeConfig = {
-  initialColorMode: 'system',
+  initialColorMode: 'light',
   useSystemColorMode: true,
 }
 
