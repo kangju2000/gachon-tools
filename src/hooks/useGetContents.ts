@@ -5,9 +5,20 @@ import type { Contents } from '@/types'
 import { getActivities, getCourses } from '@/services'
 import { allProgress } from '@/utils'
 
-const useGetContents = (
-  options: { local?: boolean; enabled?: boolean } = { local: false, enabled: true },
-) => {
+type Options = {
+  local?: boolean
+  enabled?: boolean
+  refreshTime?: number
+}
+
+const useGetContents = (options: Options) => {
+  const _options = {
+    local: false,
+    enabled: true,
+    refreshTime: 1000 * 60 * 20, // 20분
+    ...options,
+  }
+
   const [isLoading, setIsLoading] = useState(false)
   const [pos, setPos] = useState(0)
   const [data, setData] = useState<Contents>({
@@ -58,11 +69,17 @@ const useGetContents = (
   }
 
   useEffect(() => {
-    if (options.enabled) {
+    if (_options.enabled) {
       setIsLoading(true)
-      options.local ? getLocalData() : getData()
+      _options.local ? getLocalData() : getData()
     }
-  }, [options.enabled])
+  }, [_options.enabled])
+
+  useEffect(() => {
+    if (_options.refreshTime < new Date().getTime() - new Date(data.updateAt).getTime()) {
+      refetch()
+    }
+  }, [data])
 
   return { data, pos, isLoading, refetch }
 }

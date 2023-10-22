@@ -36,16 +36,16 @@ const ActivityItem = ({ activity }: Props) => {
           <Box>
             <Flex align="center" gap="4px">
               <ActivityBadge type={activity.type} />
-              <Text fontSize="14px" fontWeight="600">
+              <Text fontSize="14px" fontWeight="600" noOfLines={1}>
                 {activity.title}
               </Text>
             </Flex>
-            <Text fontSize="12px" color="gray.500">
+            <Text fontSize="12px" color="gray.500" noOfLines={1}>
               {activity.courseTitle}
             </Text>
           </Box>
         </Flex>
-        <Box textAlign="end">
+        <Box textAlign="end" flexShrink="0">
           <Text fontSize="14px">{dDay} 마감</Text>
           <Text fontSize="12px" color="gray.500">
             ~{format(new Date(activity.endAt), 'yyyy.MM.dd HH:mm')}

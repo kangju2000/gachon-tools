@@ -44,8 +44,6 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
     isLoading,
   } = useGetContents({ enabled: isOpen, local: true })
 
-  console.log(courseList, activityList)
-
   return (
     <Modal isCentered isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -84,6 +82,7 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                 }}
                 cursor="pointer"
                 onClick={() => setSelectedCourseId(course.id)}
+                noOfLines={1}
               >
                 {course.title}
               </Text>
