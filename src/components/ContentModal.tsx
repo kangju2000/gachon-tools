@@ -22,10 +22,8 @@ import { ko } from 'date-fns/locale'
 import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 
-import ActivityItem from './ActivityItem'
-import ChakraMotion from './ChakraMotion'
+import ActivityList from './ActivityList'
 import { RefreshIcon, SettingIcon } from './Icons'
-import ItemList from './ItemList'
 import LoadingProgress from './LoadingProgress'
 import PopoverOptions from './PopoverOptions'
 
@@ -46,10 +44,6 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
     refetch,
     isLoading,
   } = useGetContents({ enabled: isOpen })
-
-  const handleSettingClick = () => {
-    chrome.runtime.openOptionsPage()
-  }
 
   return (
     <Modal isCentered isOpen={isOpen} onClose={onClose}>
@@ -95,7 +89,9 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
               </Text>
             ))}
           </Stack>
+
           <Divider orientation="vertical" m="0" />
+
           <Box flex="1" overflowY="scroll" px="24px" h="100%">
             <Tabs isLazy={true}>
               <TabList
@@ -141,71 +137,37 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                   {isLoading ? (
                     <LoadingProgress pos={pos} />
                   ) : (
-                    <ChakraMotion
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{
-                        delay: 0.2,
-                      }}
-                    >
-                      <ItemList
-                        data={filteredActivities(
-                          activityList,
-                          selectedCourseId,
-                          '진행중인 과제',
-                          false,
-                        )}
-                        renderItem={activity => (
-                          <ActivityItem key={activity.id} activity={activity} />
-                        )}
-                        renderEmpty={() => (
-                          <Text fontSize="14px" color="gray.500" textAlign="center">
-                            진행중인 과제가 없습니다.
-                          </Text>
-                        )}
-                        spacing="16px"
-                      />
-                    </ChakraMotion>
+                    <ActivityList
+                      contentData={filteredActivities(
+                        activityList,
+                        selectedCourseId,
+                        '진행중인 과제',
+                        false,
+                      )}
+                    />
                   )}
                 </TabPanel>
                 <TabPanel>
                   {isLoading ? (
                     <LoadingProgress pos={pos} />
                   ) : (
-                    <ChakraMotion
-                      as={Stack}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{
-                        delay: 0.2,
-                      }}
-                      spacing="16px"
-                    >
-                      <ItemList
-                        data={filteredActivities(
-                          activityList,
-                          selectedCourseId,
-                          '모든 과제',
-                          false,
-                        )}
-                        renderItem={activity => (
-                          <ActivityItem key={activity.id} activity={activity} />
-                        )}
-                        renderEmpty={() => (
-                          <Text fontSize="14px" color="gray.500" textAlign="center">
-                            과제가 없습니다.
-                          </Text>
-                        )}
-                        spacing="16px"
-                      />
-                    </ChakraMotion>
+                    <ActivityList
+                      contentData={filteredActivities(
+                        activityList,
+                        selectedCourseId,
+                        '모든 과제',
+                        false,
+                      )}
+                    />
                   )}
                 </TabPanel>
               </TabPanels>
             </Tabs>
           </Box>
         </ModalBody>
+
         <Divider m="0" />
+
         <ModalFooter h="60px" px="24px">
           <PopoverOptions
             triggerElement={
