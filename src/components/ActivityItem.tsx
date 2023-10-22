@@ -25,6 +25,10 @@ const ActivityItem = ({ activity }: Props) => {
       href={`https://cyber.gachon.ac.kr/mod/${
         activity.type === 'assignment' ? 'assign' : 'vod'
       }/view.php?id=${activity.id}`}
+      _hover={{
+        _light: { color: 'blue.600' },
+        _dark: { color: 'blue.300' },
+      }}
     >
       <CardBody display="flex" alignItems="center" justifyContent="space-between" px="16px">
         <Flex align="center" gap="8px">

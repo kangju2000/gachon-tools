@@ -15,8 +15,10 @@ import {
   TabPanels,
   Tabs,
   Text,
+  useColorMode,
 } from '@chakra-ui/react'
 import { ko } from 'date-fns/locale'
+import { useState } from 'react'
 
 import ActivityItem from './ActivityItem'
 import { RefreshIcon } from './Icons'
@@ -32,29 +34,27 @@ type Props = {
 }
 
 const ContentModal = ({ isOpen, onClose }: Props) => {
+  const { colorMode, toggleColorMode } = useColorMode()
+
+  const [selectedCourseId, setSelectedCourseId] = useState('-1')
   const {
     data: { courseList, activityList, updateAt },
     pos,
     refetch,
     isLoading,
-  } = useGetContents({ enabled: isOpen, local: false })
+  } = useGetContents({ enabled: isOpen, local: true })
 
-  console.log(isLoading, pos, activityList)
+  console.log(courseList, activityList)
 
   return (
     <Modal isCentered isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent minW="750px" h="500px" borderRadius="8px">
-        <ModalHeader
-          display="flex"
-          alignItems="center"
-          minH="60px"
-          px="24px"
-          color="gray.700"
-          fontSize="large"
-          fontWeight="700"
-        >
-          Gachon Tools
+        <ModalHeader display="flex" alignItems="center" minH="60px" px="24px">
+          <Text fontSize="18px" fontWeight="700">
+            Gachon Tools
+          </Text>
+          <button onClick={toggleColorMode}>{colorMode === 'light' ? '🌙' : '🌞'}</button>
           <ModalCloseButton
             size="lg"
             top="16px"
@@ -71,10 +71,36 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
         </ModalHeader>
         <Divider m="0" />
         <ModalBody display="flex" p="0" overflow="hidden">
-          <Stack spacing="16px" w="200px" p="24px" bg="gray.200" overflowY="scroll"></Stack>
+          <Stack spacing="16px" w="200px" p="24px" overflowY="scroll">
+            {courseList.map(course => (
+              <Text
+                key={course.id}
+                fontSize="14px"
+                fontWeight={selectedCourseId === course.id ? '600' : '400'}
+                _light={{ color: selectedCourseId === course.id ? 'blue.600' : 'gray.600' }}
+                _dark={{ color: selectedCourseId === course.id ? 'blue.400' : 'gray.400' }}
+                _hover={{
+                  _light: { color: 'blue.600' },
+                  _dark: { color: 'blue.400' },
+                }}
+                cursor="pointer"
+                onClick={() => setSelectedCourseId(course.id)}
+              >
+                {course.title}
+              </Text>
+            ))}
+          </Stack>
+          <Divider orientation="vertical" m="0" />
           <Box flex="1" overflowY="scroll" px="24px" h="100%">
             <Tabs>
-              <TabList position="sticky" top="0" zIndex="1" bg="white" pt="16px">
+              <TabList
+                position="sticky"
+                top="0"
+                zIndex="1"
+                _light={{ bg: 'white' }}
+                _dark={{ bg: 'gray.700' }}
+                pt="16px"
+              >
                 <Tab
                   fontSize="14px"
                   borderRadius="none"
@@ -105,11 +131,14 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                     <LoadingProgress pos={pos} />
                   ) : (
                     <Stack spacing="16px">
-                      {filteredActivities(activityList, '-1', '진행중인 과제', false).map(
-                        activity => (
-                          <ActivityItem key={activity.id} activity={activity} />
-                        ),
-                      )}
+                      {filteredActivities(
+                        activityList,
+                        selectedCourseId,
+                        '진행중인 과제',
+                        false,
+                      ).map(activity => (
+                        <ActivityItem key={activity.id} activity={activity} />
+                      ))}
                     </Stack>
                   )}
                 </TabPanel>
@@ -118,9 +147,11 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                     <LoadingProgress pos={pos} />
                   ) : (
                     <Stack spacing="16px">
-                      {activityList.map(activity => (
-                        <ActivityItem key={activity.id} activity={activity} />
-                      ))}
+                      {filteredActivities(activityList, selectedCourseId, '모든 과제', false).map(
+                        activity => (
+                          <ActivityItem key={activity.id} activity={activity} />
+                        ),
+                      )}
                     </Stack>
                   )}
                 </TabPanel>
@@ -130,10 +161,19 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
         </ModalBody>
         <Divider m="0" />
         <ModalFooter h="60px" px="24px">
-          <Text fontSize="12px" color="gray.600" mr="4px">
+          <Text
+            fontSize="12px"
+            _light={{ color: 'gray.500' }}
+            _dark={{ color: 'gray.400' }}
+            mr="4px"
+          >
             {isLoading ? '불러오는 중...' : `${foramtDate(ko, updateAt)} 업데이트`}
           </Text>
-          <RefreshIcon color="gray.600" onClick={refetch} />
+          <RefreshIcon
+            _light={{ color: 'gray.500' }}
+            _dark={{ color: 'gray.400' }}
+            onClick={refetch}
+          />
         </ModalFooter>
       </ModalContent>
     </Modal>

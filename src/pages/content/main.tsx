@@ -1,4 +1,4 @@
-import { ChakraProvider, extendTheme } from '@chakra-ui/react'
+import { ChakraProvider, extendTheme, type ThemeConfig } from '@chakra-ui/react'
 import * as Sentry from '@sentry/react'
 import { createRoot } from 'react-dom/client'
 
@@ -31,7 +31,13 @@ const modal = document.createElement('div')
 modal.id = 'modal'
 document.body.append(modal)
 
+const config: ThemeConfig = {
+  initialColorMode: 'system',
+  useSystemColorMode: true,
+}
+
 const theme = extendTheme({
+  config,
   components: {
     Text: {
       baseStyle: {
