@@ -15,7 +15,6 @@ import {
   TabPanels,
   Tabs,
   Text,
-  useColorMode,
 } from '@chakra-ui/react'
 import { ko } from 'date-fns/locale'
 import { AnimatePresence } from 'framer-motion'
@@ -24,6 +23,7 @@ import { useState } from 'react'
 import ActivityItem from './ActivityItem'
 import ChakraMotion from './ChakraMotion'
 import { RefreshIcon } from './Icons'
+import ItemList from './ItemList'
 import LoadingProgress from './LoadingProgress'
 
 import useGetContents from '@/hooks/useGetContents'
@@ -36,8 +36,6 @@ type Props = {
 }
 
 const ContentModal = ({ isOpen, onClose }: Props) => {
-  const { colorMode, toggleColorMode } = useColorMode()
-
   const [selectedCourseId, setSelectedCourseId] = useState('-1')
   const {
     data: { courseList, activityList, updateAt },
@@ -56,16 +54,15 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
           <Text fontSize="18px" fontWeight="700">
             Gachon Tools
           </Text>
-          <button onClick={toggleColorMode}>{colorMode === 'light' ? '🌙' : '🌞'}</button>
           <ModalCloseButton
             size="lg"
             top="16px"
             right="16px"
             border="none"
-            _focus={{
-              outline: 'none',
-              bg: 'none',
-            }}
+            outline="none !important"
+            _hover={{ bg: 'none', color: 'inherit' }}
+            _focus={{ bg: 'none', color: 'inherit' }}
+            _active={{ bg: 'none' }}
             _focusVisible={{
               boxShadow: 'none',
             }}
@@ -108,6 +105,9 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                   borderRadius="none"
                   border="none"
                   outline="none !important"
+                  _hover={{
+                    _dark: { bg: 'blue.800', color: 'white' },
+                  }}
                   _focus={{ outline: 'none', bg: 'none', border: 'none' }}
                   _active={{ outline: 'none', bg: 'none' }}
                   _selected={{ color: 'blue.600', borderBottom: '2px solid' }}
@@ -119,6 +119,9 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                   borderRadius="none"
                   border="none"
                   outline="none !important"
+                  _hover={{
+                    _dark: { bg: 'blue.800', color: 'white' },
+                  }}
                   _focus={{ outline: 'none', bg: 'none', border: 'none' }}
                   _active={{ outline: 'none', bg: 'none' }}
                   _selected={{ color: 'blue.600', borderBottom: '2px solid' }}
@@ -133,22 +136,29 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                     <LoadingProgress pos={pos} />
                   ) : (
                     <ChakraMotion
-                      as={Stack}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{
                         delay: 0.2,
                       }}
-                      spacing="16px"
                     >
-                      {filteredActivities(
-                        activityList,
-                        selectedCourseId,
-                        '진행중인 과제',
-                        false,
-                      ).map(activity => (
-                        <ActivityItem key={activity.id} activity={activity} />
-                      ))}
+                      <ItemList
+                        data={filteredActivities(
+                          activityList,
+                          selectedCourseId,
+                          '진행중인 과제',
+                          false,
+                        )}
+                        renderItem={activity => (
+                          <ActivityItem key={activity.id} activity={activity} />
+                        )}
+                        renderEmpty={() => (
+                          <Text fontSize="14px" color="gray.500" textAlign="center">
+                            진행중인 과제가 없습니다.
+                          </Text>
+                        )}
+                        spacing="16px"
+                      />
                     </ChakraMotion>
                   )}
                 </TabPanel>
@@ -165,11 +175,23 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                       }}
                       spacing="16px"
                     >
-                      {filteredActivities(activityList, selectedCourseId, '모든 과제', false).map(
-                        activity => (
+                      <ItemList
+                        data={filteredActivities(
+                          activityList,
+                          selectedCourseId,
+                          '모든 과제',
+                          false,
+                        )}
+                        renderItem={activity => (
                           <ActivityItem key={activity.id} activity={activity} />
-                        ),
-                      )}
+                        )}
+                        renderEmpty={() => (
+                          <Text fontSize="14px" color="gray.500" textAlign="center">
+                            과제가 없습니다.
+                          </Text>
+                        )}
+                        spacing="16px"
+                      />
                     </ChakraMotion>
                   )}
                 </TabPanel>
@@ -184,6 +206,7 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
             _light={{ color: 'gray.500' }}
             _dark={{ color: 'gray.400' }}
             mr="4px"
+            cursor="pointer"
           >
             {isLoading ? '불러오는 중...' : `${foramtDate(ko, updateAt)} 업데이트`}
           </Text>
