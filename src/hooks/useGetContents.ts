@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import type { Contents } from '@/types'
 
-import { getActivities, getCourses } from '@/services'
+import { getActivities, getAssignmentSubmitted, getCourses, getVideoSubmitted } from '@/services'
 import { allProgress } from '@/utils'
 
 type Options = {
@@ -27,10 +27,19 @@ const useGetContents = (options: Options) => {
 
   const getData = async () => {
     const courses = await getCourses()
-    const activities = await allProgress(
-      courses.map(course => getActivities(course.title, course.id)),
-      progress => setPos(progress),
-    )
+    const maxPos = courses.length * 2
+    let curPos = 0
+
+    const activities = await Promise.all(
+      courses.map(async course => {
+        const assignmentSubmittedArray = await getAssignmentSubmitted(course.id)
+        setPos((++curPos / maxPos) * 100)
+        const videoSubmittedArray = await getVideoSubmitted(course.id)
+        setPos((++curPos / maxPos) * 100)
+        return getActivities(course.title, course.id, assignmentSubmittedArray, videoSubmittedArray)
+      }),
+    ).then(activities => activities.flat())
+
     const updateAt = new Date().toISOString()
 
     chrome.storage.local.set({

@@ -1,5 +1,4 @@
 import { captureException } from '@sentry/react'
-import axios from 'axios'
 import * as cheerio from 'cheerio'
 
 import type { ActivityType, Course } from '@/types'
@@ -8,8 +7,10 @@ import { getLinkId } from '@/utils'
 
 const fetchDocument = async (url: string) => {
   try {
-    const response = await axios.get(url)
-    const html = response.data
+    const response = await fetch(url)
+    if (!response.ok) throw new Error(response.statusText)
+
+    const html = await response.text()
     const $ = cheerio.load(html)
     return $
   } catch (error) {
@@ -45,13 +46,12 @@ export const getCourses = async (): Promise<Course[]> => {
 export const getActivities = async (
   courseTitle: string,
   courseId: string,
+  assignmentSubmittedArray: ActivityType[],
+  videoSubmittedArray: ActivityType[],
 ): Promise<ActivityType[]> => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`)
   const assignmentAtCourseDocument = getAssignmentAtCourseDocument($, courseId)
   const videoAtCourseDocument = getVideoAtCourseDocument($, courseId)
-
-  const assignmentSubmittedArray = await getAssignmentSubmitted(courseId)
-  const videoSubmittedArray = await getVideoSubmitted(courseId)
 
   const assignment = assignmentAtCourseDocument.reduce((acc, cur) => {
     const findAssignment = assignmentSubmittedArray.find(
@@ -184,7 +184,7 @@ const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
  * 강의의 과제 제출 여부를 가져온다.
  * @param courseId course id
  */
-const getAssignmentSubmitted = async (courseId: string) => {
+export const getAssignmentSubmitted = async (courseId: string) => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${courseId}`)
 
   let currentSectionTitle = ''
@@ -213,7 +213,7 @@ const getAssignmentSubmitted = async (courseId: string) => {
  * 강의의 비디오 제출 여부를 가져온다.
  * @param courseId course id
  */
-const getVideoSubmitted = async (courseId: string) => {
+export const getVideoSubmitted = async (courseId: string) => {
   const $ = await fetchDocument(
     `https://cyber.gachon.ac.kr/report/ubcompletion/progress.php?id=${courseId}`,
   )
