@@ -18,9 +18,11 @@ import {
   useColorMode,
 } from '@chakra-ui/react'
 import { ko } from 'date-fns/locale'
+import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 
 import ActivityItem from './ActivityItem'
+import ChakraMotion from './ChakraMotion'
 import { RefreshIcon } from './Icons'
 import LoadingProgress from './LoadingProgress'
 
@@ -92,7 +94,7 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
           </Stack>
           <Divider orientation="vertical" m="0" />
           <Box flex="1" overflowY="scroll" px="24px" h="100%">
-            <Tabs>
+            <Tabs isLazy={true}>
               <TabList
                 position="sticky"
                 top="0"
@@ -125,12 +127,20 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                 </Tab>
               </TabList>
 
-              <TabPanels>
+              <TabPanels as={AnimatePresence}>
                 <TabPanel>
                   {isLoading ? (
                     <LoadingProgress pos={pos} />
                   ) : (
-                    <Stack spacing="16px">
+                    <ChakraMotion
+                      as={Stack}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{
+                        delay: 0.2,
+                      }}
+                      spacing="16px"
+                    >
                       {filteredActivities(
                         activityList,
                         selectedCourseId,
@@ -139,20 +149,28 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                       ).map(activity => (
                         <ActivityItem key={activity.id} activity={activity} />
                       ))}
-                    </Stack>
+                    </ChakraMotion>
                   )}
                 </TabPanel>
-                <TabPanel minH="100%">
+                <TabPanel>
                   {isLoading ? (
                     <LoadingProgress pos={pos} />
                   ) : (
-                    <Stack spacing="16px">
+                    <ChakraMotion
+                      as={Stack}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{
+                        delay: 0.2,
+                      }}
+                      spacing="16px"
+                    >
                       {filteredActivities(activityList, selectedCourseId, '모든 과제', false).map(
                         activity => (
                           <ActivityItem key={activity.id} activity={activity} />
                         ),
                       )}
-                    </Stack>
+                    </ChakraMotion>
                   )}
                 </TabPanel>
               </TabPanels>
