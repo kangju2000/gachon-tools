@@ -1,4 +1,4 @@
-export default function allProgress<T>(
+export default async function allProgress<T>(
   promise: Promise<T>[],
   callback: (progress: number) => void,
 ) {
@@ -10,5 +10,5 @@ export default function allProgress<T>(
       callback((d * 100) / promise.length)
     })
   }
-  return Promise.all(promise)
+  return await Promise.all(promise).then(data => data.flat())
 }

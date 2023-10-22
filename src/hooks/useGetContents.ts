@@ -8,11 +8,12 @@ import { allProgress } from '@/utils'
 const useGetContents = (
   options: { local?: boolean; enabled?: boolean } = { local: false, enabled: true },
 ) => {
+  const [isLoading, setIsLoading] = useState(false)
   const [pos, setPos] = useState(0)
   const [data, setData] = useState<Contents>({
     courseList: [{ id: '-1', title: '전체' }],
     activityList: [],
-    updateAt: 0,
+    updateAt: new Date().toISOString(),
   })
 
   const getData = async () => {
@@ -20,23 +21,22 @@ const useGetContents = (
     const activities = await allProgress(
       courses.map(course => getActivities(course.title, course.id)),
       progress => setPos(progress),
-    ).then(activities => activities.flat())
-
-    const updateAt = new Date().getTime()
-
-    setData({
-      courseList: [{ id: '-1', title: '전체' }, ...courses],
-      activityList: activities,
-      updateAt,
-    })
-
-    setPos(0)
+    )
+    const updateAt = new Date().toISOString()
 
     chrome.storage.local.set({
       courses,
       activities,
       updateAt,
     })
+
+    setData({
+      courseList: [{ id: '-1', title: '전체' }, ...courses],
+      activityList: activities,
+      updateAt,
+    })
+    setPos(0)
+    setIsLoading(false)
   }
 
   const getLocalData = () => {
@@ -47,15 +47,24 @@ const useGetContents = (
         updateAt,
       })
     })
+
+    setPos(0)
+    setIsLoading(false)
+  }
+
+  const refetch = () => {
+    setIsLoading(true)
+    getData()
   }
 
   useEffect(() => {
     if (options.enabled) {
+      setIsLoading(true)
       options.local ? getLocalData() : getData()
     }
   }, [options.enabled])
 
-  return { data, pos }
+  return { data, pos, isLoading, refetch }
 }
 
 export default useGetContents
