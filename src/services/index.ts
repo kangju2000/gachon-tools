@@ -1,7 +1,7 @@
 import { captureException } from '@sentry/react'
 import * as cheerio from 'cheerio'
 
-import type { ActivityType, Course } from '@/types'
+import type { ActivityType, Assignment, Course, Video } from '@/types'
 
 import { getLinkId } from '@/utils'
 
@@ -46,8 +46,8 @@ export const getCourses = async (): Promise<Course[]> => {
 export const getActivities = async (
   courseTitle: string,
   courseId: string,
-  assignmentSubmittedArray: ActivityType[],
-  videoSubmittedArray: ActivityType[],
+  assignmentSubmittedArray: Awaited<ReturnType<typeof getAssignmentSubmitted>>,
+  videoSubmittedArray: Awaited<ReturnType<typeof getVideoSubmitted>>,
 ): Promise<ActivityType[]> => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`)
   const assignmentAtCourseDocument = getAssignmentAtCourseDocument($, courseId)
@@ -79,7 +79,10 @@ export const getActivities = async (
  * @param $
  * @param courseId
  */
-const getAssignmentAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
+const getAssignmentAtCourseDocument = (
+  $: cheerio.CheerioAPI,
+  courseId: string,
+): Omit<Assignment, 'courseTitle' | 'hasSubmitted'>[] => {
   const sectionOne = $('#section-0 .modtype_assign .activityinstance').map((i, el) => {
     const link = $(el).find('a').attr('href')
 
@@ -87,7 +90,7 @@ const getAssignmentAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) 
     const title = $(el).find('.instancename').clone().children().remove().end().text().trim()
 
     const assignment = {
-      type: 'assignment',
+      type: 'assignment' as const,
       id,
       courseId,
       title,
@@ -116,7 +119,7 @@ const getAssignmentAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) 
           .map(t => t.trim())
 
         return {
-          type: 'assignment',
+          type: 'assignment' as const,
           id,
           courseId,
           title,
@@ -165,7 +168,7 @@ const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
           }
 
           return {
-            type: 'video',
+            type: 'video' as const,
             id,
             courseId,
             title,
@@ -184,7 +187,9 @@ const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
  * 강의의 과제 제출 여부를 가져온다.
  * @param courseId course id
  */
-export const getAssignmentSubmitted = async (courseId: string) => {
+export const getAssignmentSubmitted = async (
+  courseId: string,
+): Promise<Pick<Assignment, 'title' | 'hasSubmitted' | 'sectionTitle' | 'endAt'>[]> => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${courseId}`)
 
   let currentSectionTitle = ''
@@ -213,7 +218,9 @@ export const getAssignmentSubmitted = async (courseId: string) => {
  * 강의의 비디오 제출 여부를 가져온다.
  * @param courseId course id
  */
-export const getVideoSubmitted = async (courseId: string) => {
+export const getVideoSubmitted = async (
+  courseId: string,
+): Promise<Pick<Video, 'title' | 'hasSubmitted' | 'sectionTitle'>[]> => {
   const $ = await fetchDocument(
     `https://cyber.gachon.ac.kr/report/ubcompletion/progress.php?id=${courseId}`,
   )
