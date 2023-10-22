@@ -22,6 +22,7 @@ export const courseData: Course[] = [
 export const ActivityData: ActivityType[] = [
   {
     courseId: '79655',
+    courseTitle: '데이터베이스',
     endAt: '2022-10-10 00:00:00',
     hasSubmitted: true,
     id: '586409',
@@ -32,6 +33,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '79655',
+    courseTitle: '데이터베이스',
     endAt: '2022-11-01 12:00:00',
     hasSubmitted: true,
     id: '600877',
@@ -42,6 +44,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '79655',
+    courseTitle: '데이터베이스',
     endAt: '2022-11-07 00:00:00',
     hasSubmitted: true,
     id: '603418',
@@ -52,6 +55,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '79655',
+    courseTitle: '데이터베이스',
     endAt: '2022-11-14 00:00:00',
     hasSubmitted: true,
     id: '605371',
@@ -62,6 +66,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '79655',
+    courseTitle: '데이터베이스',
     endAt: '2022-11-14 00:00:00',
     hasSubmitted: true,
     id: '605374',
@@ -72,6 +77,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '79655',
+    courseTitle: '데이터베이스',
     endAt: '2022-11-21 00:00:00',
     hasSubmitted: true,
     id: '610207',
@@ -82,6 +88,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '79655',
+    courseTitle: '데이터베이스',
     endAt: '2022-11-28 00:00:00',
     hasSubmitted: true,
     id: '610573',
@@ -92,6 +99,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '79655',
+    courseTitle: '데이터베이스',
     endAt: '2022-09-19 23:59:00',
     hasSubmitted: true,
     id: '572674',
@@ -103,6 +111,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '79655',
+    courseTitle: '데이터베이스',
     endAt: '2022-10-10 23:59:00',
     hasSubmitted: true,
     id: '586449',
@@ -114,6 +123,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '79655',
+    courseTitle: '데이터베이스',
     endAt: '2022-10-17 23:59:00',
     hasSubmitted: true,
     id: '590146',
@@ -125,6 +135,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '79655',
+    courseTitle: '데이터베이스',
     endAt: '2022-11-06 23:59:00',
     hasSubmitted: true,
     id: '601403',
@@ -136,6 +147,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2020-09-08 23:00:00',
     hasSubmitted: false,
     id: '561658',
@@ -146,6 +158,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-09-16 23:00:00',
     hasSubmitted: true,
     id: '561663',
@@ -156,6 +169,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-09-23 23:00:00',
     hasSubmitted: true,
     id: '561667',
@@ -166,6 +180,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-10-07 23:00:00',
     hasSubmitted: true,
     id: '561672',
@@ -176,6 +191,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-10-14 23:00:00',
     hasSubmitted: true,
     id: '561676',
@@ -186,6 +202,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-11-04 23:00:00',
     hasSubmitted: true,
     id: '561691',
@@ -196,6 +213,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-11-04 23:00:00',
     hasSubmitted: true,
     id: '601860',
@@ -206,6 +224,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-11-18 23:00:00',
     hasSubmitted: true,
     id: '561697',
@@ -216,6 +235,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-11-18 23:00:00',
     hasSubmitted: true,
     id: '561702',
@@ -226,6 +246,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-11-25 23:00:00',
     hasSubmitted: true,
     id: '561709',
@@ -236,6 +257,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-12-02 23:00:00',
     hasSubmitted: true,
     id: '561715',
@@ -246,6 +268,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-09-15 13:00:00',
     hasSubmitted: false,
     id: '561659',
@@ -257,6 +280,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-10-31 23:00:00',
     hasSubmitted: true,
     id: '561673',
@@ -268,6 +292,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-11-30 23:59:00',
     hasSubmitted: true,
     id: '561689',
@@ -279,6 +304,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-11-30 23:59:00',
     hasSubmitted: true,
     id: '561690',
@@ -290,6 +316,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '82194',
+    courseTitle: 'JAVA',
     endAt: '2022-11-30 23:59:00',
     hasSubmitted: true,
     id: '561695',
@@ -301,6 +328,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '89376',
+    courseTitle: '[2023-1]학습공동체(G)',
     endAt: '2023-03-31 23:59:00',
     hasSubmitted: false,
     id: '620520',
@@ -311,6 +339,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '89376',
+    courseTitle: '[2023-1]학습공동체(G)',
     endAt: '2023-03-26 23:59:00',
     hasSubmitted: true,
     id: '620525',
@@ -321,6 +350,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '89376',
+    courseTitle: '[2023-1]학습공동체(G)',
     endAt: '2023-03-26 23:59:00',
     hasSubmitted: false,
     id: '620526',
@@ -331,6 +361,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '89376',
+    courseTitle: '[2023-1]학습공동체(G)',
     endAt: '2023-04-09 23:59:00',
     hasSubmitted: false,
     id: '620528',
@@ -341,6 +372,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '89376',
+    courseTitle: '[2023-1]학습공동체(G)',
     endAt: '2023-04-30 23:59:00',
     hasSubmitted: false,
     id: '620881',
@@ -351,6 +383,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '89376',
+    courseTitle: '[2023-1]학습공동체(G)',
     endAt: '2023-05-14 23:59:00',
     hasSubmitted: true,
     id: '620882',
@@ -361,6 +394,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '89376',
+    courseTitle: '[2023-1]학습공동체(G)',
     endAt: '2023-05-26 23:59:00',
     hasSubmitted: false,
     id: '620883',
@@ -371,6 +405,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '89376',
+    courseTitle: '[2023-1]학습공동체(G)',
     endAt: '2023-06-04 23:59:00',
     hasSubmitted: false,
     id: '620885',
@@ -381,6 +416,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '89376',
+    courseTitle: '[2023-1]학습공동체(G)',
     endAt: '2023-06-07 16:00:00',
     hasSubmitted: false,
     id: '620887',
@@ -391,6 +427,7 @@ export const ActivityData: ActivityType[] = [
   },
   {
     courseId: '89376',
+    courseTitle: '[2023-1]학습공동체(G)',
     endAt: '2023-06-30 17:00:00',
     hasSubmitted: false,
     id: '620888',

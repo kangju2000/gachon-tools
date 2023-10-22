@@ -1,17 +1,21 @@
 import { Badge, Box, Card, CardBody, Flex, Text } from '@chakra-ui/react'
-import { format } from 'date-fns'
+import { format, formatDistanceToNowStrict } from 'date-fns'
+import { ko } from 'date-fns/locale'
 
 import { CheckIcon, XMarkIcon } from './Icons'
 
 import type { ActivityType } from '@/types'
-
-import { timeFormat } from '@/utils'
 
 type Props = {
   activity: ActivityType
 }
 
 const ActivityItem = ({ activity }: Props) => {
+  const dDay = formatDistanceToNowStrict(new Date(activity.endAt), {
+    addSuffix: true,
+    locale: ko,
+  })
+
   return (
     <Card
       as="a"
@@ -38,7 +42,7 @@ const ActivityItem = ({ activity }: Props) => {
           </Box>
         </Flex>
         <Box textAlign="end">
-          <Text fontSize="14px">{timeFormat(activity.endAt)}</Text>
+          <Text fontSize="14px">{dDay} 마감</Text>
           <Text fontSize="12px" color="gray.500">
             ~{format(new Date(activity.endAt), 'yyyy.MM.dd HH:mm')}
           </Text>

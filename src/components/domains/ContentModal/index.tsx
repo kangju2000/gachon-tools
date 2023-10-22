@@ -5,7 +5,6 @@ import type { Course } from '@/types'
 
 import { ReactComponent as RefreshIcon } from '@/assets/refresh.svg'
 import { ReactComponent as SettingIcon } from '@/assets/setting.svg'
-import ActivityList from '@/components/domains/ActivityList'
 import useFetchData from '@/components/domains/ContentModal/hooks/useFetchData'
 import Filter from '@/components/uis/Filter'
 import FlexCenterDiv from '@/components/uis/FlexCenterDiv'
@@ -125,7 +124,7 @@ const ContentModal = ({ isOpen, onClick }: Props, ref: React.Ref<HTMLDivElement>
             <ProgressBar pos={pos} />
           </FlexCenterDiv>
         ) : (
-          <ActivityList filteredActivityList={filteredActivityList} courseList={courseList} />
+          <></>
         )}
         <div className="mt-5 flex items-center justify-end opacity-70">
           <p className="text-[12px]">
