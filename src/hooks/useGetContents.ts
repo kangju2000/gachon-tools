@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import type { Contents } from '@/types'
 
 import { getActivities, getAssignmentSubmitted, getCourses, getVideoSubmitted } from '@/services'
-import { allProgress } from '@/utils'
 
 type Options = {
   enabled?: boolean
@@ -13,7 +12,7 @@ type Options = {
 const useGetContents = (options: Options) => {
   const _options = {
     enabled: true,
-    refreshTime: 1000 * 60 * 20, // 20분
+    refreshTime: 1000 * 60 * 1, // 20분
     ...options,
   }
 
@@ -81,6 +80,8 @@ const useGetContents = (options: Options) => {
   }
 
   useEffect(() => {
+    if (isLoading) return
+
     if (_options.enabled) {
       if (_options.refreshTime < new Date().getTime() - new Date(data.updateAt).getTime()) {
         refetch()
@@ -89,6 +90,10 @@ const useGetContents = (options: Options) => {
       }
     }
   }, [_options.enabled])
+
+  useEffect(() => {
+    getLocalData()
+  }, [])
 
   return { data, pos, isLoading, refetch }
 }
