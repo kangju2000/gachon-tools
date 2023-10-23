@@ -12,7 +12,7 @@ type Options = {
 const useGetContents = (options: Options) => {
   const _options = {
     enabled: true,
-    refreshTime: 1000 * 60 * 1, // 20분
+    refreshTime: 1000 * 60 * 20, // 20분
     ...options,
   }
 

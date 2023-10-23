@@ -43,7 +43,7 @@ const PopoverOptions = ({ triggerElement }: Props) => {
         <Divider m="0" />
         <PopoverBody p="12px">
           <Stack spacing={5} direction="row">
-            <Text>다크모드 :</Text>
+            <Text>테마 :</Text>
             <Checkbox
               m="0"
               size="lg"

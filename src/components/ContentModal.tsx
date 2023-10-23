@@ -29,7 +29,7 @@ import PopoverOptions from './PopoverOptions'
 
 import useGetContents from '@/hooks/useGetContents'
 import filteredActivities from '@/utils/filteredActivityList'
-import foramtDate from '@/utils/formatDate'
+import formatDate from '@/utils/formatDate'
 
 type Props = {
   isOpen: boolean
@@ -191,7 +191,7 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
               _dark={{ color: 'gray.400' }}
               mr="4px"
             >
-              {isLoading ? '불러오는 중...' : `${foramtDate(ko, updateAt)} 업데이트`}
+              {isLoading ? '불러오는 중...' : `${formatDate(ko, updateAt)} 업데이트`}
             </Text>
             <RefreshIcon
               _light={{ color: 'gray.600' }}
