@@ -8,7 +8,7 @@ const LoadingProgress = ({ pos }: Props) => {
   return (
     <Center h="300px">
       <CircularProgress value={pos} color="#2F6EA2" display="flex" alignItems="center">
-        <CircularProgressLabel>{pos}%</CircularProgressLabel>
+        <CircularProgressLabel>{Math.round(pos)}%</CircularProgressLabel>
       </CircularProgress>
     </Center>
   )
