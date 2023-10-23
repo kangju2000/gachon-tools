@@ -112,6 +112,8 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                   }}
                   _focus={{ outline: 'none', bg: 'none', border: 'none' }}
                   _active={{ outline: 'none', bg: 'none' }}
+                  _light={{ color: 'gray.700', _selected: { color: 'blue.600' } }}
+                  _dark={{ color: 'gray.200', _selected: { color: 'blue.400' } }}
                   _selected={{ color: 'blue.600', borderBottom: '2px solid' }}
                 >
                   진행중인 과제
@@ -126,6 +128,8 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                   }}
                   _focus={{ outline: 'none', bg: 'none', border: 'none' }}
                   _active={{ outline: 'none', bg: 'none' }}
+                  _light={{ color: 'gray.700', _selected: { color: 'blue.600' } }}
+                  _dark={{ color: 'gray.200', _selected: { color: 'blue.400' } }}
                   _selected={{ color: 'blue.600', borderBottom: '2px solid' }}
                 >
                   모든 과제
