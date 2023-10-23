@@ -1,4 +1,5 @@
-import { ChakraProvider, ColorModeScript, extendTheme, type ThemeConfig } from '@chakra-ui/react'
+import { ChakraProvider, extendTheme, type ThemeConfig } from '@chakra-ui/react'
+import { mode, type StyleFunctionProps } from '@chakra-ui/theme-tools'
 import * as Sentry from '@sentry/react'
 import { createRoot } from 'react-dom/client'
 
@@ -36,19 +37,29 @@ const config: ThemeConfig = {
 
 const theme = extendTheme({
   config,
+  styles: {
+    global: {
+      body: {
+        // 사이버캠퍼스 기본 설정 적용
+        fontSize: '14px',
+        lineHeight: '1.42857143',
+        color: '#333',
+      },
+    },
+  },
   components: {
     Text: {
-      baseStyle: {
+      baseStyle: (props: StyleFunctionProps) => ({
+        color: mode('gray.700', 'gray.200')(props),
         margin: 0,
         padding: 0,
-      },
+      }),
     },
   },
 })
 
 createRoot(root).render(
   <>
-    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
     <ChakraProvider resetCSS={false} theme={theme}>
       <App />
     </ChakraProvider>
