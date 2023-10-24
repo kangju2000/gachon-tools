@@ -69,10 +69,21 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
         </ModalHeader>
         <Divider m="0" />
         <ModalBody display="flex" p="0" overflow="hidden">
-          <Stack spacing="16px" w="200px" p="24px" overflowY="scroll">
+          <Stack
+            spacing="16px"
+            w="200px"
+            p="24px"
+            overflow="scroll"
+            sx={{
+              '::-webkit-scrollbar': {
+                display: 'none',
+              },
+            }}
+          >
             {courseList.map(course => (
               <Text
                 key={course.id}
+                flexShrink="0"
                 fontSize="14px"
                 fontWeight={selectedCourseId === course.id ? '600' : '400'}
                 _light={{ color: selectedCourseId === course.id ? 'blue.600' : 'gray.600' }}
@@ -92,7 +103,17 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
 
           <Divider orientation="vertical" m="0" />
 
-          <Box flex="1" overflowY="scroll" px="24px" h="100%">
+          <Box
+            flex="1"
+            overflowY="scroll"
+            px="24px"
+            h="100%"
+            sx={{
+              '::-webkit-scrollbar': {
+                display: 'none',
+              },
+            }}
+          >
             <Tabs isLazy={true}>
               <TabList
                 position="sticky"
@@ -172,7 +193,7 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
 
         <Divider m="0" />
 
-        <ModalFooter h="60px" px="24px">
+        <ModalFooter h="60px" px="24px" userSelect="none">
           <PopoverOptions
             triggerElement={
               <Center cursor="pointer">
