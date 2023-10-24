@@ -62,6 +62,10 @@ export const getActivities = async (
     return acc
   }, [])
 
+  // if ((courseId = '93769')) {
+  //   console.log(assignmentAtCourseDocument, assignmentSubmittedArray, assignment)
+  // }
+
   const video = videoAtCourseDocument.reduce((acc, cur) => {
     const findVideo = videoSubmittedArray.find(
       v => v.sectionTitle === cur.sectionTitle && v.title === cur.title,
@@ -70,6 +74,10 @@ export const getActivities = async (
 
     return acc
   }, [])
+
+  // if (courseId === '91535') {
+  //   console.log(videoAtCourseDocument, videoSubmittedArray, video)
+  // }
 
   return [...assignment, ...video]
 }
@@ -142,7 +150,7 @@ const getAssignmentAtCourseDocument = (
 const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
   return $('.total_sections .content')
     .map((i, el) => {
-      const sectionTitle = $(el).find('.sectionname').text().trim()
+      const sectionTitle = $(el).find('.sectionname').text().trim().split(' ')[0].match(/\d+/g)[0]
 
       return $(el)
         .find('.activity.vod .activityinstance')
@@ -230,14 +238,11 @@ export const getVideoSubmitted = async (
       ? '.user_progress_table tbody tr'
       : '.user_progress tbody tr'
 
-  let currentSectionTitle = ''
-
   return $(className)
     .map((i, el) => {
-      if ($(el).find('.sectiontitle').length)
-        currentSectionTitle = $(el).find('.sectiontitle').attr('title')
       const std = $(el).find('.text-center.hidden-xs.hidden-sm')
       const title = std.prev().text().trim()
+      const sectionTitle = $(el).find('tr td').first().text().trim()
       const requiredTime = std.text().trim()
       const totalStudyTime = std.next().clone().children().remove().end().text().trim()
       const hasSubmitted =
@@ -246,7 +251,7 @@ export const getVideoSubmitted = async (
       return {
         title,
         hasSubmitted,
-        sectionTitle: currentSectionTitle,
+        sectionTitle,
       }
     })
     .get()

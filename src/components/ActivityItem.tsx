@@ -11,10 +11,12 @@ type Props = {
 }
 
 const ActivityItem = ({ activity }: Props) => {
-  const dDay = formatDistanceToNowStrict(new Date(activity.endAt), {
-    addSuffix: true,
-    locale: ko,
-  })
+  const dDay =
+    !!activity.endAt &&
+    formatDistanceToNowStrict(new Date(activity.endAt), {
+      addSuffix: true,
+      locale: ko,
+    })
 
   return (
     <Card
@@ -51,9 +53,9 @@ const ActivityItem = ({ activity }: Props) => {
           </Box>
         </Flex>
         <Box textAlign="end" flexShrink="0">
-          <Text fontSize="14px">{dDay} 마감</Text>
+          <Text fontSize="14px">{!!activity.endAt ? `${dDay} 마감` : '마감일 없음'}</Text>
           <Text fontSize="12px" _light={{ color: 'gray.500' }} _dark={{ color: 'gray.400' }}>
-            ~{format(new Date(activity.endAt), 'yyyy.MM.dd HH:mm')}
+            {!!activity.endAt && `~${format(new Date(activity.endAt), 'yyyy.MM.dd HH:mm')}`}
           </Text>
         </Box>
       </CardBody>
