@@ -62,9 +62,9 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
             _hover={{ bg: 'none', color: 'inherit' }}
             _focus={{ bg: 'none', color: 'inherit' }}
             _active={{ bg: 'none' }}
-            _focusVisible={{
-              boxShadow: 'none',
-            }}
+            _focusVisible={{ boxShadow: 'none' }}
+            _light={{ color: 'gray.600' }}
+            _dark={{ color: 'gray.400' }}
           />
         </ModalHeader>
         <Divider m="0" />
@@ -209,7 +209,7 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
             }
           />
           <Spacer />
-          <Center cursor="pointer">
+          <Center cursor="pointer" onClick={refetch}>
             <Text
               fontSize="12px"
               _light={{ color: 'gray.600' }}
@@ -218,11 +218,7 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
             >
               {isLoading ? '불러오는 중...' : `${formatDate(ko, updateAt)} 업데이트`}
             </Text>
-            <RefreshIcon
-              _light={{ color: 'gray.600' }}
-              _dark={{ color: 'gray.400' }}
-              onClick={refetch}
-            />
+            <RefreshIcon _light={{ color: 'gray.600' }} _dark={{ color: 'gray.400' }} />
           </Center>
         </ModalFooter>
       </ModalContent>

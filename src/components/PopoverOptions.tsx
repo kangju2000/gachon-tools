@@ -44,6 +44,8 @@ const PopoverOptions = ({ triggerElement }: Props) => {
           top="8px"
           right="4px"
           outline="none !important"
+          _light={{ color: 'gray.600' }}
+          _dark={{ color: 'gray.400' }}
         />
         <Divider m="0" />
         <PopoverBody p="12px">

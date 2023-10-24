@@ -75,6 +75,7 @@ const useGetContents = (options: Options) => {
   }
 
   const refetch = () => {
+    if (isLoading) return
     setIsLoading(true)
     getData()
   }
