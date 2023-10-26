@@ -62,10 +62,6 @@ export const getActivities = async (
     return acc
   }, [])
 
-  // if ((courseId = '93769')) {
-  //   console.log(assignmentAtCourseDocument, assignmentSubmittedArray, assignment)
-  // }
-
   const video = videoAtCourseDocument.reduce((acc, cur) => {
     const findVideo = videoSubmittedArray.find(
       v => v.sectionTitle === cur.sectionTitle && v.title === cur.title,
@@ -74,10 +70,6 @@ export const getActivities = async (
 
     return acc
   }, [])
-
-  // if (courseId === '91535') {
-  //   console.log(videoAtCourseDocument, videoSubmittedArray, video)
-  // }
 
   return [...assignment, ...video]
 }
@@ -242,7 +234,7 @@ export const getVideoSubmitted = async (
     .map((i, el) => {
       const std = $(el).find('.text-center.hidden-xs.hidden-sm')
       const title = std.prev().text().trim()
-      const sectionTitle = $(el).find('tr td').first().text().trim()
+      const sectionTitle = $(el).find('tr td').first().text().trim().split(' ')[0].match(/\d+/g)[0]
       const requiredTime = std.text().trim()
       const totalStudyTime = std.next().clone().children().remove().end().text().trim()
       const hasSubmitted =
