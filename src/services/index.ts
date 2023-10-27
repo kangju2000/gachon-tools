@@ -1,8 +1,6 @@
-import { captureException } from '@sentry/react'
 import * as cheerio from 'cheerio'
 
 import type { ActivityType, Assignment, Course, Video } from '@/types'
-
 import { getLinkId } from '@/utils'
 
 const fetchDocument = async (url: string) => {
@@ -161,12 +159,6 @@ const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
             .map(t => t.trim())
           const timeInfo = $(el).find('.displayoptions .time-info').text()
 
-          if (!id) {
-            captureException(
-              new Error(`getVideoAtCourseDocument에서 id 없음. ${title} / ${startAt} / ${endAt}`),
-            )
-          }
-
           return {
             type: 'video' as const,
             id,
@@ -230,11 +222,16 @@ export const getVideoSubmitted = async (
       ? '.user_progress_table tbody tr'
       : '.user_progress tbody tr'
 
+  let section = '1'
   return $(className)
-    .map((i, el) => {
+    .map((_, el) => {
+      if ($(el.firstChild).attr('rowspan') || $(el.firstChild).hasClass('vmiddle')) {
+        section = $(el.firstChild).text().trim()
+      }
+
       const std = $(el).find('.text-center.hidden-xs.hidden-sm')
       const title = std.prev().text().trim()
-      const sectionTitle = $(el).find('tr td').first().text().trim().split(' ')[0].match(/\d+/g)[0]
+      const sectionTitle = section
       const requiredTime = std.text().trim()
       const totalStudyTime = std.next().clone().children().remove().end().text().trim()
       const hasSubmitted =
