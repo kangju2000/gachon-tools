@@ -48,19 +48,15 @@ export const getActivities = async (
   videoSubmittedArray: Awaited<ReturnType<typeof getVideoSubmitted>>,
 ): Promise<ActivityType[]> => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`)
-  const assignmentAtCourseDocument = getAssignmentAtCourseDocument($, courseId)
-  const videoAtCourseDocument = getVideoAtCourseDocument($, courseId)
 
-  const assignment = assignmentAtCourseDocument.reduce((acc, cur) => {
-    const findAssignment = assignmentSubmittedArray.find(
-      a => a.sectionTitle === cur.sectionTitle && a.title === cur.title,
-    )
+  const assignment: Assignment[] = getAssignmentAtCourseDocument($, courseId).reduce((acc, cur) => {
+    const findAssignment = assignmentSubmittedArray.find(a => a.id === cur.id)
     if (findAssignment) return [...acc, Object.assign({}, cur, findAssignment, { courseTitle })]
 
     return acc
   }, [])
 
-  const video = videoAtCourseDocument.reduce((acc, cur) => {
+  const video: Video[] = getVideoAtCourseDocument($, courseId).reduce((acc, cur) => {
     const findVideo = videoSubmittedArray.find(
       v => v.sectionTitle === cur.sectionTitle && v.title === cur.title,
     )
@@ -92,7 +88,6 @@ const getAssignmentAtCourseDocument = (
       id,
       courseId,
       title,
-      sectionTitle: '',
       startAt: '',
       endAt: '',
     }
@@ -137,13 +132,16 @@ const getAssignmentAtCourseDocument = (
  * @param $
  * @param courseId
  */
-const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
+const getVideoAtCourseDocument = (
+  $: cheerio.CheerioAPI,
+  courseId: string,
+): Omit<Video, 'courseTitle' | 'hasSubmitted'>[] => {
   return $('.total_sections .content')
     .map((i, el) => {
-      const sectionTitle = $(el).find('.sectionname').text().trim().split(' ')[0].match(/\d+/g)[0]
+      const sectionTitle = $(el).find('.sectionname').text().trim().split(' ')[0].match(/\d+/g)?.[0]
 
       return $(el)
-        .find('.activity.vod .activityinstance')
+        .find('.modtype_vod .activityinstance')
         .map((i, el) => {
           const link = $(el).find('a').attr('href') // 링크 없는 과제도 존재
           const id = getLinkId(link)
@@ -157,7 +155,6 @@ const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
             .text()
             .split(' ~ ')
             .map(t => t.trim())
-          const timeInfo = $(el).find('.displayoptions .time-info').text()
 
           return {
             type: 'video' as const,
@@ -166,7 +163,6 @@ const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
             title,
             startAt,
             endAt,
-            timeInfo,
             sectionTitle,
           }
         })
@@ -181,24 +177,21 @@ const getVideoAtCourseDocument = ($: cheerio.CheerioAPI, courseId: string) => {
  */
 export const getAssignmentSubmitted = async (
   courseId: string,
-): Promise<Pick<Assignment, 'title' | 'hasSubmitted' | 'sectionTitle' | 'endAt'>[]> => {
+): Promise<Pick<Assignment, 'id' | 'title' | 'hasSubmitted' | 'endAt'>[]> => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${courseId}`)
 
-  let currentSectionTitle = ''
   return $('tbody tr')
     .map((i, el) => {
       if ($(el).find('.tabledivider').length) return
-
-      const sectionTitle = $(el).find('.c0').text().trim()
-      if (sectionTitle !== '') currentSectionTitle = sectionTitle
+      const id = getLinkId($(el).find('.c1 a').attr('href'))
 
       const title = $(el).find('.c1 a').text().trim()
       const endAt = $(el).find('.c2').text().trim() + ':00'
       const hasSubmitted = /(Submitted for grading)|(제출 완료)/.test($(el).find('.c3').text())
 
       return {
+        id,
         title,
-        sectionTitle: currentSectionTitle,
         endAt,
         hasSubmitted,
       }

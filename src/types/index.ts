@@ -3,7 +3,6 @@ interface Activity {
   courseId: string
   courseTitle: string
   title: string
-  sectionTitle: string
   startAt: string // 시작 날짜 없는 과제도 존재 ex) No time limit
   endAt: string // 마감 날짜 없는 과제가 있나? 확실하지 않음
   hasSubmitted: boolean
@@ -19,7 +18,7 @@ export interface Assignment extends Activity {
 
 export interface Video extends Activity {
   type: 'video'
-  timeInfo: string
+  sectionTitle: string
 }
 
 export type ActivityType = Assignment | Video
