@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 
-import type { Contents } from '@/types'
-
 import { getActivities, getAssignmentSubmitted, getCourses, getVideoSubmitted } from '@/services'
+import type { Contents } from '@/types'
 
 type Options = {
   enabled?: boolean

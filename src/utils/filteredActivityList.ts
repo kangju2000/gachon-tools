@@ -1,5 +1,4 @@
 import type { ActivityType } from '@/types'
-
 import { pipe } from '@/utils'
 
 const activityListByCourse = (activityList: ActivityType[], id: string) => {
@@ -17,7 +16,7 @@ const sortAcitivityList = (activityList: ActivityType[]) => {
 const activityListByStatus = (activityList: ActivityType[], status: string) => {
   if (status === '진행중인 과제') {
     return activityList.filter(activity => {
-      if (!!activity.endAt) return new Date(activity.endAt).getTime() > new Date().getTime()
+      if (activity.endAt) return new Date(activity.endAt).getTime() > new Date().getTime()
 
       return true
     })

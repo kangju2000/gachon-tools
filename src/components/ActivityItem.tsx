@@ -3,7 +3,6 @@ import { format, formatDistanceToNowStrict } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
 import { CheckIcon, XMarkIcon } from './Icons'
-
 import type { ActivityType } from '@/types'
 
 type Props = {
@@ -53,7 +52,7 @@ const ActivityItem = ({ activity }: Props) => {
           </Box>
         </Flex>
         <Box textAlign="end" flexShrink="0">
-          <Text fontSize="14px">{!!activity.endAt ? `${dDay} 마감` : '마감일 없음'}</Text>
+          <Text fontSize="14px">{activity.endAt ? `${dDay} 마감` : '마감일 없음'}</Text>
           <Text fontSize="12px" _light={{ color: 'gray.500' }} _dark={{ color: 'gray.400' }}>
             {!!activity.endAt && `~${format(new Date(activity.endAt), 'yyyy.MM.dd HH:mm')}`}
           </Text>

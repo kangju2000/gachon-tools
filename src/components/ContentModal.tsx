@@ -26,7 +26,6 @@ import ActivityList from './ActivityList'
 import { RefreshIcon, SettingIcon } from './Icons'
 import LoadingProgress from './LoadingProgress'
 import PopoverOptions from './PopoverOptions'
-
 import useGetContents from '@/hooks/useGetContents'
 import filteredActivities from '@/utils/filteredActivityList'
 import formatDate from '@/utils/formatDate'

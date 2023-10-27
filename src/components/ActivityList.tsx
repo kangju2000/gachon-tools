@@ -3,14 +3,13 @@ import { Text } from '@chakra-ui/react'
 import ActivityItem from './ActivityItem'
 import ChakraMotion from './ChakraMotion'
 import ItemList from './ItemList'
+import type { ActivityType } from '@/types'
 
-import { ActivityType } from '@/types'
-
-type props = {
+type Props = {
   contentData: ActivityType[]
 }
 
-const ActivityList = ({ contentData }: props) => {
+const ActivityList = ({ contentData }: Props) => {
   return (
     <ChakraMotion
       initial={{ opacity: 0 }}
