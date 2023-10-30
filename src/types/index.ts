@@ -3,8 +3,8 @@ interface Activity {
   courseId: string
   courseTitle: string
   title: string
-  startAt: string // 시작 날짜 없는 과제도 존재 ex) No time limit
-  endAt: string // 마감 날짜 없는 과제가 있나? 확실하지 않음
+  startAt: string
+  endAt: string
   hasSubmitted: boolean
 }
 export interface Course {

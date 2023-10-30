@@ -18,6 +18,7 @@ import {
   Tabs,
   Text,
 } from '@chakra-ui/react'
+import { formatDistanceToNowStrict, isValid } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
@@ -28,7 +29,6 @@ import LoadingProgress from './LoadingProgress'
 import PopoverOptions from './PopoverOptions'
 import useGetContents from '@/hooks/useGetContents'
 import filteredActivities from '@/utils/filteredActivityList'
-import formatDate from '@/utils/formatDate'
 
 type Props = {
   isOpen: boolean
@@ -43,6 +43,8 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
     refetch,
     isLoading,
   } = useGetContents({ enabled: isOpen })
+
+  const updateAtDate = new Date(updateAt)
 
   return (
     <Modal isCentered isOpen={isOpen} onClose={onClose}>
@@ -215,7 +217,12 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
               _dark={{ color: 'gray.400' }}
               mr="4px"
             >
-              {isLoading ? '불러오는 중...' : `${formatDate(ko, updateAt)} 업데이트`}
+              {isLoading
+                ? '불러오는 중...'
+                : `${
+                    isValid(updateAtDate) &&
+                    formatDistanceToNowStrict(updateAtDate, { addSuffix: true, locale: ko })
+                  } 업데이트`}
             </Text>
             <RefreshIcon _light={{ color: 'gray.600' }} _dark={{ color: 'gray.400' }} />
           </Center>
