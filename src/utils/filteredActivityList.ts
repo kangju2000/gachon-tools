@@ -1,3 +1,5 @@
+import { isValid } from 'date-fns'
+
 import type { ActivityType } from '@/types'
 import { pipe } from '@/utils'
 
@@ -10,7 +12,22 @@ const activityListByCourse = (activityList: ActivityType[], id: string) => {
 }
 
 const sortAcitivityList = (activityList: ActivityType[]) => {
-  return activityList.sort((a, b) => new Date(a.endAt).getTime() - new Date(b.endAt).getTime())
+  const [endAtList, noEndAtList] = activityList.reduce<[ActivityType[], ActivityType[]]>(
+    (acc, cur) => {
+      if (isValid(new Date(cur.endAt))) {
+        return [[...acc[0], cur], acc[1]]
+      }
+
+      return [acc[0], [...acc[1], cur]]
+    },
+    [[], []],
+  )
+
+  const sortedList = endAtList.sort((a, b) => {
+    return new Date(a.endAt).getTime() - new Date(b.endAt).getTime()
+  })
+
+  return [...sortedList, ...noEndAtList]
 }
 
 const activityListByStatus = (activityList: ActivityType[], status: string) => {
