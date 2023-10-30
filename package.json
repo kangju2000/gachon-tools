@@ -1,6 +1,6 @@
 {
   "name": "gachon-extension",
-  "version": "1.1.2",
+  "version": "1.1.21",
   "license": "MIT",
   "type": "module",
   "scripts": {
