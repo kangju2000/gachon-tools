@@ -1,9 +1,9 @@
-import { defineManifest } from '@crxjs/vite-plugin';
+import { defineManifest } from '@crxjs/vite-plugin'
 
-import packageJson from './package.json';
-const { version } = packageJson;
+import packageJson from './package.json'
+const { version } = packageJson
 
-const [major, minor, patch, label = '0'] = version.replace(/[^\d.-]+/g, '').split(/[.-]/);
+const [major, minor, patch, label = '0'] = version.replace(/[^\d.-]+/g, '').split(/[.-]/)
 
 export default defineManifest(async env => ({
   manifest_version: 3,
@@ -47,4 +47,4 @@ export default defineManifest(async env => ({
   host_permissions: ['https://cyber.gachon.ac.kr/*'],
   options_page: 'src/pages/options/index.html',
   permissions: ['storage', 'scripting', 'activeTab'],
-}));
+}))
