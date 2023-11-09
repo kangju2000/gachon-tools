@@ -1997,10 +1997,10 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
-"@types/chrome@^0.0.248":
-  version "0.0.248"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.248.tgz#fdc188a4b7ab8cfd2c49cb666214ecab81599002"
-  integrity sha512-qtBzxZD1v3eWZn8XxH1i07pAhzJDHnxJBBVy7bmntXxXKxjzNXYxD41teqa5yOcX/Yy8brRFGZESEzGoINvBDg==
+"@types/chrome@^0.0.250":
+  version "0.0.250"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.250.tgz#dd21d177f8d4ea9a12433b0506d25d41e90d7729"
+  integrity sha512-bg6UC+cXS5blsaJaVOg0TQfu6FG64og/4o+65IuaVvlTKBzNUiazLabPde+gRpk8DSrqpGBPk0xME+tbU3KlKg==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
