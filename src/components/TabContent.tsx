@@ -36,6 +36,7 @@ const TabContent = ({ activityList, selectedCourseId, pos, isLoading }: Props) =
       >
         {TAB_LIST.map(tab => (
           <Tab
+            key={tab}
             position="relative"
             fontSize="14px"
             borderRadius="none"

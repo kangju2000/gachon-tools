@@ -1,6 +1,7 @@
 import {
   Checkbox,
   Divider,
+  Kbd,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -49,7 +50,7 @@ const PopoverOptions = ({ triggerElement }: Props) => {
         />
         <Divider m="0" />
         <PopoverBody p="12px">
-          <Stack spacing={5} direction="row">
+          <Stack spacing={5} direction="row" fontSize="12px" mb="8px">
             <Text>테마 :</Text>
             <Checkbox
               m="0"
@@ -67,6 +68,18 @@ const PopoverOptions = ({ triggerElement }: Props) => {
             >
               <Text>Dark</Text>
             </Checkbox>
+          </Stack>
+          <Stack spacing={5} direction="row" fontSize="12px">
+            <Text>단축키 :</Text>
+            <Text>
+              <Kbd _light={{ color: 'gray.600' }} _dark={{ color: 'gray.600' }}>
+                {navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'}
+              </Kbd>
+              {' + '}
+              <Kbd _light={{ color: 'gray.600' }} _dark={{ color: 'gray.600' }}>
+                K
+              </Kbd>
+            </Text>
           </Stack>
         </PopoverBody>
         <PopoverFooter>

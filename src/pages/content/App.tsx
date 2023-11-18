@@ -1,11 +1,20 @@
 import { Box, useDisclosure } from '@chakra-ui/react'
 import { AnimatePresence } from 'framer-motion'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 import ChakraMotion from '@/components/ChakraMotion'
 import ContentModal from '@/components/ContentModal'
 
 export default function App() {
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  useHotkeys('ctrl+k, meta+k', () => {
+    if (isOpen) {
+      onClose()
+    } else {
+      onOpen()
+    }
+  })
 
   return (
     <Box pos="fixed" w="100vw" display="flex" bottom="25px" justifyContent="center" zIndex="9999">
