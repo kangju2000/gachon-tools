@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import ActivityList from './ActivityList'
 import LoadingProgress from './LoadingProgress'
+import { TAB_LIST } from '@/constants'
 import useFilteredActivityList from '@/hooks/useFilteredActivityList'
 import { ActivityType } from '@/types'
 
@@ -33,38 +34,25 @@ const TabContent = ({ activityList, selectedCourseId, pos, isLoading }: Props) =
         _dark={{ bg: 'gray.700' }}
         pt="16px"
       >
-        <Tab
-          fontSize="14px"
-          borderRadius="none"
-          border="none"
-          outline="none !important"
-          _hover={{
-            _dark: { bg: 'blue.800', color: 'white' },
-          }}
-          _focus={{ outline: 'none', bg: 'none', border: 'none' }}
-          _active={{ outline: 'none', bg: 'none' }}
-          _light={{ color: 'gray.700', _selected: { color: 'blue.600' } }}
-          _dark={{ color: 'gray.200', _selected: { color: 'blue.400' } }}
-          _selected={{ color: 'blue.600', borderBottom: '2px solid' }}
-        >
-          진행중인 과제
-        </Tab>
-        <Tab
-          fontSize="14px"
-          borderRadius="none"
-          border="none"
-          outline="none !important"
-          _hover={{
-            _dark: { bg: 'blue.800', color: 'white' },
-          }}
-          _focus={{ outline: 'none', bg: 'none', border: 'none' }}
-          _active={{ outline: 'none', bg: 'none' }}
-          _light={{ color: 'gray.700', _selected: { color: 'blue.600' } }}
-          _dark={{ color: 'gray.200', _selected: { color: 'blue.400' } }}
-          _selected={{ color: 'blue.600', borderBottom: '2px solid' }}
-        >
-          모든 과제
-        </Tab>
+        {TAB_LIST.map(tab => (
+          <Tab
+            position="relative"
+            fontSize="14px"
+            borderRadius="none"
+            border="none"
+            outline="none !important"
+            _hover={{
+              _dark: { bg: 'blue.800', color: 'white' },
+            }}
+            _focus={{ outline: 'none', bg: 'none', border: 'none' }}
+            _active={{ outline: 'none', bg: 'none' }}
+            _light={{ color: 'gray.700', _selected: { color: 'blue.600' } }}
+            _dark={{ color: 'gray.200', _selected: { color: 'blue.400' } }}
+            _selected={{ color: 'blue.600', borderBottom: '2px solid' }}
+          >
+            {tab}
+          </Tab>
+        ))}
       </TabList>
 
       <TabPanels as={AnimatePresence}>
