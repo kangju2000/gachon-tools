@@ -1,4 +1,4 @@
-import { Badge, Box, Card, CardBody, Flex, Text } from '@chakra-ui/react'
+import { chakra, Badge, Box, Card, CardBody, Flex, Text } from '@chakra-ui/react'
 import { format, formatDistanceToNowStrict, isValid } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
@@ -11,9 +11,8 @@ type Props = {
 
 const ActivityItem = ({ activity }: Props) => {
   const endAtDate = new Date(activity.endAt)
-  const dDay = isValid(endAtDate)
-    ? formatDistanceToNowStrict(endAtDate, { addSuffix: true, locale: ko }) + ' 마감'
-    : '마감일 없음'
+  const dDay =
+    isValid(endAtDate) && formatDistanceToNowStrict(endAtDate, { addSuffix: true, locale: ko })
 
   return (
     <Card
@@ -25,13 +24,24 @@ const ActivityItem = ({ activity }: Props) => {
         activity.type === 'assignment' ? 'assign' : 'vod'
       }/view.php?id=${activity.id}`}
       _hover={{
-        _light: { color: 'blue.600' },
-        _dark: { color: 'blue.300' },
+        _light: {
+          bg: 'gray.50',
+        },
+        _dark: {
+          bg: 'gray.800',
+        },
       }}
+      transition="background 0.2s"
     >
-      <CardBody display="flex" alignItems="center" justifyContent="space-between" px="16px">
-        <Flex align="center" gap="8px">
-          {activity.hasSubmitted ? <CheckIcon /> : <XMarkIcon />}
+      <CardBody
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        gap="10px"
+        px="16px"
+      >
+        <Flex align="center" gap="10px">
+          {activity.hasSubmitted ? <CheckIcon flexShrink="0" /> : <XMarkIcon flexShrink="0" />}
           <Box>
             <Flex align="center" gap="4px">
               <ActivityBadge type={activity.type} />
@@ -50,8 +60,24 @@ const ActivityItem = ({ activity }: Props) => {
           </Box>
         </Flex>
         <Box textAlign="end" flexShrink="0">
-          <Text fontSize="14px">{dDay}</Text>
-          <Text fontSize="12px" _light={{ color: 'gray.500' }} _dark={{ color: 'gray.400' }}>
+          <Text fontSize="14px" noOfLines={1}>
+            {dDay ? (
+              <>
+                {dDay + ' '}
+                <chakra.span fontSize="12px" fontWeight="400">
+                  마감
+                </chakra.span>
+              </>
+            ) : (
+              '기한 없음'
+            )}
+          </Text>
+          <Text
+            fontSize="12px"
+            _light={{ color: 'gray.500' }}
+            _dark={{ color: 'gray.400' }}
+            noOfLines={1}
+          >
             {isValid(endAtDate) && `~${format(endAtDate, 'yyyy.MM.dd HH:mm')}`}
           </Text>
         </Box>
@@ -65,7 +91,15 @@ export default ActivityItem
 const ActivityBadge = ({ type }: { type: ActivityType['type'] }) => {
   if (type === 'assignment') {
     return (
-      <Badge variant="solid" colorScheme="blue" fontSize="12px" px="4px" borderRadius="2px">
+      <Badge
+        variant="solid"
+        colorScheme="blue"
+        fontSize="9px"
+        fontWeight="700"
+        px="4px"
+        py="2px"
+        borderRadius="4px"
+      >
         과제
       </Badge>
     )
@@ -73,7 +107,15 @@ const ActivityBadge = ({ type }: { type: ActivityType['type'] }) => {
 
   if (type === 'video') {
     return (
-      <Badge variant="solid" colorScheme="gray" fontSize="12px" px="4px" borderRadius="2px">
+      <Badge
+        variant="solid"
+        colorScheme="gray"
+        fontSize="9px"
+        fontWeight="700"
+        px="4px"
+        py="2px"
+        borderRadius="4px"
+      >
         영상
       </Badge>
     )

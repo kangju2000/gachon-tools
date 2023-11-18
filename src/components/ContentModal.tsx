@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Center,
   Divider,
   Modal,
@@ -93,6 +94,7 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                   _light: { color: 'blue.600' },
                   _dark: { color: 'blue.400' },
                 }}
+                transition="color 0.2s"
                 cursor="pointer"
                 onClick={() => setSelectedCourseId(course.id)}
                 noOfLines={1}
@@ -197,13 +199,28 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
         <ModalFooter h="60px" px="24px" userSelect="none">
           <PopoverOptions
             triggerElement={
-              <Center cursor="pointer">
+              <Center
+                as={Button}
+                cursor="pointer"
+                outline="none !important"
+                bg="none"
+                _hover={{ bg: 'none' }}
+                _focus={{ bg: 'none' }}
+                _active={{ bg: 'none' }}
+                border="none"
+                p="6px"
+              >
                 <SettingIcon
                   _light={{ color: 'gray.600' }}
                   _dark={{ color: 'gray.400' }}
                   mr="4px"
                 />
-                <Text fontSize="12px" _light={{ color: 'gray.600' }} _dark={{ color: 'gray.400' }}>
+                <Text
+                  fontSize="12px"
+                  fontWeight="500"
+                  _light={{ color: 'gray.600' }}
+                  _dark={{ color: 'gray.400' }}
+                >
                   설정
                 </Text>
               </Center>
