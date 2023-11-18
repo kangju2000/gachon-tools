@@ -11,25 +11,17 @@ import {
   ModalHeader,
   ModalOverlay,
   Spacer,
-  Stack,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   Text,
 } from '@chakra-ui/react'
 import { formatDistanceToNowStrict, isValid } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 
-import ActivityList from './ActivityList'
+import CourseList from './CourseList'
 import { RefreshIcon, SettingIcon } from './Icons'
-import LoadingProgress from './LoadingProgress'
 import PopoverOptions from './PopoverOptions'
+import TabContent from './TabContent'
 import useGetContents from '@/hooks/useGetContents'
-import filteredActivities from '@/utils/filteredActivityList'
 
 type Props = {
   isOpen: boolean
@@ -71,41 +63,14 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
         </ModalHeader>
         <Divider m="0" />
         <ModalBody display="flex" p="0" overflow="hidden">
-          <Stack
-            spacing="16px"
-            w="200px"
-            p="24px"
-            overflow="scroll"
-            sx={{
-              '::-webkit-scrollbar': {
-                display: 'none',
-              },
-            }}
-          >
-            {courseList.map(course => (
-              <Text
-                key={course.id}
-                flexShrink="0"
-                fontSize="14px"
-                fontWeight={selectedCourseId === course.id ? '600' : '400'}
-                _light={{ color: selectedCourseId === course.id ? 'blue.600' : 'gray.600' }}
-                _dark={{ color: selectedCourseId === course.id ? 'blue.400' : 'gray.400' }}
-                _hover={{
-                  _light: { color: 'blue.600' },
-                  _dark: { color: 'blue.400' },
-                }}
-                transition="color 0.2s"
-                cursor="pointer"
-                onClick={() => setSelectedCourseId(course.id)}
-                noOfLines={1}
-              >
-                {course.title}
-              </Text>
-            ))}
-          </Stack>
-
+          <Box w="200px" p="24px">
+            <CourseList
+              courseList={courseList}
+              selectedCourseId={selectedCourseId}
+              setSelectedCourseId={setSelectedCourseId}
+            />
+          </Box>
           <Divider orientation="vertical" m="0" />
-
           <Box
             flex="1"
             overflowY="scroll"
@@ -117,86 +82,18 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
               },
             }}
           >
-            <Tabs isLazy={true}>
-              <TabList
-                position="sticky"
-                top="0"
-                zIndex="1"
-                _light={{ bg: 'white' }}
-                _dark={{ bg: 'gray.700' }}
-                pt="16px"
-              >
-                <Tab
-                  fontSize="14px"
-                  borderRadius="none"
-                  border="none"
-                  outline="none !important"
-                  _hover={{
-                    _dark: { bg: 'blue.800', color: 'white' },
-                  }}
-                  _focus={{ outline: 'none', bg: 'none', border: 'none' }}
-                  _active={{ outline: 'none', bg: 'none' }}
-                  _light={{ color: 'gray.700', _selected: { color: 'blue.600' } }}
-                  _dark={{ color: 'gray.200', _selected: { color: 'blue.400' } }}
-                  _selected={{ color: 'blue.600', borderBottom: '2px solid' }}
-                >
-                  진행중인 과제
-                </Tab>
-                <Tab
-                  fontSize="14px"
-                  borderRadius="none"
-                  border="none"
-                  outline="none !important"
-                  _hover={{
-                    _dark: { bg: 'blue.800', color: 'white' },
-                  }}
-                  _focus={{ outline: 'none', bg: 'none', border: 'none' }}
-                  _active={{ outline: 'none', bg: 'none' }}
-                  _light={{ color: 'gray.700', _selected: { color: 'blue.600' } }}
-                  _dark={{ color: 'gray.200', _selected: { color: 'blue.400' } }}
-                  _selected={{ color: 'blue.600', borderBottom: '2px solid' }}
-                >
-                  모든 과제
-                </Tab>
-              </TabList>
-
-              <TabPanels as={AnimatePresence}>
-                <TabPanel>
-                  {isLoading ? (
-                    <LoadingProgress pos={pos} />
-                  ) : (
-                    <ActivityList
-                      contentData={filteredActivities(
-                        activityList,
-                        selectedCourseId,
-                        '진행중인 과제',
-                        false,
-                      )}
-                    />
-                  )}
-                </TabPanel>
-                <TabPanel>
-                  {isLoading ? (
-                    <LoadingProgress pos={pos} />
-                  ) : (
-                    <ActivityList
-                      contentData={filteredActivities(
-                        activityList,
-                        selectedCourseId,
-                        '모든 과제',
-                        false,
-                      )}
-                    />
-                  )}
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
+            <TabContent
+              activityList={activityList}
+              selectedCourseId={selectedCourseId}
+              pos={pos}
+              isLoading={isLoading}
+            />
           </Box>
         </ModalBody>
 
         <Divider m="0" />
 
-        <ModalFooter h="60px" px="24px" userSelect="none">
+        <ModalFooter h="50px" px="24px" userSelect="none">
           <PopoverOptions
             triggerElement={
               <Center
@@ -204,9 +101,9 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                 cursor="pointer"
                 outline="none !important"
                 bg="none"
-                _hover={{ bg: 'none' }}
-                _focus={{ bg: 'none' }}
-                _active={{ bg: 'none' }}
+                _hover={{ _light: { bg: 'none' }, _dark: { bg: 'none' } }}
+                _focus={{ _light: { bg: 'none' }, _dark: { bg: 'none' } }}
+                _active={{ _light: { bg: 'none' }, _dark: { bg: 'none' } }}
                 border="none"
                 p="6px"
               >

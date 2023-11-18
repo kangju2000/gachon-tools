@@ -1,5 +1,7 @@
 import { isValid } from 'date-fns'
+import { useCallback } from 'react'
 
+import { TAB_LIST } from '@/constants'
 import type { ActivityType } from '@/types'
 import { pipe } from '@/utils'
 
@@ -30,8 +32,8 @@ const sortAcitivityList = (activityList: ActivityType[]) => {
   return [...sortedList, ...noEndAtList]
 }
 
-const activityListByStatus = (activityList: ActivityType[], status: string) => {
-  if (status === '진행중인 과제') {
+const activityListByTabIndex = (activityList: ActivityType[], tabIndex: number) => {
+  if (TAB_LIST[tabIndex] === TAB_LIST[0]) {
     return activityList.filter(activity => {
       if (activity.endAt) return new Date(activity.endAt).getTime() > new Date().getTime()
 
@@ -49,18 +51,19 @@ const activityListBySubmitted = (activityList: ActivityType[], isChecked: boolea
   return activityList
 }
 
-const filteredActivities = (
+const useFilteredActivityList = (
   activityList: ActivityType[],
   selectedCourseId: string,
-  status: string,
+  tabIndex: number,
   isChecked: boolean,
-) =>
-  pipe(
+) => {
+  return pipe(
     activityList,
     activityList => activityListByCourse(activityList, selectedCourseId),
     activityList => sortAcitivityList(activityList),
-    activityList => activityListByStatus(activityList, status),
+    activityList => activityListByTabIndex(activityList, tabIndex),
     activityList => activityListBySubmitted(activityList, isChecked),
   )
+}
 
-export default filteredActivities
+export default useFilteredActivityList

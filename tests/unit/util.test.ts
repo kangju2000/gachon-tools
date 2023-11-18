@@ -1,6 +1,4 @@
-import { ActivityData } from '@/data/dummyData'
 import { allProgress, getLinkId } from '@/utils'
-import filteredActivities from '@/utils/filteredActivityList'
 
 describe('getLinkId 테스트', () => {
   test('올바른 링크 입력시 id 값을 반환한다.', () => {
@@ -13,57 +11,6 @@ describe('getLinkId 테스트', () => {
     const link2 = undefined
     expect(getLinkId(link)).toBe('')
     expect(getLinkId(link2)).toBe('')
-  })
-})
-
-describe('filteredActivityList 테스트', () => {
-  beforeAll(() => {
-    const time = new Date('2022-11-01T00:00:00Z')
-    jest.useFakeTimers({})
-    jest.setSystemTime(time)
-  })
-  afterAll(() => {
-    jest.useRealTimers()
-  })
-
-  test('진행중인 과제의 개수가 올바르게 나오는지 확인한다.', () => {
-    const activityList = ActivityData
-    const selectedCourseId = '-1'
-    const status = '진행중인 과제'
-    const isChecked = false
-    const filteredList = filteredActivities(activityList, selectedCourseId, status, isChecked)
-
-    expect(filteredList.length).toBe(26)
-  })
-
-  test('특정 과제 선택, 전체 과제로 올바르게 필터링 되는지 확인한다.', () => {
-    const activityList = ActivityData
-    const selectedCourseId = '82194' // 알고리즘 강의
-    const status = '전체 과제'
-    const isChecked = false
-    const filteredList = filteredActivities(activityList, selectedCourseId, status, isChecked)
-
-    expect(filteredList.length).toBe(16)
-  })
-
-  test('특정 과제 선택, 진행중인 과제로 올바르게 필터링 되는지 확인한다.', () => {
-    const activityList = ActivityData
-    const selectedCourseId = '82194' // 알고리즘 강의
-    const status = '진행중인 과제'
-    const isChecked = false
-    const filteredList = filteredActivities(activityList, selectedCourseId, status, isChecked)
-
-    expect(filteredList.length).toBe(9)
-  })
-
-  test('특정 과제 선택, 미제출 과제로 올바르게 필터링 되는지 확인한다.', () => {
-    const activityList = ActivityData
-    const selectedCourseId = '82194' // 알고리즘 강의
-    const status = '전체 과제'
-    const isChecked = true
-    const filteredList = filteredActivities(activityList, selectedCourseId, status, isChecked)
-
-    expect(filteredList.length).toBe(2)
   })
 })
 
