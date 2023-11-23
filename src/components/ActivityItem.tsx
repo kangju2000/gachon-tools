@@ -31,7 +31,7 @@ const ActivityItem = ({ activity }: Props) => {
           bg: 'gray.800',
         },
       }}
-      transition="background 0.2s"
+      transition="background 0.1s"
     >
       <CardBody
         display="flex"

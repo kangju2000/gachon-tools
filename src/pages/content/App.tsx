@@ -8,7 +8,7 @@ import ContentModal from '@/components/ContentModal'
 export default function App() {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  useHotkeys('ctrl+k, meta+k', () => {
+  useHotkeys('ctrl+/, meta+/', () => {
     if (isOpen) {
       onClose()
     } else {

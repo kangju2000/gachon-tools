@@ -77,7 +77,7 @@ const PopoverOptions = ({ triggerElement }: Props) => {
               </Kbd>
               {' + '}
               <Kbd _light={{ color: 'gray.600' }} _dark={{ color: 'gray.600' }}>
-                K
+                /
               </Kbd>
             </Text>
           </Stack>
