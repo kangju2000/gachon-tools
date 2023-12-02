@@ -42,7 +42,14 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
   return (
     <Modal isCentered isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent minW="750px" h="500px" borderRadius="8px">
+      <ModalContent
+        minW={{
+          base: '90%',
+          md: '750px',
+        }}
+        h="500px"
+        borderRadius="8px"
+      >
         <ModalHeader display="flex" alignItems="center" minH="60px" px="24px">
           <Text fontSize="18px" fontWeight="700">
             Gachon Tools
@@ -63,14 +70,14 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
         </ModalHeader>
         <Divider m="0" />
         <ModalBody display="flex" p="0" overflow="hidden">
-          <Box w="200px" p="24px">
+          <Box w="200px" p="24px" display={{ base: 'none', md: 'block' }}>
             <CourseList
               courseList={courseList}
               selectedCourseId={selectedCourseId}
               setSelectedCourseId={setSelectedCourseId}
             />
           </Box>
-          <Divider orientation="vertical" m="0" />
+          <Divider orientation="vertical" m="0" display={{ base: 'none', md: 'block' }} />
           <Box
             flex="1"
             overflowY="scroll"
