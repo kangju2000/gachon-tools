@@ -27,6 +27,9 @@ const theme = extendTheme({
         lineHeight: '1.42857143',
         color: '#333',
       },
+      '#back-top': {
+        opacity: 0,
+      },
     },
   },
   components: {
