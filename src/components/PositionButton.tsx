@@ -12,7 +12,6 @@ const PositionButton = ({ onClick }: Props) => {
   const x = useMotionValue(0)
   const y = useMotionValue(0)
 
-  // const [point, setPoint] = useState<{ x: number; y: number }>(null)
   const ref = useRef<HTMLDivElement>(null)
   const isDragging = useRef(false)
 
@@ -28,9 +27,6 @@ const PositionButton = ({ onClick }: Props) => {
         x.set(point.x)
         y.set(point.y)
 
-        // const childrenRef = ref.current.children[0] as HTMLElement
-        // childrenRef.style.top = `${point.y || 0}px`
-        // childrenRef.style.left = `${point.x || 0}px`
         return
       }
 

@@ -70,7 +70,14 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
         </ModalHeader>
         <Divider m="0" />
         <ModalBody display="flex" p="0" overflow="hidden">
-          <Box w="200px" p="24px" display={{ base: 'none', md: 'block' }}>
+          <Box
+            w="200px"
+            h="100%"
+            px="18px"
+            py="24px"
+            display={{ base: 'none', md: 'block' }}
+            overflowY="scroll"
+          >
             <CourseList
               courseList={courseList}
               selectedCourseId={selectedCourseId}

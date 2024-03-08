@@ -12,8 +12,7 @@ const CourseList = ({ courseList, selectedCourseId, setSelectedCourseId }: Props
   return (
     <Stack
       spacing="16px"
-      w="200px"
-      overflow="scroll"
+      h="100%"
       sx={{
         '::-webkit-scrollbar': {
           display: 'none',
