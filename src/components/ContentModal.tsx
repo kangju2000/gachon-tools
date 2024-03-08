@@ -77,6 +77,11 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
             py="24px"
             display={{ base: 'none', md: 'block' }}
             overflowY="scroll"
+            sx={{
+              '::-webkit-scrollbar': {
+                display: 'none',
+              },
+            }}
           >
             <CourseList
               courseList={courseList}

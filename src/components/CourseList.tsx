@@ -10,15 +10,7 @@ type Props = {
 
 const CourseList = ({ courseList, selectedCourseId, setSelectedCourseId }: Props) => {
   return (
-    <Stack
-      spacing="16px"
-      h="100%"
-      sx={{
-        '::-webkit-scrollbar': {
-          display: 'none',
-        },
-      }}
-    >
+    <Stack spacing="16px" h="100%">
       {courseList.map(course => (
         <Text
           key={course.id}
