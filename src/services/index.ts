@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio'
 
 import type { ActivityType, Assignment, Course, Video } from '@/types'
 import { getLinkId } from '@/utils'
+import { mapElement } from '@/utils/mapElement'
 
 const fetchDocument = async (url: string) => {
   try {
@@ -22,19 +23,16 @@ const fetchDocument = async (url: string) => {
 export const getCourses = async (): Promise<Course[]> => {
   const $ = await fetchDocument('https://cyber.gachon.ac.kr/local/ubion/user')
 
-  const courses = $('.coursefullname').map((i, el) => {
+  const courses = mapElement($('.coursefullname'), (i, el) => {
     const id = getLinkId($(el).attr('href'))
     const title = $(el)
       .text()
       .replace(/ \((\d{5}_\d{3})\)/, '')
 
-    return {
-      id,
-      title,
-    }
+    return { id, title }
   })
 
-  return courses.get()
+  return courses
 }
 
 /**
@@ -57,9 +55,7 @@ export const getActivities = async (
   }, [])
 
   const video: Video[] = getVideoAtCourseDocument($, courseId).reduce((acc, cur) => {
-    const findVideo = videoSubmittedArray.find(
-      v => v.sectionTitle === cur.sectionTitle && v.title === cur.title,
-    )
+    const findVideo = videoSubmittedArray.find(v => v.sectionTitle === cur.sectionTitle && v.title === cur.title)
     if (findVideo) return [...acc, Object.assign({}, cur, findVideo, { courseTitle })]
 
     return acc
@@ -77,54 +73,35 @@ const getAssignmentAtCourseDocument = (
   $: cheerio.CheerioAPI,
   courseId: string,
 ): Omit<Assignment, 'courseTitle' | 'hasSubmitted'>[] => {
-  const sectionOne = $('#section-0 .modtype_assign .activityinstance').map((i, el) => {
+  const sectionOne = mapElement($('#section-0 .modtype_assign .activityinstance'), (i, el) => {
     const link = $(el).find('a').attr('href')
-
     const id = getLinkId(link)
     const title = $(el).find('.instancename').clone().children().remove().end().text().trim()
-
-    const assignment = {
-      type: 'assignment' as const,
-      id,
-      courseId,
-      title,
-      startAt: '',
-      endAt: '',
-    }
+    const assignment = { type: 'assignment' as const, id, courseId, title, startAt: '', endAt: '' }
 
     return assignment
   })
 
-  const sectionTwo = $('.total_sections .content').map((i, el) => {
+  const sectionTwo = mapElement($('.total_sections .content'), (i, el) => {
     const sectionTitle = $(el).find('.sectionname').text().trim()
 
-    return $(el)
-      .find('.modtype_assign .activityinstance')
-      .map((i, el) => {
-        const link = $(el).find('a').attr('href') // 링크 없는 과제도 존재
+    const assignment = mapElement($(el).find('.modtype_assign .activityinstance'), (i, el) => {
+      const link = $(el).find('a').attr('href') // 링크 없는 과제도 존재
+      const id = getLinkId(link)
+      const title = $(el).find('.instancename').clone().children().remove().end().text().trim()
+      const [startAt, endAt] = $(el)
+        .find('.displayoptions')
+        .text()
+        .split(' ~ ')
+        .map(t => t.trim())
 
-        const id = getLinkId(link)
-        const title = $(el).find('.instancename').clone().children().remove().end().text().trim()
-        const [startAt, endAt] = $(el)
-          .find('.displayoptions')
-          .text()
-          .split(' ~ ')
-          .map(t => t.trim())
+      return { type: 'assignment' as const, id, courseId, title, sectionTitle, startAt, endAt }
+    })
 
-        return {
-          type: 'assignment' as const,
-          id,
-          courseId,
-          title,
-          sectionTitle,
-          startAt,
-          endAt,
-        }
-      })
-      .get()
+    return assignment
   })
 
-  return [...sectionOne.get(), ...sectionTwo.get()]
+  return [...sectionOne, ...sectionTwo]
 }
 
 /**
@@ -136,39 +113,28 @@ const getVideoAtCourseDocument = (
   $: cheerio.CheerioAPI,
   courseId: string,
 ): Omit<Video, 'courseTitle' | 'hasSubmitted'>[] => {
-  return $('.total_sections .content')
-    .map((i, el) => {
-      const sectionTitle = $(el).find('.sectionname').text().trim().split(' ')[0].match(/\d+/g)?.[0]
+  return mapElement($('.total_sections .content'), (i, el) => {
+    const sectionTitle = $(el).find('.sectionname').text().trim().split(' ')[0].match(/\d+/g)?.[0]
 
-      return $(el)
-        .find('.modtype_vod .activityinstance')
-        .map((i, el) => {
-          const link = $(el).find('a').attr('href') // 링크 없는 과제도 존재
-          const id = getLinkId(link)
-          const title = $(el).find('.instancename').clone().children().remove().end().text().trim()
-          const [startAt, endAt] = $(el)
-            .find('.displayoptions .text-ubstrap')
-            .clone()
-            .children()
-            .remove()
-            .end()
-            .text()
-            .split(' ~ ')
-            .map(t => t.trim())
+    const video = mapElement($(el).find('.modtype_vod .activityinstance'), (i, el) => {
+      const link = $(el).find('a').attr('href') // 링크 없는 과제도 존재
+      const id = getLinkId(link)
+      const title = $(el).find('.instancename').clone().children().remove().end().text().trim()
+      const [startAt, endAt] = $(el)
+        .find('.displayoptions .text-ubstrap')
+        .clone()
+        .children()
+        .remove()
+        .end()
+        .text()
+        .split(' ~ ')
+        .map(t => t.trim())
 
-          return {
-            type: 'video' as const,
-            id,
-            courseId,
-            title,
-            startAt,
-            endAt,
-            sectionTitle,
-          }
-        })
-        .get()
+      return { type: 'video' as const, id, courseId, title, startAt, endAt, sectionTitle }
     })
-    .get()
+
+    return video
+  })
 }
 
 /**
@@ -180,23 +146,16 @@ export const getAssignmentSubmitted = async (
 ): Promise<Pick<Assignment, 'id' | 'title' | 'hasSubmitted' | 'endAt'>[]> => {
   const $ = await fetchDocument(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${courseId}`)
 
-  return $('tbody tr')
-    .map((i, el) => {
-      if ($(el).find('.tabledivider').length) return
-      const id = getLinkId($(el).find('.c1 a').attr('href'))
+  return mapElement($('tbody tr'), (i, el) => {
+    if ($(el).find('.tabledivider').length) return
+    const id = getLinkId($(el).find('.c1 a').attr('href'))
 
-      const title = $(el).find('.c1 a').text().trim()
-      const endAt = $(el).find('.c2').text().trim() + ':00'
-      const hasSubmitted = /(Submitted for grading)|(제출 완료)/.test($(el).find('.c3').text())
+    const title = $(el).find('.c1 a').text().trim()
+    const endAt = $(el).find('.c2').text().trim() + ':00'
+    const hasSubmitted = /(Submitted for grading)|(제출 완료)/.test($(el).find('.c3').text())
 
-      return {
-        id,
-        title,
-        endAt,
-        hasSubmitted,
-      }
-    })
-    .get()
+    return { id, title, endAt, hasSubmitted }
+  })
 }
 
 /**
@@ -206,35 +165,24 @@ export const getAssignmentSubmitted = async (
 export const getVideoSubmitted = async (
   courseId: string,
 ): Promise<Pick<Video, 'title' | 'hasSubmitted' | 'sectionTitle'>[]> => {
-  const $ = await fetchDocument(
-    `https://cyber.gachon.ac.kr/report/ubcompletion/progress.php?id=${courseId}`,
-  )
+  const $ = await fetchDocument(`https://cyber.gachon.ac.kr/report/ubcompletion/progress.php?id=${courseId}`)
 
   const className =
-    $('.user_progress tbody tr').length === 0
-      ? '.user_progress_table tbody tr'
-      : '.user_progress tbody tr'
+    $('.user_progress tbody tr').length === 0 ? '.user_progress_table tbody tr' : '.user_progress tbody tr'
 
   let section = '1'
-  return $(className)
-    .map((_, el) => {
-      if ($(el.firstChild).attr('rowspan') || $(el.firstChild).hasClass('vmiddle')) {
-        section = $(el.firstChild).text().trim()
-      }
+  return mapElement($(className), (_, el) => {
+    if ($(el.firstChild).attr('rowspan') || $(el.firstChild).hasClass('vmiddle')) {
+      section = $(el.firstChild).text().trim()
+    }
 
-      const std = $(el).find('.text-center.hidden-xs.hidden-sm')
-      const title = std.prev().text().trim()
-      const sectionTitle = section
-      const requiredTime = std.text().trim()
-      const totalStudyTime = std.next().clone().children().remove().end().text().trim()
-      const hasSubmitted =
-        Number(requiredTime.replace(/:/g, '')) <= Number(totalStudyTime.replace(/:/g, ''))
+    const std = $(el).find('.text-center.hidden-xs.hidden-sm')
+    const title = std.prev().text().trim()
+    const sectionTitle = section
+    const requiredTime = std.text().trim()
+    const totalStudyTime = std.next().clone().children().remove().end().text().trim()
+    const hasSubmitted = Number(requiredTime.replace(/:/g, '')) <= Number(totalStudyTime.replace(/:/g, ''))
 
-      return {
-        title,
-        hasSubmitted,
-        sectionTitle,
-      }
-    })
-    .get()
+    return { title, hasSubmitted, sectionTitle }
+  })
 }
