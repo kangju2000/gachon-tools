@@ -12,4 +12,9 @@ export default defineConfig({
     },
   },
   plugins: [react(), crx({ manifest }), tsconfigPaths()],
+  server: {
+    watch: {
+      usePolling: true,
+    },
+  },
 })

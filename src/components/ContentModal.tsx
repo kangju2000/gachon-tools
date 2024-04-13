@@ -22,6 +22,7 @@ import { RefreshIcon, SettingIcon } from './Icons'
 import PopoverOptions from './PopoverOptions'
 import TabContent from './TabContent'
 import useGetContents from '@/hooks/useGetContents'
+import { useShadowContext } from '@/pages/content/App'
 
 type Props = {
   isOpen: boolean
@@ -29,6 +30,7 @@ type Props = {
 }
 
 const ContentModal = ({ isOpen, onClose }: Props) => {
+  const shadowRef = useShadowContext()
   const [selectedCourseId, setSelectedCourseId] = useState('-1')
   const {
     data: { courseList, activityList, updateAt },
@@ -40,7 +42,14 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
   const updateAtDate = new Date(updateAt)
 
   return (
-    <Modal isCentered isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isCentered
+      isOpen={isOpen}
+      onClose={onClose}
+      portalProps={{
+        containerRef: shadowRef,
+      }}
+    >
       <ModalOverlay />
       <ModalContent
         minW={{
@@ -126,17 +135,8 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
                 border="none"
                 p="6px"
               >
-                <SettingIcon
-                  _light={{ color: 'gray.600' }}
-                  _dark={{ color: 'gray.400' }}
-                  mr="4px"
-                />
-                <Text
-                  fontSize="12px"
-                  fontWeight="500"
-                  _light={{ color: 'gray.600' }}
-                  _dark={{ color: 'gray.400' }}
-                >
+                <SettingIcon _light={{ color: 'gray.600' }} _dark={{ color: 'gray.400' }} mr="4px" />
+                <Text fontSize="12px" fontWeight="500" _light={{ color: 'gray.600' }} _dark={{ color: 'gray.400' }}>
                   설정
                 </Text>
               </Center>
@@ -144,17 +144,11 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
           />
           <Spacer />
           <Center cursor="pointer" onClick={refetch}>
-            <Text
-              fontSize="12px"
-              _light={{ color: 'gray.600' }}
-              _dark={{ color: 'gray.400' }}
-              mr="4px"
-            >
+            <Text fontSize="12px" _light={{ color: 'gray.600' }} _dark={{ color: 'gray.400' }} mr="4px">
               {isLoading
                 ? '불러오는 중...'
                 : `${
-                    isValid(updateAtDate) &&
-                    formatDistanceToNowStrict(updateAtDate, { addSuffix: true, locale: ko })
+                    isValid(updateAtDate) && formatDistanceToNowStrict(updateAtDate, { addSuffix: true, locale: ko })
                   } 업데이트`}
             </Text>
             <RefreshIcon _light={{ color: 'gray.600' }} _dark={{ color: 'gray.400' }} />

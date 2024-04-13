@@ -1,40 +1,56 @@
-import { Box, useDisclosure } from '@chakra-ui/react'
-import { AnimatePresence } from 'framer-motion'
-import { useHotkeys } from 'react-hotkeys-hook'
+import { ThemeProvider, theme, CSSReset, Box } from '@chakra-ui/react'
+import createCache from '@emotion/cache'
+import { CacheProvider, EmotionCache } from '@emotion/react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import root from 'react-shadow/emotion'
 
-import ChakraMotion from '@/components/ChakraMotion'
-import ContentModal from '@/components/ContentModal'
+import Trigger from '@/components/Trigger'
+
+const ShadowContext = createContext<React.RefObject<HTMLElement>>(null)
+
+export const useShadowContext = () => {
+  return useContext(ShadowContext)
+}
 
 export default function App() {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  useHotkeys('ctrl+/, meta+/', () => {
-    if (isOpen) {
-      onClose()
-    } else {
-      onOpen()
-    }
-  })
+  const shadowRef = useRef<HTMLElement>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null)
+  const [emotionCache, setEmotionCache] = useState<EmotionCache | null>(null)
+
+  useEffect(() => {
+    if (!shadowRoot) return
+
+    const cache = createCache({
+      key: 'shadow',
+      container: shadowRoot,
+    })
+
+    setEmotionCache(cache)
+  }, [shadowRoot])
+
+  useEffect(() => {
+    if (!shadowRef.current.shadowRoot) return
+
+    setShadowRoot(shadowRef.current.shadowRoot)
+  }, [shadowRef.current?.shadowRoot])
 
   return (
-    <Box pos="fixed" w="100vw" display="flex" bottom="25px" justifyContent="center" zIndex="9999">
-      <AnimatePresence mode="wait">
-        {!isOpen && (
-          <ChakraMotion
-            initial={{ width: '0px', height: '0px' }}
-            animate={{ width: '40px', height: '40px' }}
-            exit={{ width: '0px', height: '0px' }}
-            whileHover={{ width: '100px', height: '50px' }}
-            w="40px"
-            h="40px"
-            bg="#2F6EA2"
-            boxShadow="dark-lg"
-            rounded="full"
-            cursor="pointer"
-            onClick={onOpen}
-          />
-        )}
-      </AnimatePresence>
-      <ContentModal isOpen={isOpen} onClose={onClose} />
-    </Box>
+    <root.div ref={shadowRef}>
+      <CacheProvider value={emotionCache}>
+        <div id="shadow-root" ref={rootRef}>
+          {emotionCache && (
+            <ThemeProvider cssVarsRoot=":host,:root" theme={theme}>
+              <CSSReset />
+              <ShadowContext.Provider value={rootRef}>
+                <Box pos="fixed" w="100vw" display="flex" bottom="25px" justifyContent="center" zIndex="9999">
+                  <Trigger />
+                </Box>
+              </ShadowContext.Provider>
+            </ThemeProvider>
+          )}
+        </div>
+      </CacheProvider>
+    </root.div>
   )
 }

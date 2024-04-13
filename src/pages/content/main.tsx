@@ -1,16 +1,13 @@
 import { ChakraProvider, extendTheme, type ThemeConfig } from '@chakra-ui/react'
 import { mode, type StyleFunctionProps } from '@chakra-ui/theme-tools'
 import { createRoot } from 'react-dom/client'
+import root from 'react-shadow'
 
 import App from '@/pages/content/App'
 
-const root = document.createElement('div')
-root.id = 'root'
-document.body.append(root)
-
-const modal = document.createElement('div')
-modal.id = 'modal'
-document.body.append(modal)
+const crxRoot = document.createElement('div')
+crxRoot.id = 'crx-root'
+document.body.append(crxRoot)
 
 const config: ThemeConfig = {
   initialColorMode: 'light',
@@ -43,8 +40,4 @@ const theme = extendTheme({
   },
 })
 
-createRoot(root).render(
-  <ChakraProvider resetCSS={false} theme={theme}>
-    <App />
-  </ChakraProvider>,
-)
+createRoot(crxRoot).render(<App />)

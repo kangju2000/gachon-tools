@@ -11,8 +11,7 @@ type Props = {
 
 const ActivityItem = ({ activity }: Props) => {
   const endAtDate = new Date(activity.endAt)
-  const dDay =
-    isValid(endAtDate) && formatDistanceToNowStrict(endAtDate, { addSuffix: true, locale: ko })
+  const dDay = isValid(endAtDate) && formatDistanceToNowStrict(endAtDate, { addSuffix: true, locale: ko })
 
   return (
     <Card
@@ -20,9 +19,9 @@ const ActivityItem = ({ activity }: Props) => {
       minH="72px"
       textDecoration="none !important"
       cursor="pointer"
-      href={`https://cyber.gachon.ac.kr/mod/${
-        activity.type === 'assignment' ? 'assign' : 'vod'
-      }/view.php?id=${activity.id}`}
+      href={`https://cyber.gachon.ac.kr/mod/${activity.type === 'assignment' ? 'assign' : 'vod'}/view.php?id=${
+        activity.id
+      }`}
       _hover={{
         _light: {
           bg: 'gray.50',
@@ -33,13 +32,7 @@ const ActivityItem = ({ activity }: Props) => {
       }}
       transition="background 0.1s"
     >
-      <CardBody
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        gap="10px"
-        px="16px"
-      >
+      <CardBody display="flex" alignItems="center" justifyContent="space-between" gap="10px" px="16px">
         <Flex align="center" gap="10px">
           {activity.hasSubmitted ? <CheckIcon flexShrink="0" /> : <XMarkIcon flexShrink="0" />}
           <Box>
@@ -49,12 +42,7 @@ const ActivityItem = ({ activity }: Props) => {
                 {activity.title}
               </Text>
             </Flex>
-            <Text
-              fontSize="12px"
-              noOfLines={1}
-              _light={{ color: 'gray.500' }}
-              _dark={{ color: 'gray.400' }}
-            >
+            <Text fontSize="12px" noOfLines={1} _light={{ color: 'gray.500' }} _dark={{ color: 'gray.400' }}>
               {activity.courseTitle}
             </Text>
           </Box>
@@ -72,12 +60,7 @@ const ActivityItem = ({ activity }: Props) => {
               '기한 없음'
             )}
           </Text>
-          <Text
-            fontSize="12px"
-            _light={{ color: 'gray.500' }}
-            _dark={{ color: 'gray.400' }}
-            noOfLines={1}
-          >
+          <Text fontSize="12px" _light={{ color: 'gray.500' }} _dark={{ color: 'gray.400' }} noOfLines={1}>
             {isValid(endAtDate) && `~${format(endAtDate, 'yyyy.MM.dd HH:mm')}`}
           </Text>
         </Box>
@@ -91,15 +74,7 @@ export default ActivityItem
 const ActivityBadge = ({ type }: { type: ActivityType['type'] }) => {
   if (type === 'assignment') {
     return (
-      <Badge
-        variant="solid"
-        colorScheme="blue"
-        fontSize="9px"
-        fontWeight="700"
-        px="4px"
-        py="2px"
-        borderRadius="4px"
-      >
+      <Badge variant="solid" colorScheme="blue" fontSize="9px" fontWeight="700" px="4px" py="2px" borderRadius="4px">
         과제
       </Badge>
     )
@@ -107,15 +82,7 @@ const ActivityBadge = ({ type }: { type: ActivityType['type'] }) => {
 
   if (type === 'video') {
     return (
-      <Badge
-        variant="solid"
-        colorScheme="gray"
-        fontSize="9px"
-        fontWeight="700"
-        px="4px"
-        py="2px"
-        borderRadius="4px"
-      >
+      <Badge variant="solid" colorScheme="gray" fontSize="9px" fontWeight="700" px="4px" py="2px" borderRadius="4px">
         영상
       </Badge>
     )
