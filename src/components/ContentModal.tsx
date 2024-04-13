@@ -21,8 +21,8 @@ import CourseList from './CourseList'
 import { RefreshIcon, SettingIcon } from './Icons'
 import PopoverOptions from './PopoverOptions'
 import TabContent from './TabContent'
+import { useRootRefContext } from '@/components/ShadowChakraProvider'
 import useGetContents from '@/hooks/useGetContents'
-import { useShadowContext } from '@/pages/content/App'
 
 type Props = {
   isOpen: boolean
@@ -30,7 +30,7 @@ type Props = {
 }
 
 const ContentModal = ({ isOpen, onClose }: Props) => {
-  const shadowRef = useShadowContext()
+  const rootRef = useRootRefContext()
   const [selectedCourseId, setSelectedCourseId] = useState('-1')
   const {
     data: { courseList, activityList, updateAt },
@@ -42,23 +42,9 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
   const updateAtDate = new Date(updateAt)
 
   return (
-    <Modal
-      isCentered
-      isOpen={isOpen}
-      onClose={onClose}
-      portalProps={{
-        containerRef: shadowRef,
-      }}
-    >
+    <Modal isCentered isOpen={isOpen} onClose={onClose} portalProps={{ containerRef: rootRef }}>
       <ModalOverlay />
-      <ModalContent
-        minW={{
-          base: '90%',
-          md: '750px',
-        }}
-        h="500px"
-        borderRadius="8px"
-      >
+      <ModalContent minW={{ base: '90%', md: '750px' }} h="500px" borderRadius="8px">
         <ModalHeader display="flex" alignItems="center" minH="60px" px="24px">
           <Text fontSize="18px" fontWeight="700">
             Gachon Tools

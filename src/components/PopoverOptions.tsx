@@ -31,12 +31,7 @@ const PopoverOptions = ({ triggerElement }: Props) => {
       <PopoverTrigger>{triggerElement}</PopoverTrigger>
       <PopoverContent w="auto">
         <PopoverArrow />
-        <PopoverHeader
-          p="8px"
-          fontWeight="700"
-          _light={{ color: 'gray.700' }}
-          _dark={{ color: 'gray.200' }}
-        >
+        <PopoverHeader p="8px" fontWeight="700" _light={{ color: 'gray.700' }} _dark={{ color: 'gray.200' }}>
           설정
         </PopoverHeader>
         <PopoverCloseButton
@@ -52,20 +47,10 @@ const PopoverOptions = ({ triggerElement }: Props) => {
         <PopoverBody p="12px">
           <Stack spacing={5} direction="row" fontSize="12px" mb="8px">
             <Text>테마 :</Text>
-            <Checkbox
-              m="0"
-              size="lg"
-              isChecked={colorMode === 'light'}
-              onChange={() => setColorMode('light')}
-            >
+            <Checkbox m="0" size="lg" isChecked={colorMode === 'light'} onChange={() => setColorMode('light')}>
               <Text>Light</Text>
             </Checkbox>
-            <Checkbox
-              m="0"
-              size="lg"
-              isChecked={colorMode === 'dark'}
-              onChange={() => setColorMode('dark')}
-            >
+            <Checkbox m="0" size="lg" isChecked={colorMode === 'dark'} onChange={() => setColorMode('dark')}>
               <Text>Dark</Text>
             </Checkbox>
           </Stack>

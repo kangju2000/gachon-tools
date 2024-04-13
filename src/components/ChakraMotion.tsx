@@ -1,14 +1,10 @@
-import { type ChakraProps, chakra, shouldForwardProp, forwardRef } from '@chakra-ui/react'
+import { chakra, shouldForwardProp, forwardRef, type ChakraProps } from '@chakra-ui/react'
 import { isValidMotionProp, motion, type MotionProps } from 'framer-motion'
 
 import type { ComponentPropsWithoutRef } from 'react'
 
 const ChakraMotion = <C extends React.ElementType>(
-  {
-    as,
-    children,
-    ...props
-  }: ComponentPropsWithoutRef<C> & { as?: C } & MotionProps & Omit<ChakraProps, 'transition'>, /// <reference path=
+  { as, children, ...props }: ComponentPropsWithoutRef<C> & { as?: C } & MotionProps & Omit<ChakraProps, 'transition'>,
   ref: React.ComponentPropsWithRef<C>['ref'],
 ) => {
   const Component = as || 'div'

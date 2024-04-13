@@ -17,12 +17,7 @@ type Props = {
 
 const TabContent = ({ activityList, selectedCourseId, pos, isLoading }: Props) => {
   const [tabIndex, setTabIndex] = useState(0)
-  const filteredActivities = useFilteredActivityList(
-    activityList,
-    selectedCourseId,
-    tabIndex,
-    false,
-  )
+  const filteredActivities = useFilteredActivityList(activityList, selectedCourseId, tabIndex, false)
 
   return (
     <Tabs isLazy={true} index={tabIndex} onChange={index => setTabIndex(index)}>
@@ -33,6 +28,9 @@ const TabContent = ({ activityList, selectedCourseId, pos, isLoading }: Props) =
         _light={{ bg: 'white' }}
         _dark={{ bg: 'gray.700' }}
         pt="16px"
+        bg="white"
+        borderBottom="2px solid"
+        borderColor="gray.200"
       >
         {TAB_LIST.map(tab => (
           <Tab
@@ -58,18 +56,10 @@ const TabContent = ({ activityList, selectedCourseId, pos, isLoading }: Props) =
 
       <TabPanels as={AnimatePresence}>
         <TabPanel>
-          {isLoading ? (
-            <LoadingProgress pos={pos} />
-          ) : (
-            <ActivityList contentData={filteredActivities} />
-          )}
+          {isLoading ? <LoadingProgress pos={pos} /> : <ActivityList contentData={filteredActivities} />}
         </TabPanel>
         <TabPanel>
-          {isLoading ? (
-            <LoadingProgress pos={pos} />
-          ) : (
-            <ActivityList contentData={filteredActivities} />
-          )}
+          {isLoading ? <LoadingProgress pos={pos} /> : <ActivityList contentData={filteredActivities} />}
         </TabPanel>
       </TabPanels>
     </Tabs>

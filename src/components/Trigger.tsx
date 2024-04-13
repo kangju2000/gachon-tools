@@ -24,13 +24,17 @@ export default function Trigger() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            whileHover={{ width: '100px', height: '50px' }}
+            whileHover={{ width: '100px', height: '50px', x: -30 }}
+            position="fixed"
+            bottom="25px"
+            left="50%"
             w="40px"
             h="40px"
             bg="#2F6EA2"
             boxShadow="dark-lg"
             rounded="full"
             cursor="pointer"
+            zIndex={9999}
             onClick={onOpen}
           />
         )}
