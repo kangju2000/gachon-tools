@@ -12,10 +12,11 @@ import {
   ModalOverlay,
   Spacer,
   Text,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { formatDistanceToNowStrict, isValid } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import CourseList from './CourseList'
 import { RefreshIcon, SettingIcon } from './Icons'
@@ -38,64 +39,53 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
     refetch,
     isLoading,
   } = useGetContents({ enabled: isOpen })
+  const color = useColorModeValue('gray.600', 'gray.400')
 
-  const updateAtDate = new Date(updateAt)
+  const loadingText = useMemo(() => {
+    if (isLoading) {
+      return '불러오는 중...'
+    }
+
+    const updateAtDate = new Date(updateAt)
+    if (!isValid(updateAtDate)) {
+      return '업데이트 날짜 없음'
+    }
+
+    const time = formatDistanceToNowStrict(updateAtDate, { addSuffix: true, locale: ko })
+    return `${time} 업데이트`
+  }, [isLoading, updateAt])
 
   return (
     <Modal isCentered isOpen={isOpen} onClose={onClose} portalProps={{ containerRef: rootRef }}>
       <ModalOverlay />
-      <ModalContent minW={{ base: '90%', md: '750px' }} h="500px" borderRadius="8px">
+      <ModalContent
+        minW={{ base: '90%', md: '750px' }}
+        h="500px"
+        borderRadius="8px"
+        bg="modalBg"
+        sx={{
+          '*::-webkit-scrollbar': {
+            display: 'none',
+          },
+        }}
+      >
         <ModalHeader display="flex" alignItems="center" minH="60px" px="24px">
           <Text fontSize="18px" fontWeight="700">
             Gachon Tools
           </Text>
-          <ModalCloseButton
-            size="lg"
-            top="16px"
-            right="16px"
-            border="none"
-            outline="none !important"
-            _hover={{ bg: 'none', color: 'inherit' }}
-            _focus={{ bg: 'none', color: 'inherit' }}
-            _active={{ bg: 'none' }}
-            _focusVisible={{ boxShadow: 'none' }}
-            _light={{ color: 'gray.600' }}
-            _dark={{ color: 'gray.400' }}
-          />
+          <ModalCloseButton size="lg" top="16px" right="16px" _focusVisible={{ boxShadow: 'none' }} color={color} />
         </ModalHeader>
-        <Divider m="0" />
+        <Divider />
         <ModalBody display="flex" p="0" overflow="hidden">
-          <Box
-            w="200px"
-            h="100%"
-            px="18px"
-            py="24px"
-            display={{ base: 'none', md: 'block' }}
-            overflowY="scroll"
-            sx={{
-              '::-webkit-scrollbar': {
-                display: 'none',
-              },
-            }}
-          >
+          <Box w="200px" h="100%" px="18px" py="24px" display={{ base: 'none', md: 'block' }} overflowY="scroll">
             <CourseList
               courseList={courseList}
               selectedCourseId={selectedCourseId}
               setSelectedCourseId={setSelectedCourseId}
             />
           </Box>
-          <Divider orientation="vertical" m="0" display={{ base: 'none', md: 'block' }} />
-          <Box
-            flex="1"
-            overflowY="scroll"
-            px="24px"
-            h="100%"
-            sx={{
-              '::-webkit-scrollbar': {
-                display: 'none',
-              },
-            }}
-          >
+          <Divider orientation="vertical" display={{ base: 'none', md: 'block' }} />
+          <Box flex="1" overflowY="scroll" px="24px" h="100%">
             <TabContent
               activityList={activityList}
               selectedCourseId={selectedCourseId}
@@ -105,24 +95,14 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
           </Box>
         </ModalBody>
 
-        <Divider m="0" />
+        <Divider />
 
-        <ModalFooter h="50px" px="24px" userSelect="none">
+        <ModalFooter h="50px" px="24px">
           <PopoverOptions
             triggerElement={
-              <Center
-                as={Button}
-                cursor="pointer"
-                outline="none !important"
-                bg="none"
-                _hover={{ _light: { bg: 'none' }, _dark: { bg: 'none' } }}
-                _focus={{ _light: { bg: 'none' }, _dark: { bg: 'none' } }}
-                _active={{ _light: { bg: 'none' }, _dark: { bg: 'none' } }}
-                border="none"
-                p="6px"
-              >
-                <SettingIcon _light={{ color: 'gray.600' }} _dark={{ color: 'gray.400' }} mr="4px" />
-                <Text fontSize="12px" fontWeight="500" _light={{ color: 'gray.600' }} _dark={{ color: 'gray.400' }}>
+              <Center as={Button} cursor="pointer" bg="none" p="6px">
+                <SettingIcon mr="4px" color={color} />
+                <Text fontSize="12px" fontWeight="500" color={color}>
                   설정
                 </Text>
               </Center>
@@ -130,14 +110,10 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
           />
           <Spacer />
           <Center cursor="pointer" onClick={refetch}>
-            <Text fontSize="12px" _light={{ color: 'gray.600' }} _dark={{ color: 'gray.400' }} mr="4px">
-              {isLoading
-                ? '불러오는 중...'
-                : `${
-                    isValid(updateAtDate) && formatDistanceToNowStrict(updateAtDate, { addSuffix: true, locale: ko })
-                  } 업데이트`}
+            <Text fontSize="12px" color={color} mr="4px">
+              {loadingText}
             </Text>
-            <RefreshIcon _light={{ color: 'gray.600' }} _dark={{ color: 'gray.400' }} />
+            <RefreshIcon color={color} />
           </Center>
         </ModalFooter>
       </ModalContent>

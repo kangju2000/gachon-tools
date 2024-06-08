@@ -13,11 +13,7 @@ function App() {
       <div className="flex-grow"></div>
       <Flex gap="5px" mt="10px">
         <Tooltip label="깃허브">
-          <Link
-            href="https://www.github.com/kangju2000/gachon-extension"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <Link href="https://www.github.com/kangju2000/gachon-extension" target="_blank" rel="noreferrer">
             <GithubIcon cursor="pointer" />
           </Link>
         </Tooltip>

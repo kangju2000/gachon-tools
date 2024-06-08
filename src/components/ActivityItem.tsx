@@ -1,4 +1,4 @@
-import { chakra, Badge, Box, Card, CardBody, Flex, Text } from '@chakra-ui/react'
+import { Badge, Highlight, Box, Card, CardBody, Flex, Text, useColorModeValue } from '@chakra-ui/react'
 import { format, formatDistanceToNowStrict, isValid } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
@@ -11,25 +11,21 @@ type Props = {
 
 const ActivityItem = ({ activity }: Props) => {
   const endAtDate = new Date(activity.endAt)
-  const dDay = isValid(endAtDate) && formatDistanceToNowStrict(endAtDate, { addSuffix: true, locale: ko })
+  const dDay = isValid(endAtDate) ? formatDistanceToNowStrict(endAtDate, { addSuffix: true, locale: ko }) : '기한 없음'
+
+  const cardBgHover = useColorModeValue('gray.50', 'gray.800')
+  const descriptionColor = useColorModeValue('gray.500', 'gray.400')
 
   return (
     <Card
       as="a"
       minH="72px"
-      textDecoration="none !important"
       cursor="pointer"
       href={`https://cyber.gachon.ac.kr/mod/${activity.type === 'assignment' ? 'assign' : 'vod'}/view.php?id=${
         activity.id
       }`}
-      _hover={{
-        _light: {
-          bg: 'gray.50',
-        },
-        _dark: {
-          bg: 'gray.800',
-        },
-      }}
+      bg="modalBg"
+      _hover={{ bg: cardBgHover }}
       transition="background 0.1s"
     >
       <CardBody display="flex" alignItems="center" justifyContent="space-between" gap="10px" px="16px">
@@ -42,25 +38,18 @@ const ActivityItem = ({ activity }: Props) => {
                 {activity.title}
               </Text>
             </Flex>
-            <Text fontSize="12px" noOfLines={1} _light={{ color: 'gray.500' }} _dark={{ color: 'gray.400' }}>
+            <Text fontSize="12px" noOfLines={1} color={descriptionColor}>
               {activity.courseTitle}
             </Text>
           </Box>
         </Flex>
         <Box textAlign="end" flexShrink="0">
           <Text fontSize="14px" noOfLines={1}>
-            {dDay ? (
-              <>
-                {dDay + ' '}
-                <chakra.span fontSize="12px" fontWeight="400">
-                  마감
-                </chakra.span>
-              </>
-            ) : (
-              '기한 없음'
-            )}
+            <Highlight query="마감" styles={{ fontSize: '12px', fontWeight: '400', color: 'inherit' }}>
+              {`${dDay} 마감`}
+            </Highlight>
           </Text>
-          <Text fontSize="12px" _light={{ color: 'gray.500' }} _dark={{ color: 'gray.400' }} noOfLines={1}>
+          <Text fontSize="12px" noOfLines={1} color={descriptionColor}>
             {isValid(endAtDate) && `~${format(endAtDate, 'yyyy.MM.dd HH:mm')}`}
           </Text>
         </Box>
@@ -72,19 +61,22 @@ const ActivityItem = ({ activity }: Props) => {
 export default ActivityItem
 
 const ActivityBadge = ({ type }: { type: ActivityType['type'] }) => {
-  if (type === 'assignment') {
-    return (
-      <Badge variant="solid" colorScheme="blue" fontSize="9px" fontWeight="700" px="4px" py="2px" borderRadius="4px">
-        과제
-      </Badge>
-    )
-  }
+  const badge = {
+    assignment: { color: 'blue', text: '과제' },
+    video: { color: 'gray', text: '영상' },
+  }[type]
 
-  if (type === 'video') {
-    return (
-      <Badge variant="solid" colorScheme="gray" fontSize="9px" fontWeight="700" px="4px" py="2px" borderRadius="4px">
-        영상
-      </Badge>
-    )
-  }
+  return (
+    <Badge
+      variant="solid"
+      colorScheme={badge.color}
+      fontSize="9px"
+      fontWeight="700"
+      px="4px"
+      py="2px"
+      borderRadius="4px"
+    >
+      {badge.text}
+    </Badge>
+  )
 }

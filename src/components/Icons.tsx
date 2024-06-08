@@ -70,10 +70,7 @@ export const GachonLogoIcon = (props: ComponentProps<ChakraComponent<'svg'>>) =>
       <rect width="32" height="32" fill="url(#pattern0)" />
       <defs>
         <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
-          <use
-            xlinkHref="#image0_38_57"
-            transform="translate(0.0128385 0.124573) scale(0.00558984)"
-          />
+          <use xlinkHref="#image0_38_57" transform="translate(0.0128385 0.124573) scale(0.00558984)" />
         </pattern>
         <image
           id="image0_38_57"
@@ -88,13 +85,7 @@ export const GachonLogoIcon = (props: ComponentProps<ChakraComponent<'svg'>>) =>
 
 export const FeedbackIcon = (props: ComponentProps<ChakraComponent<'svg'>>) => {
   return (
-    <chakra.svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24px"
-      height="24px"
-      viewBox="0 0 24 24"
-      {...props}
-    >
+    <chakra.svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" {...props}>
       <path
         fill="currentColor"
         d="M12 15q.425 0 .713-.288T13 14q0-.425-.288-.712T12 13q-.425 0-.712.288T11 14q0 .425.288.713T12 15m-1-4h2V5h-2zM2 22V4q0-.825.588-1.412T4 2h16q.825 0 1.413.588T22 4v12q0 .825-.587 1.413T20 18H6zm3.15-6H20V4H4v13.125zM4 16V4z"

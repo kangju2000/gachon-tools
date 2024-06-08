@@ -8,13 +8,7 @@ interface ItemListProps<T> extends Omit<ComponentProps<typeof Stack>, 'children'
   hasDivider?: boolean
 }
 
-export default function ItemList<T>({
-  data,
-  renderItem,
-  renderEmpty,
-  hasDivider = false,
-  ...props
-}: ItemListProps<T>) {
+export default function ItemList<T>({ data, renderItem, renderEmpty, hasDivider = false, ...props }: ItemListProps<T>) {
   return (
     <Stack {...props}>
       {data?.length === 0

@@ -30,7 +30,7 @@ export default function Trigger() {
             left="50%"
             w="40px"
             h="40px"
-            bg="#2F6EA2"
+            bg="primary"
             boxShadow="dark-lg"
             rounded="full"
             cursor="pointer"

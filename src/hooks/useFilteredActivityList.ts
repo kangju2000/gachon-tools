@@ -1,5 +1,4 @@
 import { isValid } from 'date-fns'
-import { useCallback } from 'react'
 
 import { TAB_LIST } from '@/constants'
 import type { ActivityType } from '@/types'
@@ -13,7 +12,7 @@ const activityListByCourse = (activityList: ActivityType[], id: string) => {
   return activityList.filter(activity => activity.courseId === id)
 }
 
-const sortAcitivityList = (activityList: ActivityType[]) => {
+const sortActivityList = (activityList: ActivityType[]) => {
   const [endAtList, noEndAtList] = activityList.reduce<[ActivityType[], ActivityType[]]>(
     (acc, cur) => {
       if (isValid(new Date(cur.endAt))) {
@@ -60,7 +59,7 @@ const useFilteredActivityList = (
   return pipe(
     activityList,
     activityList => activityListByCourse(activityList, selectedCourseId),
-    activityList => sortAcitivityList(activityList),
+    activityList => sortActivityList(activityList),
     activityList => activityListByTabIndex(activityList, tabIndex),
     activityList => activityListBySubmitted(activityList, isChecked),
   )

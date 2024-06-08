@@ -1,4 +1,4 @@
-import { Stack, Text } from '@chakra-ui/react'
+import { Stack, Text, useColorModeValue } from '@chakra-ui/react'
 
 import type { Course } from '@/types'
 
@@ -9,6 +9,11 @@ type Props = {
 }
 
 const CourseList = ({ courseList, selectedCourseId, setSelectedCourseId }: Props) => {
+  const unselectedColor = useColorModeValue('gray.600', 'gray.400')
+  const selectedColor = useColorModeValue('blue.600', 'blue.400')
+
+  const isSelected = (id: string) => selectedCourseId === id
+
   return (
     <Stack spacing="16px" h="100%">
       {courseList.map(course => (
@@ -16,13 +21,9 @@ const CourseList = ({ courseList, selectedCourseId, setSelectedCourseId }: Props
           key={course.id}
           flexShrink="0"
           fontSize="14px"
-          fontWeight={selectedCourseId === course.id ? '600' : '400'}
-          _light={{ color: selectedCourseId === course.id ? 'blue.600' : 'gray.600' }}
-          _dark={{ color: selectedCourseId === course.id ? 'blue.400' : 'gray.400' }}
-          _hover={{
-            _light: { color: 'blue.600' },
-            _dark: { color: 'blue.400' },
-          }}
+          fontWeight={isSelected(course.id) ? 'bold' : 'normal'}
+          color={isSelected(course.id) ? selectedColor : unselectedColor}
+          _hover={{ color: selectedColor }}
           transition="color 0.2s"
           cursor="pointer"
           onClick={() => setSelectedCourseId(course.id)}

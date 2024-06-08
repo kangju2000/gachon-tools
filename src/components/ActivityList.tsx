@@ -11,13 +11,7 @@ type Props = {
 
 const ActivityList = ({ contentData }: Props) => {
   return (
-    <ChakraMotion
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{
-        delay: 0.2,
-      }}
-    >
+    <ChakraMotion initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
       <ItemList
         data={contentData}
         renderItem={activity => <ActivityItem key={activity.id} activity={activity} />}

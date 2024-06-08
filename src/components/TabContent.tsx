@@ -21,33 +21,14 @@ const TabContent = ({ activityList, selectedCourseId, pos, isLoading }: Props) =
 
   return (
     <Tabs isLazy={true} index={tabIndex} onChange={index => setTabIndex(index)}>
-      <TabList
-        position="sticky"
-        top="0"
-        zIndex="1"
-        _light={{ bg: 'white' }}
-        _dark={{ bg: 'gray.700' }}
-        pt="16px"
-        bg="white"
-        borderBottom="2px solid"
-        borderColor="gray.200"
-      >
+      <TabList position="sticky" top="0" zIndex="1" bg="modalBg" pt="16px">
         {TAB_LIST.map(tab => (
           <Tab
             key={tab}
             position="relative"
             fontSize="14px"
-            borderRadius="none"
-            border="none"
-            outline="none !important"
-            _hover={{
-              _dark: { bg: 'blue.800', color: 'white' },
-            }}
-            _focus={{ outline: 'none', bg: 'none', border: 'none' }}
-            _active={{ outline: 'none', bg: 'none' }}
             _light={{ color: 'gray.700', _selected: { color: 'blue.600' } }}
             _dark={{ color: 'gray.200', _selected: { color: 'blue.400' } }}
-            _selected={{ color: 'blue.600', borderBottom: '2px solid' }}
           >
             {tab}
           </Tab>

@@ -7,7 +7,7 @@ type Props = {
 const LoadingProgress = ({ pos }: Props) => {
   return (
     <Center h="300px">
-      <CircularProgress value={pos} color="#2F6EA2" display="flex" alignItems="center">
+      <CircularProgress value={pos} color="primary" display="flex" alignItems="center">
         <CircularProgressLabel _light={{ color: 'gray.700' }} _dark={{ color: 'gray.200' }}>
           {Math.round(pos)}%
         </CircularProgressLabel>

@@ -9,7 +9,9 @@
     "test": "jest ./tests/unit",
     "preview": "vite preview",
     "prepare": "husky install",
-    "lint": "eslint './src/**/*.{ts,tsx}' --fix"
+    "lint": "eslint './src/**/*.{ts,tsx}' --fix",
+    "gen:theme-typings": "chakra-cli tokens ./src/constants/customTheme.ts",
+    "postinstall": "yarn gen:theme-typings"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.1",
@@ -26,6 +28,7 @@
     "react-shadow": "^20.4.0"
   },
   "devDependencies": {
+    "@chakra-ui/cli": "^2.4.1",
     "@crxjs/vite-plugin": "^2.0.0-beta.17",
     "@playwright/test": "^1.39.0",
     "@types/chrome": "^0.0.253",
