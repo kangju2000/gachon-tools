@@ -9,9 +9,9 @@ export default defineManifest(async env => ({
   manifest_version: 3,
   name:
     env.mode === 'staging'
-      ? '[INTERNAL] Gachon Tools - 사이버캠퍼스 확장프로그램'
-      : 'Gachon Tools - 사이버캠퍼스 확장프로그램',
-  description: '가천대학교 사이버캠퍼스 확장프로그램',
+      ? '[INTERNAL] Hongik Tools - 홍익대학교 확장프로그램'
+      : 'Hongik Tools - 홍익대학교 확장프로그램',
+  description: '홍익대학교 확장프로그램',
   version: label === '0' ? `${major}.${minor}.${patch}` : `${major}.${minor}.${patch}.${label}`,
   version_name: version,
   action: {
@@ -19,9 +19,9 @@ export default defineManifest(async env => ({
     default_popup: 'src/pages/popup/index.html',
   },
   icons: {
-    '16': 'logo16.png',
-    '48': 'logo48.png',
-    '128': 'logo128.png',
+    '16': 'chatbot_image.png',
+    '48': 'chatbot_image.png',
+    '128': 'chatbot_image.png',
   },
   background: {
     service_worker: 'src/pages/background/index.ts',
@@ -29,11 +29,9 @@ export default defineManifest(async env => ({
   },
   content_scripts: [
     {
-      matches: ['https://cyber.gachon.ac.kr/*'],
+      matches: ['https://www.hongik.ac.kr/*'],
       exclude_matches: [
-        'https://cyber.gachon.ac.kr/login.php*',
-        'https://cyber.gachon.ac.kr/mod/ubfile/viewer.php*',
-        'https://cyber.gachon.ac.kr/mod/vod/viewer.php*',
+        //
       ],
       js: ['src/pages/content/main.tsx'],
     },
@@ -44,7 +42,7 @@ export default defineManifest(async env => ({
       matches: ['*://*/*'],
     },
   ],
-  host_permissions: ['https://cyber.gachon.ac.kr/*'],
+  host_permissions: ['https://www.hongik.ac.kr/*'],
   options_page: 'src/pages/options/index.html',
   permissions: ['storage', 'scripting', 'activeTab'],
 }))
