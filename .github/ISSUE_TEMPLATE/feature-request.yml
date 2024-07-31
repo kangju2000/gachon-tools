@@ -1,0 +1,16 @@
+name: Feature Request
+description: 추가하고 싶은 기능을 제안하기 위한 이슈 템플릿입니다.
+labels: [feature]
+title: '[Feature]:'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        기능 제안을 해주셔서 감사합니다! 아래 양식을 작성하여 제출해주세요.
+  - type: textarea
+    id: description
+    attributes:
+      description: 어떤 기능을 추가하고 싶으신가요?
+      label: Description
+    validations:
+      required: true

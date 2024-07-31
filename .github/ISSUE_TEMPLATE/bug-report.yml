@@ -1,0 +1,34 @@
+name: Bug Report
+description: 버그 제보를 위한 이슈 템플릿입니다.
+title: '[Bug]: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        버그를 제보해주셔서 감사합니다!. 아래 양식을 작성하여 제출해주세요.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 어떤 문제가 발생했나요?
+      description: 문제가 발생한 상황을 자세히 설명해주세요.
+      placeholder: '<!--- 어떤 문제가 발생했는지 자세히 설명해주세요. --->'
+    validations:
+      required: true
+  - type: input
+    id: extension-version
+    attributes:
+      label: 현재 사용하는 익스텐션 버전
+      description: 어떤 버전을 사용하고 계신가요? [이 문서](https://kangju2000.notion.site/8e15093688c24df3bb5e37a74fce5b9f?pvs=4)를 참고해주세요.
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: 어떤 브라우저에서 문제가 발생했나요?
+      multiple: true
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Microsoft Edge
