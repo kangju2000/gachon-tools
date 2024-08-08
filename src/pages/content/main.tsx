@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
 
 import App from '@/pages/content/App'
+import '@/styles/globals.css'
 
 const crxRoot = document.createElement('div')
 crxRoot.id = 'crx-root'
