@@ -171,18 +171,33 @@ export const getVideoSubmitted = async (
     $('.user_progress tbody tr').length === 0 ? '.user_progress_table tbody tr' : '.user_progress tbody tr'
 
   let section = '1'
+
+  // const hasAttendance = $('.user_progress thead th').eq(-1).text().trim() === '출석'
+
+  const attendanceRule = $('.rollbook .blue').text().trim()
+  const matches = attendanceRule.match(/\[(.*?)\]/g)
+  const attendanceMark = matches ? matches[0].replace(/\[|\]/g, '') : undefined
+
   return mapElement($(className), (_, el) => {
     if ($(el.firstChild).attr('rowspan') || $(el.firstChild).hasClass('vmiddle')) {
       section = $(el.firstChild).text().trim()
     }
 
-    const std = $(el).find('.text-center.hidden-xs.hidden-sm')
-    const title = std.prev().text().trim()
+    const title = $(el).find('.text-left').text().trim()
     const sectionTitle = section
+
+    if (attendanceMark !== undefined) {
+      const attendance = $(el).find('.text-center').eq(-1).text().trim()
+
+      return { title, hasSubmitted: attendance === attendanceMark, sectionTitle }
+    }
+
+    const std = $(el).find('.text-center.hidden-xs.hidden-sm')
+
     const requiredTime = std.text().trim()
     const totalStudyTime = std.next().clone().children().remove().end().text().trim()
     const hasSubmitted = Number(requiredTime.replace(/:/g, '')) <= Number(totalStudyTime.replace(/:/g, ''))
 
     return { title, hasSubmitted, sectionTitle }
-  })
+  }).filter((v): v is Pick<Video, 'title' | 'hasSubmitted' | 'sectionTitle'> => !!v.title)
 }
