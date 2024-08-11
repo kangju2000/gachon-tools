@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :host {
+  all: initial;
   font-weight: 500 !important;
   font-size: 16px !important;
   letter-spacing: normal;

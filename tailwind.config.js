@@ -10,13 +10,13 @@ export default {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      colors: {
-        primary: '#2F6EA2',
-      },
       spacing: spacing,
       borderWidth: spacing,
       borderRadius: spacing,
     },
   },
-  plugins: [],
+  plugins: [require('daisyui')],
+  daisyui: {
+    themes: ['light', 'dark'],
+  },
 }

@@ -1,5 +1,4 @@
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 
 import ActivityList from './ActivityList'
@@ -20,30 +19,41 @@ const TabContent = ({ activityList, selectedCourseId, pos, isLoading }: Props) =
   const filteredActivities = useFilteredActivityList(activityList, selectedCourseId, tabIndex, false)
 
   return (
-    <Tabs isLazy={true} index={tabIndex} onChange={index => setTabIndex(index)}>
-      <TabList position="sticky" top="0" zIndex="1" bg="modalBg" pt="16px">
-        {TAB_LIST.map(tab => (
-          <Tab
+    <div>
+      <div className="sticky top-0 z-10 flex bg-white pt-16px dark:bg-gray-800">
+        {TAB_LIST.map((tab, index) => (
+          <button
             key={tab}
-            position="relative"
-            fontSize="14px"
-            _light={{ color: 'gray.700', _selected: { color: 'blue.600' } }}
-            _dark={{ color: 'gray.200', _selected: { color: 'blue.400' } }}
+            className={`text-14px relative px-4 py-2 transition-colors duration-200 ${
+              tabIndex === index
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-gray-700 hover:text-blue-600 dark:text-gray-200 dark:hover:text-blue-400'
+            }`}
+            onClick={() => setTabIndex(index)}
           >
             {tab}
-          </Tab>
+            {tabIndex === index && (
+              <motion.div
+                className="absolute bottom-0 left-0 h-0.5 w-full bg-blue-600 dark:bg-blue-400"
+                layoutId="underline"
+              />
+            )}
+          </button>
         ))}
-      </TabList>
+      </div>
 
-      <TabPanels as={AnimatePresence}>
-        <TabPanel>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={tabIndex}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+        >
           {isLoading ? <LoadingProgress pos={pos} /> : <ActivityList contentData={filteredActivities} />}
-        </TabPanel>
-        <TabPanel>
-          {isLoading ? <LoadingProgress pos={pos} /> : <ActivityList contentData={filteredActivities} />}
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+        </motion.div>
+      </AnimatePresence>
+    </div>
   )
 }
 

@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useState, useCallback } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-// import ContentModal from '@/components/ContentModal'
+import ContentModal from './ContentModal'
 
 export default function Trigger() {
   const [isOpen, setIsOpen] = useState(false)
