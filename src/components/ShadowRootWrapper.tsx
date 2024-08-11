@@ -1,7 +1,6 @@
 import createCache from '@emotion/cache'
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import { useEffect, useRef, useState } from 'react'
-import root from 'react-shadow/emotion'
 
 type Props = {
   children: React.ReactNode
@@ -23,9 +22,5 @@ export function ShadowRootWrapper({ children }: Props) {
     setEmotionCache(cache)
   }, [])
 
-  return (
-    <root.div ref={shadowRef}>
-      <CacheProvider value={emotionCache}>{emotionCache ? children : null}</CacheProvider>
-    </root.div>
-  )
+  return <CacheProvider value={emotionCache}>{emotionCache ? children : null}</CacheProvider>
 }

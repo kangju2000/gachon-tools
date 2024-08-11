@@ -1,13 +1,14 @@
 {
-  "name": "gachon-extension",
+  "name": "gachon-tools",
+  "description": "가천대학교 사이버캠퍼스 확장프로그램",
   "version": "1.2.5",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky install"
   },
@@ -26,7 +27,7 @@
   },
   "devDependencies": {
     "@chakra-ui/cli": "^2.4.1",
-    "@crxjs/vite-plugin": "^2.0.0-beta.25",
+    "@crxjs/vite-plugin": "^1.0.14",
     "@playwright/test": "^1.39.0",
     "@thedutchcoder/postcss-rem-to-px": "^0.0.2",
     "@types/chrome": "^0.0.268",
@@ -49,7 +50,7 @@
     "prettier-plugin-tailwindcss": "^0.6.6",
     "tailwindcss": "^3.4.9",
     "typescript": "^5.2.2",
-    "vite": "^5.3.5",
+    "vite": "^5.2.0",
     "vite-tsconfig-paths": "^4.3.2"
   },
   "lint-staged": {

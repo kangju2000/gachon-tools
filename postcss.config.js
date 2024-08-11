@@ -20,26 +20,14 @@ function transformSelector(prefix, selector, prefixedSelector) {
   return prefixedSelector
 }
 
-/**
- * Configuration object for PostCSS plugins.
- * @type {Object}
- * @property {Function[]} plugins - Array of PostCSS plugins.
- */
 const postcssConfig = {
   plugins: [
-    // Apply Tailwind CSS
     tailwindcss(),
-
-    // Add a prefix to all selectors
     postcssPrefixSelector({
-      prefix: '#my-ext',
+      prefix: '#gt-app',
       transform: transformSelector,
     }),
-
-    // Convert rem units to px
     postcssRemToPx(),
-
-    // Add vendor prefixes
     autoprefixer(),
   ],
 }

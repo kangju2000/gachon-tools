@@ -12,13 +12,13 @@ export function ShadowChakraProvider({ children }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
 
   return (
-    <ShadowRootWrapper>
-      <ChakraProvider cssVarsRoot=":host,:root" theme={customTheme}>
-        <div ref={rootRef}>
-          <RootRefContext.Provider value={rootRef}>{children}</RootRefContext.Provider>
-        </div>
-      </ChakraProvider>
-    </ShadowRootWrapper>
+    // <ShadowRootWrapper>
+    <ChakraProvider cssVarsRoot=":host,:root" theme={customTheme}>
+      <div ref={rootRef}>
+        <RootRefContext.Provider value={rootRef}>{children}</RootRefContext.Provider>
+      </div>
+    </ChakraProvider>
+    // </ShadowRootWrapper>
   )
 }
 

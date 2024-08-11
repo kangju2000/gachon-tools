@@ -1,6 +1,6 @@
 import { Box } from '@chakra-ui/react'
 
-import packageJson from '../../../package.json'
+import packageJson from './../../package.json'
 
 const { version } = packageJson
 

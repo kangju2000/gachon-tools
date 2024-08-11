@@ -1,40 +1,29 @@
-import { useDisclosure } from '@chakra-ui/react'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useState, useCallback } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import ChakraMotion from '@/components/ChakraMotion'
-import ContentModal from '@/components/ContentModal'
+// import ContentModal from '@/components/ContentModal'
 
 export default function Trigger() {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [isOpen, setIsOpen] = useState(false)
+  const onOpen = useCallback(() => setIsOpen(true), [])
+  const onClose = useCallback(() => setIsOpen(false), [])
+
   useHotkeys('ctrl+/, meta+/', () => {
-    if (isOpen) {
-      onClose()
-    } else {
-      onOpen()
-    }
+    setIsOpen(prev => !prev)
   })
 
   return (
     <>
       <AnimatePresence mode="wait">
         {!isOpen && (
-          <ChakraMotion
+          <motion.div
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
             whileHover={{ width: '100px', height: '50px', x: -30 }}
-            position="fixed"
-            bottom="25px"
-            left="50%"
-            w="40px"
-            h="40px"
-            bg="primary"
-            boxShadow="dark-lg"
-            rounded="full"
-            cursor="pointer"
-            zIndex={9999}
+            className="fixed bottom-25px left-1/2 z-[9999] h-10 w-10 cursor-pointer rounded-full bg-primary shadow-2xl"
             onClick={onOpen}
           />
         )}

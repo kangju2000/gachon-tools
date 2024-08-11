@@ -11,14 +11,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     }
   },
-  "include": ["*/**.ts", "*/**.tsx", "vite.config.ts"],
+  "include": ["*/**.ts", "*/**.tsx", "vite.config.ts", "src"],
   "exclude": ["node_modules", "dist"],
-  "references": [{ "path": "./tsconfig.node.json" }],
   "types": ["chrome", "node"]
 }
