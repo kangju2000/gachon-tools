@@ -1,9 +1,18 @@
-import Trigger from '@/components/Trigger'
+import { Theme } from 'daisyui'
+import { useState } from 'react'
+
+import { ContentWrapper } from './components/ContentWrapper'
+import { ThemeContext } from './components/theme-context'
+import { Trigger } from '@/components/Trigger'
 
 export default function Content() {
+  const [theme, setTheme] = useState<Theme>('light')
+
   return (
-    <div id="gt-app" data-theme="light">
-      <Trigger />
-    </div>
+    <ThemeContext.Provider value={{ theme: theme, setTheme }}>
+      <ContentWrapper>
+        <Trigger />
+      </ContentWrapper>
+    </ThemeContext.Provider>
   )
 }

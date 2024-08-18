@@ -28,6 +28,7 @@
   "devDependencies": {
     "@chakra-ui/cli": "^2.4.1",
     "@crxjs/vite-plugin": "^1.0.14",
+    "@emotion/cache": "^11.13.1",
     "@playwright/test": "^1.39.0",
     "@thedutchcoder/postcss-rem-to-px": "^0.0.2",
     "@types/chrome": "^0.0.268",

@@ -1,13 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import ContentModal from './ContentModal'
-
-export default function Trigger() {
+export function Trigger() {
   const [isOpen, setIsOpen] = useState(false)
-  const onOpen = useCallback(() => setIsOpen(true), [])
-  const onClose = useCallback(() => setIsOpen(false), [])
 
   useHotkeys('ctrl+/, meta+/', () => {
     setIsOpen(prev => !prev)
@@ -15,21 +11,22 @@ export default function Trigger() {
 
   return (
     <>
-      <AnimatePresence mode="wait">
-        {!isOpen && (
+      <label className="d-swap">
+        <input type="checkbox" onChange={() => setIsOpen(prev => !prev)} checked={isOpen} />
+        <div className="d-mask d-swap-off d-mask-squircle fixed bottom-25px right-25px z-[9999] h-56px w-56px cursor-pointer bg-black"></div>
+        <div className="d-mask d-swap-on d-mask-squircle fixed bottom-25px right-25px z-[9999] h-56px w-56px cursor-pointer bg-white"></div>
+      </label>
+
+      <AnimatePresence>
+        {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            whileHover={{ width: '100px', height: '50px', x: -30 }}
-            className="fixed bottom-25px left-1/2 z-[9999] h-10 w-10 cursor-pointer rounded-full bg-primary shadow-2xl"
-            onClick={onOpen}
-          />
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed bottom-96px right-25px h-600px w-350px rounded-36px bg-base-200"
+          ></motion.div>
         )}
       </AnimatePresence>
-
-      <ContentModal isOpen={isOpen} onClose={onClose} />
     </>
   )
 }

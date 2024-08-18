@@ -39,6 +39,7 @@ export default defineManifest(async env => ({
         'https://cyber.gachon.ac.kr/mod/vod/viewer.php*',
       ],
       js: isDev ? ['src/content/index.dev.tsx'] : ['src/content/index.prod.tsx'],
+      run_at: 'document_start',
     },
   ],
   options_page: 'src/options/index.html',
