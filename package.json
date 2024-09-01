@@ -19,11 +19,13 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "cheerio": "^1.0.0-rc.12",
+    "clsx": "^2.1.1",
     "date-fns": "^2.30.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hotkeys-hook": "^4.4.1",
-    "react-shadow": "^20.4.0"
+    "react-shadow": "^20.4.0",
+    "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {
     "@chakra-ui/cli": "^2.4.1",
@@ -64,6 +66,6 @@
   "packageManager": "pnpm@8.15.0",
   "engines": {
     "node": "20.x",
-    "pnpm": ">=8.15.0"
+    "pnpm": "8.15.0"
   }
 }

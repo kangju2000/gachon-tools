@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client'
 
 import Content from './Content'
-import '@/assets/styles/index.css'
+import '@/styles/index.css'
 
 // remove scroll to top button
 document.getElementById('back-top')?.remove()

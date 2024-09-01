@@ -2,6 +2,9 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
+import { Content } from './Content'
+import { cn } from '@/utils/cn'
+
 export function Trigger() {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -11,11 +14,16 @@ export function Trigger() {
 
   return (
     <>
-      <label className="d-swap">
-        <input type="checkbox" onChange={() => setIsOpen(prev => !prev)} checked={isOpen} />
-        <div className="d-mask d-swap-off d-mask-squircle fixed bottom-25px right-25px z-[9999] h-56px w-56px cursor-pointer bg-black"></div>
-        <div className="d-mask d-swap-on d-mask-squircle fixed bottom-25px right-25px z-[9999] h-56px w-56px cursor-pointer bg-white"></div>
-      </label>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={() => setIsOpen(prev => !prev)}
+        className={cn('d-mask d-mask-squircle fixed bottom-25px right-25px z-[9999] h-56px w-56px cursor-pointer', {
+          'bg-blue-500': isOpen,
+          'bg-blue-400': !isOpen,
+        })}
+      />
 
       <AnimatePresence>
         {isOpen && (
@@ -23,8 +31,10 @@ export function Trigger() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed bottom-96px right-25px h-600px w-350px rounded-36px bg-base-200"
-          ></motion.div>
+            className="fixed bottom-96px right-25px h-600px w-350px overflow-hidden rounded-36px border border-solid border-slate-200 border-opacity-50 bg-slate-100 bg-opacity-60 shadow-[0_0_100px_0_rgba(0,0,0,0.2)] backdrop-blur-[50px]"
+          >
+            <Content />
+          </motion.div>
         )}
       </AnimatePresence>
     </>
