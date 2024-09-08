@@ -94,7 +94,7 @@ const ContentModal = ({ isOpen, onClose }: Props) => {
               />
               <div className="flex-1" />
               <div className="flex cursor-pointer items-center" onClick={refetch}>
-                <span className="text-12px mr-4px text-gray-600 dark:text-gray-400">{loadingText}</span>
+                <span className="mr-4px text-12px text-gray-600 dark:text-gray-400">{loadingText}</span>
                 <RefreshIcon className="text-gray-600 dark:text-gray-400" />
               </div>
             </div>

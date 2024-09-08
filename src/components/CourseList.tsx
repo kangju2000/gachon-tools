@@ -14,7 +14,7 @@ const CourseList = ({ courseList, selectedCourseId, setSelectedCourseId }: Props
       {courseList.map(course => (
         <button
           key={course.id}
-          className={`text-14px cursor-pointer truncate text-left transition-colors duration-200 ${
+          className={`cursor-pointer truncate text-left text-14px transition-colors duration-200 ${
             isSelected(course.id)
               ? 'font-bold text-blue-600 dark:text-blue-400'
               : 'text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400'

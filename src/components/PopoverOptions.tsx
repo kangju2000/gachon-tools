@@ -31,7 +31,7 @@ const PopoverOptions: React.FC<Props> = ({ triggerElement }) => {
 
   const popoverContent = (
     <>
-      <h3 className="text-14px mb-2 font-bold text-gray-700 dark:text-gray-200">설정</h3>
+      <h3 className="mb-2 text-14px font-bold text-gray-700 dark:text-gray-200">설정</h3>
       <div className="space-y-4">
         <div className="flex items-center space-x-4">
           <span className="text-12px text-gray-600 dark:text-gray-400">테마 :</span>
@@ -42,7 +42,7 @@ const PopoverOptions: React.FC<Props> = ({ triggerElement }) => {
               checked={colorMode === 'light'}
               onChange={() => toggleColorMode('light')}
             />
-            <span className="text-12px ml-2 text-gray-700 dark:text-gray-300">Light</span>
+            <span className="ml-2 text-12px text-gray-700 dark:text-gray-300">Light</span>
           </label>
           <label className="inline-flex items-center">
             <input
@@ -51,7 +51,7 @@ const PopoverOptions: React.FC<Props> = ({ triggerElement }) => {
               checked={colorMode === 'dark'}
               onChange={() => toggleColorMode('dark')}
             />
-            <span className="text-12px ml-2 text-gray-700 dark:text-gray-300">Dark</span>
+            <span className="ml-2 text-12px text-gray-700 dark:text-gray-300">Dark</span>
           </label>
         </div>
         <div className="flex items-center space-x-4">

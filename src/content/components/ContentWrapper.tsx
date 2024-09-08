@@ -1,6 +1,6 @@
-import { PropsWithChildren } from 'react'
-
 import { useThemeContext } from './theme-context'
+
+import type { PropsWithChildren } from 'react'
 
 export function ContentWrapper({ children }: PropsWithChildren) {
   const { theme } = useThemeContext()

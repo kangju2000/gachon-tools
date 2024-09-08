@@ -1,17 +1,19 @@
+// src/hooks/useGetContents.ts
+
 import { useEffect, useState } from 'react'
 
+import type { StorageData } from '@/lib/chromeStorage'
+import { getAllStorageData, setStorageData, DEFAULT_SETTINGS } from '@/lib/chromeStorage'
 import { getActivities, getAssignmentSubmitted, getCourses, getVideoSubmitted } from '@/services'
 import type { Contents } from '@/types'
 
 type Options = {
   enabled?: boolean
-  refreshTime?: number
 }
 
 const useGetContents = (options: Options) => {
   const _options = {
     enabled: true,
-    refreshTime: 1000 * 60 * 20, // 20분
     ...options,
   }
 
@@ -22,6 +24,7 @@ const useGetContents = (options: Options) => {
     activityList: [],
     updateAt: new Date().toISOString(),
   })
+  const [settings, setSettings] = useState<StorageData['settings']>(DEFAULT_SETTINGS)
 
   const getData = async () => {
     const courses = await getCourses()
@@ -40,11 +43,9 @@ const useGetContents = (options: Options) => {
 
     const updateAt = new Date().toISOString()
 
-    chrome.storage.local.set({
-      courses,
-      activities,
-      updateAt,
-    })
+    await setStorageData('courses', courses)
+    await setStorageData('activities', activities)
+    await setStorageData('updateAt', updateAt)
 
     setData({
       courseList: [{ id: '-1', title: '전체' }, ...courses],
@@ -55,19 +56,26 @@ const useGetContents = (options: Options) => {
     setIsLoading(false)
   }
 
-  const getLocalData = () => {
-    chrome.storage.local.get(({ updateAt, courses, activities }) => {
-      if (!updateAt || !courses || !activities) {
-        setIsLoading(true)
-        return getData()
-      }
+  const getLocalData = async () => {
+    const storedData = await getAllStorageData()
+    const { updateAt, courses, activities, settings: storedSettings } = storedData
 
-      setData({
-        courseList: [{ id: '-1', title: '전체' }, ...courses],
-        activityList: activities,
-        updateAt,
-      })
+    if (!updateAt || !courses || !activities) {
+      setIsLoading(true)
+      return getData()
+    }
+
+    setData({
+      courseList: [{ id: '-1', title: '전체' }, ...courses],
+      activityList: activities,
+      updateAt,
     })
+
+    if (storedSettings) {
+      setSettings(storedSettings)
+    } else {
+      await setStorageData('settings', DEFAULT_SETTINGS)
+    }
 
     setPos(0)
     setIsLoading(false)
@@ -83,19 +91,21 @@ const useGetContents = (options: Options) => {
     if (isLoading) return
 
     if (_options.enabled) {
-      if (_options.refreshTime < new Date().getTime() - new Date(data.updateAt).getTime()) {
+      const lastUpdateTime = new Date(data.updateAt).getTime()
+      const currentTime = new Date().getTime()
+      if (currentTime - lastUpdateTime > settings.refreshTime) {
         refetch()
       } else {
         getLocalData()
       }
     }
-  }, [_options.enabled])
+  }, [_options.enabled, settings.refreshTime])
 
   useEffect(() => {
     getLocalData()
   }, [])
 
-  return { data, pos, isLoading, refetch }
+  return { data, pos, isLoading, refetch, settings, setSettings }
 }
 
 export default useGetContents

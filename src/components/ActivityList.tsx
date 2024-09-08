@@ -15,7 +15,7 @@ export const ActivityList = ({ contentData }: ActivityListProps) => {
       {contentData.length > 0 ? (
         contentData.map(activity => <ActivityItem key={activity.id} activity={activity} />)
       ) : (
-        <p className="text-14px text-center text-gray-500">진행중인 과제가 없습니다.</p>
+        <p className="text-center text-14px text-gray-500">진행중인 과제가 없습니다.</p>
       )}
     </motion.div>
   )
@@ -42,16 +42,16 @@ const ActivityItem = ({ activity }: ActivityItemProps) => {
           <div>
             <div className="flex items-center gap-4px">
               <ActivityBadge type={activity.type} />
-              <h3 className="text-14px truncate font-semibold">{activity.title}</h3>
+              <h3 className="truncate text-14px font-semibold">{activity.title}</h3>
             </div>
-            <p className="text-12px truncate text-gray-500 dark:text-gray-400">{activity.courseTitle}</p>
+            <p className="truncate text-12px text-gray-500 dark:text-gray-400">{activity.courseTitle}</p>
           </div>
         </div>
         <div className="flex-shrink-0 text-right">
-          <p className="text-14px truncate">
+          <p className="truncate text-14px">
             <span className="text-12px font-normal">마감</span> {dDay}
           </p>
-          <p className="text-12px truncate text-gray-500 dark:text-gray-400">
+          <p className="truncate text-12px text-gray-500 dark:text-gray-400">
             {isValid(endAtDate) && `~${format(endAtDate, 'yyyy.MM.dd HH:mm')}`}
           </p>
         </div>
@@ -66,7 +66,7 @@ const ActivityBadge = ({ type }: { type: ActivityType['type'] }) => {
     video: { color: 'bg-gray-500', text: '영상' },
   }[type]
 
-  return <span className={`${badge.color} text-9px rounded-4px px-4px py-2px font-bold text-white`}>{badge.text}</span>
+  return <span className={`${badge.color} rounded-4px px-4px py-2px text-9px font-bold text-white`}>{badge.text}</span>
 }
 
 export default ActivityList

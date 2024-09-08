@@ -5,7 +5,7 @@ import ActivityList from './ActivityList'
 import LoadingProgress from './LoadingProgress'
 import { TAB_LIST } from '@/constants'
 import useFilteredActivityList from '@/hooks/useFilteredActivityList'
-import { ActivityType } from '@/types'
+import type { ActivityType } from '@/types'
 
 type Props = {
   activityList: ActivityType[]
@@ -24,7 +24,7 @@ const TabContent = ({ activityList, selectedCourseId, pos, isLoading }: Props) =
         {TAB_LIST.map((tab, index) => (
           <button
             key={tab}
-            className={`text-14px relative px-4 py-2 transition-colors duration-200 ${
+            className={`relative px-4 py-2 text-14px transition-colors duration-200 ${
               tabIndex === index
                 ? 'text-blue-600 dark:text-blue-400'
                 : 'text-gray-700 hover:text-blue-600 dark:text-gray-200 dark:hover:text-blue-400'
