@@ -1,4 +1,4 @@
-import * as cheerio from 'cheerio'
+import type * as cheerio from 'cheerio'
 
 export function mapElement<T, M>(
   element: cheerio.Cheerio<T>,

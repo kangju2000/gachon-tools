@@ -6,7 +6,7 @@ const [major, minor, patch, label = '0'] = packageJson.version.replace(/[^\d.-]+
 
 const isDev = process.env.NODE_ENV === 'development'
 
-export default defineManifest(async env => ({
+export default defineManifest(async () => ({
   manifest_version: 3,
   name: isDev ? '[DEV] Gachon Tools - 사이버캠퍼스 확장프로그램' : 'Gachon Tools - 사이버캠퍼스 확장프로그램',
   description: packageJson.description,

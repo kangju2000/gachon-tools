@@ -1,5 +1,6 @@
-import { Theme } from 'daisyui'
 import { createContext, useContext } from 'react'
+
+import type { Theme } from 'daisyui'
 
 type ThemeContextValue<T = Theme> = {
   theme: T

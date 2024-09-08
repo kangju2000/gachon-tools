@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client'
 
-export default function createShadowRoot(styles: string) {
-  const root = document.createElement('div')
+export default function createShadowRoot(styles: string, options: { root?: HTMLElement } = {}) {
+  const root = options.root || document.createElement('div')
   const shadow = root.attachShadow({ mode: 'open' })
 
   const globalStyleSheet = new CSSStyleSheet()

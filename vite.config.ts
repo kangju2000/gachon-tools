@@ -2,10 +2,12 @@
 import { crx } from '@crxjs/vite-plugin'
 import react from '@vitejs/plugin-react-swc'
 import { resolve } from 'path'
-import { defineConfig, Plugin } from 'vite'
+import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 import manifest from './manifest.config'
+
+import type { Plugin } from 'vite'
 
 const viteManifestHackIssue846: Plugin & {
   renderCrxManifest: (manifest: any, bundle: any) => void
