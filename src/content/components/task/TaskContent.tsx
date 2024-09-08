@@ -49,7 +49,7 @@ export function TaskContent() {
       <div className="relative flex-1 overflow-hidden">
         <div className="absolute inset-x-0 top-0 z-10 h-16px bg-gradient-to-b from-slate-100 to-transparent"></div>
         <div className="absolute inset-x-0 bottom-0 z-10 h-16px bg-gradient-to-t from-slate-100 to-transparent"></div>
-        <div ref={scrollRef} className="h-full overflow-y-auto px-16px py-20px">
+        <div ref={scrollRef} className="h-full overflow-y-auto overscroll-contain px-16px py-20px">
           {isLoading ? <LoadingSkeleton progress={progress} /> : <TaskList tasks={filteredTasks} />}
         </div>
       </div>
