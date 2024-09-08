@@ -9,7 +9,7 @@ import { setStorageData } from '@/lib/chromeStorage'
 
 const { version } = packageJson
 
-const refreshTimeOptions = [
+const refreshIntervalOptions = [
   { value: 1000 * 60 * 5, label: '5분' },
   { value: 1000 * 60 * 10, label: '10분' },
   { value: 1000 * 60 * 20, label: '20분' },
@@ -26,8 +26,6 @@ export function SettingsContent() {
   const [isHovering, setIsHovering] = useState(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
-
-  const buttonImagePreview = settings['trigger-bg-image']
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -48,16 +46,16 @@ export function SettingsContent() {
     async (croppedImage: string) => {
       await setStorageData('settings', {
         ...settings,
-        'trigger-bg-image': croppedImage,
+        triggerImage: croppedImage,
       })
       setIsCropModalOpen(false)
     },
     [settings],
   )
 
-  const handleRefreshTimeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newRefreshTime = Number(event.target.value)
-    setStorageData('settings', { ...settings, refreshTime: newRefreshTime })
+  const handleRefreshIntervalChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newRefreshInterval = Number(event.target.value)
+    setStorageData('settings', { ...settings, refreshInterval: newRefreshInterval })
   }
 
   return (
@@ -85,8 +83,12 @@ export function SettingsContent() {
         </div>
       )}
       <SettingItem title="새로고침 시간" description="새로고침 시간을 설정합니다.">
-        <select className="d-select d-select-bordered" value={settings.refreshTime} onChange={handleRefreshTimeChange}>
-          {refreshTimeOptions.map(option => (
+        <select
+          className="d-select d-select-bordered"
+          value={settings.refreshInterval}
+          onChange={handleRefreshIntervalChange}
+        >
+          {refreshIntervalOptions.map(option => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -102,7 +104,7 @@ export function SettingsContent() {
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          <img src={buttonImagePreview} alt="버튼 이미지 미리보기" className="h-full w-full object-cover" />
+          <img src={settings.triggerImage} alt="버튼 이미지 미리보기" className="h-full w-full object-cover" />
           {isHovering && (
             <div
               className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black bg-opacity-50 transition-opacity duration-200"

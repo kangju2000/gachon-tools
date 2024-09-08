@@ -27,7 +27,7 @@ export function Trigger() {
           'd-mask d-mask-squircle fixed bottom-25px right-25px z-[9999] h-56px w-56px cursor-pointer bg-cover bg-repeat'
         }
         style={{
-          backgroundImage: `url(${settings['trigger-bg-image']})`,
+          backgroundImage: `url(${settings.triggerImage})`,
         }}
       />
 

@@ -83,12 +83,12 @@ const useGetContents = (options: Options) => {
 
     const lastUpdateTime = new Date(data.updateAt).getTime()
     const currentTime = new Date().getTime()
-    if (currentTime - lastUpdateTime > settings.refreshTime) {
+    if (currentTime - lastUpdateTime > settings.refreshInterval) {
       refetch()
     } else {
       getLocalData()
     }
-  }, [_options.enabled, settings.refreshTime])
+  }, [_options.enabled, settings.refreshInterval])
 
   useEffect(() => {
     getLocalData()

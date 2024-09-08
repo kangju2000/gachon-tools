@@ -5,8 +5,8 @@ export interface StorageData {
   activities: ActivityType[]
   updateAt: string
   settings: {
-    refreshTime: number
-    'trigger-bg-image': string
+    refreshInterval: number
+    triggerImage: string
   }
 }
 

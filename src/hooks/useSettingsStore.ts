@@ -1,11 +1,10 @@
-// common/useSettingsStore.js
 import { createChromeStorageStateHookLocal } from 'use-chrome-storage'
 
 import type { StorageData } from '@/lib/chromeStorage'
 
 const DEFAULT_SETTINGS: StorageData['settings'] = {
-  refreshTime: 1000 * 60 * 20, // 20 minutes
-  'trigger-bg-image': '',
+  refreshInterval: 1000 * 60 * 20, // 20 minutes
+  triggerImage: '',
 }
 
 const SETTINGS_KEY = 'settings'
