@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 
 import type { StorageData } from '@/lib/chromeStorage'
-import { getAllStorageData, setStorageData, DEFAULT_SETTINGS } from '@/lib/chromeStorage'
+import { getAllStorageData, setStorageData, DEFAULT_SETTINGS, setStorageDataPartial } from '@/lib/chromeStorage'
 import { getActivities, getAssignmentSubmitted, getCourses, getVideoSubmitted } from '@/services'
 import type { Contents } from '@/types'
 
@@ -43,9 +43,7 @@ const useGetContents = (options: Options) => {
 
     const updateAt = new Date().toISOString()
 
-    await setStorageData('courses', courses)
-    await setStorageData('activities', activities)
-    await setStorageData('updateAt', updateAt)
+    await setStorageDataPartial({ courses, activities, updateAt })
 
     setData({
       courseList: [{ id: '-1', title: '전체' }, ...courses],
@@ -90,14 +88,12 @@ const useGetContents = (options: Options) => {
   useEffect(() => {
     if (isLoading) return
 
-    if (_options.enabled) {
-      const lastUpdateTime = new Date(data.updateAt).getTime()
-      const currentTime = new Date().getTime()
-      if (currentTime - lastUpdateTime > settings.refreshTime) {
-        refetch()
-      } else {
-        getLocalData()
-      }
+    const lastUpdateTime = new Date(data.updateAt).getTime()
+    const currentTime = new Date().getTime()
+    if (currentTime - lastUpdateTime > settings.refreshTime) {
+      refetch()
+    } else {
+      getLocalData()
     }
   }, [_options.enabled, settings.refreshTime])
 

@@ -1,5 +1,7 @@
 import { Divider, Stack } from '@chakra-ui/react'
-import { ComponentProps, Fragment } from 'react'
+import { Fragment } from 'react'
+
+import type { ComponentProps } from 'react'
 
 interface ItemListProps<T> extends Omit<ComponentProps<typeof Stack>, 'children'> {
   data: T[]
