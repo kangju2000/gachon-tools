@@ -1,5 +1,5 @@
 import { SettingItem } from './SettingItem'
-import packageJson from '../../package.json'
+import packageJson from '../../../../package.json'
 import useGetContents from '@/hooks/useGetContents'
 import { DEFAULT_SETTINGS, setStorageData } from '@/lib/chromeStorage'
 

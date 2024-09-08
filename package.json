@@ -16,12 +16,13 @@
     "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.1.1",
     "date-fns": "^2.30.0",
+    "framer-motion": "^10.16.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-easy-crop": "^5.0.8",
     "react-hotkeys-hook": "^4.4.1",
     "react-shadow": "^20.4.0",
-    "tailwind-merge": "^2.5.2",
-    "framer-motion": "^10.16.4"
+    "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^1.0.14",

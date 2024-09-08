@@ -1,7 +1,8 @@
 import { createRoot } from 'react-dom/client'
 
-import Content from './Content'
 import '@/styles/index.css'
+import { Trigger } from './components/Trigger'
+import { ContentThemeProvider } from '@/components/ContentThemeProvider'
 
 // remove scroll to top button
 document.getElementById('back-top')?.remove()
@@ -20,4 +21,8 @@ shadowRoot.appendChild(styleElement)
 document.body.appendChild(container)
 
 const root = createRoot(shadowRoot)
-root.render(<Content />)
+root.render(
+  <ContentThemeProvider>
+    <Trigger />
+  </ContentThemeProvider>,
+)

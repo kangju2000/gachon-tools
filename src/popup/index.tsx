@@ -1,15 +1,12 @@
 import Popup from './Popup'
-import { ContentWrapper } from '@/content/components/ContentWrapper'
-import { ThemeContext } from '@/content/components/theme-context'
+import { ContentThemeProvider } from '@/components/ContentThemeProvider'
 import styles from '@/styles/index.css?inline'
 import createShadowRoot from '@/utils/createShadowRoot'
 
 const root = createShadowRoot(styles)
 
 root.render(
-  <ThemeContext.Provider value={{ theme: 'light', setTheme: () => {} }}>
-    <ContentWrapper>
-      <Popup />
-    </ContentWrapper>
-  </ThemeContext.Provider>,
+  <ContentThemeProvider>
+    <Popup />
+  </ContentThemeProvider>,
 )

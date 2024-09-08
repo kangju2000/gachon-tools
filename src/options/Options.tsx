@@ -1,16 +1,12 @@
-import { Box } from '@chakra-ui/react'
-
 import packageJson from './../../package.json'
 
 const { version } = packageJson
 
-function Options() {
+export function Options() {
   return (
-    <Box>
+    <div>
       <h1>Options</h1>
       <p>Version: {version}</p>
-    </Box>
+    </div>
   )
 }
-
-export default Options
