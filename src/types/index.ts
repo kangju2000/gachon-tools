@@ -26,5 +26,18 @@ export type ActivityType = Assignment | Video
 export type Contents = {
   courseList: Course[]
   activityList: ActivityType[]
-  updateAt: string
+}
+
+export type StorageData = {
+  data: {
+    meta: {
+      version: string
+      updateAt: string
+    }
+    contents: Contents
+    settings: {
+      refreshInterval: number
+      triggerImage: string
+    }
+  }
 }

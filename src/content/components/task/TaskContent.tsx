@@ -6,22 +6,27 @@ import { AnimatedRefreshButton } from './AnimatedRefreshButton'
 import { LoadingSkeleton } from './LoadingSkeleton'
 import { TabNavigation } from './TabNavigation'
 import { TaskList } from './TaskList'
+import { useStorage } from '@/context/storageContext'
 import { contentsData } from '@/data/dummyData'
+import { useContents } from '@/hooks/useContents'
 import useFilteredActivityList from '@/hooks/useFilteredActivityList'
-import useGetContents from '@/hooks/useGetContents'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
 export function TaskContent() {
   const [taskTab, setTaskTab] = useState<'ongoing' | 'all'>('ongoing')
   const scrollRef = useRef<HTMLDivElement>(null)
-  const { data, pos, isLoading, refetch } = useGetContents({ enabled: !isDevelopment })
 
-  const contentData = isDevelopment ? contentsData : data
+  const { contents, progress, isLoading, refetch } = useContents()
+
+  const {
+    data: { meta },
+  } = useStorage()
+  const contentData = isDevelopment ? contentsData : contents
 
   const filteredTasks = useFilteredActivityList(contentData.activityList, '-1', taskTab === 'ongoing' ? 0 : 1, false)
 
-  const formattedUpdateTime = formatDistanceToNowStrict(new Date(contentData.updateAt), { addSuffix: true, locale: ko })
+  const formattedUpdateTime = formatDistanceToNowStrict(new Date(meta.updateAt), { addSuffix: true, locale: ko })
 
   useEffect(() => {
     scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' })
@@ -45,7 +50,7 @@ export function TaskContent() {
         <div className="absolute inset-x-0 top-0 z-10 h-16px bg-gradient-to-b from-slate-100 to-transparent"></div>
         <div className="absolute inset-x-0 bottom-0 z-10 h-16px bg-gradient-to-t from-slate-100 to-transparent"></div>
         <div ref={scrollRef} className="h-full overflow-y-auto px-16px py-20px">
-          {isLoading ? <LoadingSkeleton progress={pos} /> : <TaskList tasks={filteredTasks} />}
+          {isLoading ? <LoadingSkeleton progress={progress} /> : <TaskList tasks={filteredTasks} />}
         </div>
       </div>
     </>

@@ -5,16 +5,23 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { SettingsContent } from './setting'
 import { Navigation } from '@/content/components/Navigation'
 import { TaskContent } from '@/content/components/task'
-import { useSettingsStore } from '@/hooks/useSettingsStore'
+import { useStorage } from '@/context/storageContext'
 
 export function Trigger() {
   const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'tasks' | 'settings'>('tasks')
-  const [settings] = useSettingsStore()
+  const {
+    data: { settings },
+    isLoading,
+  } = useStorage()
 
   useHotkeys('ctrl+/, meta+/', () => {
     setIsOpen(prev => !prev)
   })
+
+  if (isLoading) {
+    return null
+  }
 
   return (
     <>
@@ -24,11 +31,9 @@ export function Trigger() {
         exit={{ opacity: 0 }}
         onClick={() => setIsOpen(prev => !prev)}
         className={
-          'd-mask d-mask-squircle fixed bottom-25px right-25px z-[9999] h-56px w-56px cursor-pointer bg-cover bg-repeat'
+          'd-mask d-mask-squircle fixed bottom-25px right-25px h-56px w-56px cursor-pointer bg-cover bg-repeat'
         }
-        style={{
-          backgroundImage: `url(${settings.triggerImage})`,
-        }}
+        style={{ backgroundImage: `url(${settings.triggerImage})` }}
       />
 
       <AnimatePresence>

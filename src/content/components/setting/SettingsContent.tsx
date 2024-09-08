@@ -4,8 +4,7 @@ import { useDropzone } from 'react-dropzone'
 import { ImageCropModal } from './ImageCropModal'
 import { SettingItem } from './SettingItem'
 import packageJson from '../../../../package.json'
-import { useSettingsStore } from '@/hooks/useSettingsStore'
-import { setStorageData } from '@/lib/chromeStorage'
+import { useStorage } from '@/context/storageContext'
 
 const { version } = packageJson
 
@@ -19,8 +18,17 @@ const refreshIntervalOptions = [
 ]
 
 export function SettingsContent() {
-  const [settings] = useSettingsStore()
+  // const {
+  //   storage: { settings },
+  //   setSettings,
+  //   isInitialStateResolved,
+  // } = useStorageStore()
 
+  const {
+    data: { settings },
+    updateData,
+    isLoading,
+  } = useStorage()
   const [image, setImage] = useState<string | null>(null)
   const [isCropModalOpen, setIsCropModalOpen] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
@@ -44,10 +52,7 @@ export function SettingsContent() {
 
   const handleCropComplete = useCallback(
     async (croppedImage: string) => {
-      await setStorageData('settings', {
-        ...settings,
-        triggerImage: croppedImage,
-      })
+      updateData({ settings: { ...settings, triggerImage: croppedImage } })
       setIsCropModalOpen(false)
     },
     [settings],
@@ -55,11 +60,11 @@ export function SettingsContent() {
 
   const handleRefreshIntervalChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newRefreshInterval = Number(event.target.value)
-    setStorageData('settings', { ...settings, refreshInterval: newRefreshInterval })
+    updateData({ settings: { ...settings, refreshInterval: newRefreshInterval } })
   }
 
   return (
-    <div {...getRootProps()} className="relative flex-1 space-y-12px overflow-y-auto px-12px py-20px">
+    <div {...getRootProps()} className="relative flex flex-1 flex-col gap-12px overflow-y-auto px-12px py-20px">
       <input {...getInputProps()} ref={inputRef} />
       {isDragActive && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-80 backdrop-blur-sm">
@@ -104,7 +109,9 @@ export function SettingsContent() {
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          <img src={settings.triggerImage} alt="버튼 이미지 미리보기" className="h-full w-full object-cover" />
+          {!isLoading && (
+            <img src={settings.triggerImage} alt="버튼 이미지 미리보기" className="h-full w-full object-cover" />
+          )}
           {isHovering && (
             <div
               className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black bg-opacity-50 transition-opacity duration-200"

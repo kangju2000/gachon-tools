@@ -622,5 +622,4 @@ export const contentsData: Contents = {
       title: '고급웹프로그래밍',
     },
   ],
-  updateAt: '2023-10-24T11:24:04.212Z',
 }

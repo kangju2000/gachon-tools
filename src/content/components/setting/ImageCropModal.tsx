@@ -28,7 +28,7 @@ export function ImageCropModal({ image, onComplete, onClose }: ImageCropModalPro
   }, [croppedAreaPixels, image, onComplete])
 
   return (
-    <div className="z-100 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="flex h-400px w-300px flex-col gap-12px rounded-12px bg-white p-12px">
         <div className="relative h-full w-full overflow-hidden rounded-12px">
           <div className="absolute inset-0 bg-white" />

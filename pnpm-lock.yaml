@@ -6,7 +6,7 @@ settings:
 
 dependencies:
   cheerio:
-    specifier: ^1.0.0-rc.12
+    specifier: ^1.0.0
     version: 1.0.0
   clsx:
     specifier: ^2.1.1
