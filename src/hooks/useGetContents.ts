@@ -1,9 +1,7 @@
-// src/hooks/useGetContents.ts
-
 import { useEffect, useState } from 'react'
 
-import type { StorageData } from '@/lib/chromeStorage'
-import { getAllStorageData, setStorageData, DEFAULT_SETTINGS, setStorageDataPartial } from '@/lib/chromeStorage'
+import { useSettingsStore } from './useSettingsStore'
+import { getAllStorageData, setStorageDataPartial } from '@/lib/chromeStorage'
 import { getActivities, getAssignmentSubmitted, getCourses, getVideoSubmitted } from '@/services'
 import type { Contents } from '@/types'
 
@@ -24,7 +22,8 @@ const useGetContents = (options: Options) => {
     activityList: [],
     updateAt: new Date().toISOString(),
   })
-  const [settings, setSettings] = useState<StorageData['settings']>(DEFAULT_SETTINGS)
+
+  const [settings] = useSettingsStore()
 
   const getData = async () => {
     const courses = await getCourses()
@@ -56,7 +55,7 @@ const useGetContents = (options: Options) => {
 
   const getLocalData = async () => {
     const storedData = await getAllStorageData()
-    const { updateAt, courses, activities, settings: storedSettings } = storedData
+    const { updateAt, courses, activities } = storedData
 
     if (!updateAt || !courses || !activities) {
       setIsLoading(true)
@@ -68,12 +67,6 @@ const useGetContents = (options: Options) => {
       activityList: activities,
       updateAt,
     })
-
-    if (storedSettings) {
-      setSettings(storedSettings)
-    } else {
-      await setStorageData('settings', DEFAULT_SETTINGS)
-    }
 
     setPos(0)
     setIsLoading(false)
@@ -101,7 +94,7 @@ const useGetContents = (options: Options) => {
     getLocalData()
   }, [])
 
-  return { data, pos, isLoading, refetch, settings, setSettings }
+  return { data, pos, isLoading, refetch }
 }
 
 export default useGetContents

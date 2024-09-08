@@ -6,6 +6,7 @@ export interface StorageData {
   updateAt: string
   settings: {
     refreshTime: number
+    'trigger-bg-image': string
   }
 }
 
@@ -49,16 +50,4 @@ async function getAllStorageData(): Promise<Partial<StorageData>> {
   })
 }
 
-const DEFAULT_SETTINGS: StorageData['settings'] = {
-  refreshTime: 1000 * 60 * 20, // 20 minutes
-}
-
-export {
-  getStorageData,
-  setStorageData,
-  setStorageDataPartial,
-  removeStorageData,
-  clearStorageData,
-  getAllStorageData,
-  DEFAULT_SETTINGS,
-}
+export { getStorageData, setStorageData, setStorageDataPartial, removeStorageData, clearStorageData, getAllStorageData }

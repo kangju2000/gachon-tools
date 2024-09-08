@@ -45,7 +45,7 @@ export default defineManifest(async () => ({
   options_page: 'src/options/index.html',
   web_accessible_resources: [
     {
-      resources: ['assets/js/*.js', 'assets/css/*.css'],
+      resources: ['assets/js/*.js', 'assets/css/*.css', '*.webp', '*.png', '*.jpg', '*.jpeg', '*.gif'],
       matches: ['*://*/*'],
     },
   ],
