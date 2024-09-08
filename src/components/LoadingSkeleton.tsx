@@ -20,7 +20,7 @@ export function LoadingSkeleton({ progress }: LoadingSkeletonProps) {
           transition={{ duration: 0.5 }}
         />
       </motion.div>
-      {[...Array(5)].map((_, index) => (
+      {[...Array(4)].map((_, index) => (
         <motion.div
           key={index}
           className="rounded-12px bg-white p-12px shadow-sm"
