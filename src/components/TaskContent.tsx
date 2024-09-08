@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNowStrict } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { useEffect, useRef, useState } from 'react'
 
@@ -21,7 +21,7 @@ export function TaskContent() {
 
   const filteredTasks = useFilteredActivityList(contentData.activityList, '-1', taskTab === 'ongoing' ? 0 : 1, false)
 
-  const formattedUpdateTime = formatDistanceToNow(new Date(contentData.updateAt), { addSuffix: true, locale: ko })
+  const formattedUpdateTime = formatDistanceToNowStrict(new Date(contentData.updateAt), { addSuffix: true, locale: ko })
 
   useEffect(() => {
     scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' })
