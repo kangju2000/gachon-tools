@@ -10,7 +10,7 @@ import { contentsData } from '@/data/dummyData'
 import useFilteredActivityList from '@/hooks/useFilteredActivityList'
 import useGetContents from '@/hooks/useGetContents'
 
-const isDevelopment = process.env.NODE_ENV !== 'development'
+const isDevelopment = process.env.NODE_ENV === 'development'
 
 export function TaskContent() {
   const [taskTab, setTaskTab] = useState<'ongoing' | 'all'>('ongoing')
