@@ -13,11 +13,6 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.8.1",
-    "@chakra-ui/styled-system": "^2.9.1",
-    "@chakra-ui/theme-tools": "^2.1.1",
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
     "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.1.1",
     "date-fns": "^2.30.0",
@@ -25,12 +20,11 @@
     "react-dom": "^18.2.0",
     "react-hotkeys-hook": "^4.4.1",
     "react-shadow": "^20.4.0",
-    "tailwind-merge": "^2.5.2"
+    "tailwind-merge": "^2.5.2",
+    "framer-motion": "^10.16.4"
   },
   "devDependencies": {
-    "@chakra-ui/cli": "^2.4.1",
     "@crxjs/vite-plugin": "^1.0.14",
-    "@emotion/cache": "^11.13.1",
     "@playwright/test": "^1.39.0",
     "@thedutchcoder/postcss-rem-to-px": "^0.0.2",
     "@types/chrome": "^0.0.268",
@@ -46,7 +40,6 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-prettier": "^5.0.1",
-    "framer-motion": "^10.16.4",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "postcss-prefix-selector": "^1.16.1",
