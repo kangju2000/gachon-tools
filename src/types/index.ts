@@ -29,15 +29,13 @@ export type Contents = {
 }
 
 export type StorageData = {
-  data: {
-    meta: {
-      version: string
-      updateAt: string
-    }
-    contents: Contents
-    settings: {
-      refreshInterval: number
-      triggerImage: string
-    }
+  meta: {
+    version: string
+    updateAt: string
+  }
+  contents: Contents
+  settings: {
+    refreshInterval: number
+    triggerImage: string
   }
 }

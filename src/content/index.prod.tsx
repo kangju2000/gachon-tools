@@ -4,9 +4,16 @@ import { App } from './App'
 import styles from '@/styles/index.css?inline'
 import createShadowRoot from '@/utils/createShadowRoot'
 
-// remove scroll to top button
-document.getElementById('back-top')?.remove()
+function initApp() {
+  // remove scroll to top button
+  document.getElementById('back-top')?.remove()
 
-const root = createShadowRoot([styles, cropperStyles])
+  const root = createShadowRoot([styles, cropperStyles])
+  root.render(<App />)
+}
 
-root.render(<App />)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp)
+} else {
+  initApp()
+}

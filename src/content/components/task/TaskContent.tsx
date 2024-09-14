@@ -6,10 +6,10 @@ import { AnimatedRefreshButton } from './AnimatedRefreshButton'
 import { LoadingSkeleton } from './LoadingSkeleton'
 import { TabNavigation } from './TabNavigation'
 import { TaskList } from './TaskList'
-import { useStorage } from '@/context/storageContext'
 import { contentsData } from '@/data/dummyData'
-import { useContents } from '@/hooks/useContents'
+import { useContentsFetcher } from '@/hooks/useContentsFetcher'
 import useFilteredActivityList from '@/hooks/useFilteredActivityList'
+import { useStorageStore } from '@/storage/useStorageStore'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -17,11 +17,9 @@ export function TaskContent() {
   const [taskTab, setTaskTab] = useState<'ongoing' | 'all'>('ongoing')
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  const { contents, progress, isLoading, refetch } = useContents()
+  const { progress, isLoading, refetch } = useContentsFetcher()
 
-  const {
-    data: { meta },
-  } = useStorage()
+  const { contents, meta } = useStorageStore()
   const contentData = isDevelopment ? contentsData : contents
 
   const filteredTasks = useFilteredActivityList(contentData.activityList, '-1', taskTab === 'ongoing' ? 0 : 1, false)

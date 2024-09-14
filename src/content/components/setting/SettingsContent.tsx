@@ -4,7 +4,7 @@ import { useDropzone } from 'react-dropzone'
 import { ImageCropModal } from './ImageCropModal'
 import { SettingItem } from './SettingItem'
 import packageJson from '../../../../package.json'
-import { useStorage } from '@/context/storageContext'
+import { useStorageStore } from '@/storage/useStorageStore'
 
 const { version } = packageJson
 
@@ -18,17 +18,7 @@ const refreshIntervalOptions = [
 ]
 
 export function SettingsContent() {
-  // const {
-  //   storage: { settings },
-  //   setSettings,
-  //   isInitialStateResolved,
-  // } = useStorageStore()
-
-  const {
-    data: { settings },
-    updateData,
-    isLoading,
-  } = useStorage()
+  const { settings, updateData } = useStorageStore()
   const [image, setImage] = useState<string | null>(null)
   const [isCropModalOpen, setIsCropModalOpen] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
@@ -109,9 +99,8 @@ export function SettingsContent() {
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          {!isLoading && (
-            <img src={settings.triggerImage} alt="버튼 이미지 미리보기" className="h-full w-full object-cover" />
-          )}
+          <img src={settings.triggerImage} alt="버튼 이미지 미리보기" className="h-full w-full object-cover" />
+
           {isHovering && (
             <div
               className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black bg-opacity-50 transition-opacity duration-200"

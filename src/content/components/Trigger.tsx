@@ -5,24 +5,21 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { SettingsContent } from './setting'
 import { Navigation } from '@/content/components/Navigation'
 import { TaskContent } from '@/content/components/task'
-import { useStorage } from '@/context/storageContext'
+import { useStorageStore } from '@/storage/useStorageStore'
 
 export function Trigger() {
   const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'tasks' | 'settings'>('tasks')
-  const {
-    data: { settings },
-    isLoading,
-  } = useStorage()
+
+  const { settings, status } = useStorageStore()
 
   useHotkeys('ctrl+/, meta+/', () => {
     setIsOpen(prev => !prev)
   })
 
-  if (isLoading) {
+  if (status === 'initializing') {
     return null
   }
-
   return (
     <>
       <motion.div
