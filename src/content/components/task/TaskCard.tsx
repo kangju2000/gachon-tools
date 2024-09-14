@@ -9,6 +9,7 @@ type TaskCardProps = {
 }
 
 export function TaskCard({ task }: TaskCardProps) {
+  const startAtDate = new Date(task.startAt)
   const endAtDate = new Date(task.endAt)
   const dDay = isValid(endAtDate) ? formatDistanceToNowStrict(endAtDate, { addSuffix: true, locale: ko }) : null
 
@@ -20,7 +21,7 @@ export function TaskCard({ task }: TaskCardProps) {
         <div className="flex gap-4px">
           <span
             className={cn('mr-4px mt-1px h-fit shrink-0 rounded-8px px-6px py-2px text-11px', {
-              'bg-gray-100 text-gray-800': task.type === 'video',
+              'bg-lime-100 text-lime-800': task.type === 'video',
               'bg-blue-100 text-blue-800': task.type === 'assignment',
             })}
           >
@@ -37,11 +38,11 @@ export function TaskCard({ task }: TaskCardProps) {
           <span
             className={cn('rounded-8px px-6px py-2px text-11px', {
               'bg-green-100 text-green-800': task.hasSubmitted,
-              'bg-yellow-100 text-yellow-800': !task.hasSubmitted && !task.startAt,
-              'bg-red-100 text-red-800': !task.hasSubmitted && task.startAt,
+              'bg-red-100 text-red-800': !task.hasSubmitted,
+              'bg-gray-100 text-gray-800': isValid(startAtDate) && task.id === '',
             })}
           >
-            {task.hasSubmitted ? '제출완료' : task.startAt !== '' ? '미제출' : '예정됨'}
+            {task.hasSubmitted ? '제출완료' : isValid(startAtDate) && task.id !== '' ? '미제출' : '예정됨'}
           </span>
         </div>
       </div>

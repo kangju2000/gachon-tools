@@ -1,8 +1,9 @@
+import type { ActivityStatus } from '@/types/storage'
 import { cn } from '@/utils/cn'
 
 type TabNavigationProps = {
-  activeTab: 'ongoing' | 'all'
-  setActiveTab: (tab: 'ongoing' | 'all') => void
+  activeTab: ActivityStatus
+  setActiveTab: (tab: ActivityStatus) => void
 }
 
 export function TabNavigation({ activeTab, setActiveTab }: TabNavigationProps) {

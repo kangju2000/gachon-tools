@@ -17,15 +17,17 @@ const createStorageStore = () => {
   const initialStore: StorageStore = {
     meta: { version: '', updateAt: '' },
     contents: { courseList: [], activityList: [] },
-    settings: { refreshInterval: 0, triggerImage: '' },
+    settings: {
+      refreshInterval: 0,
+      triggerImage: '',
+      filterOptions: { status: 'ongoing', sortBy: 'endAt', sortOrder: 'asc', kind: 'all' },
+    },
     status: 'initializing',
     error: null,
-    updateData: async () => {
-      // This will be replaced in the actual implementation
-    },
+    updateData: async () => {},
   }
 
-  const useStorageStore = create<StorageStore>((set, get) => ({
+  const useStorageStore = create<StorageStore>(set => ({
     ...initialStore,
 
     updateData: async (newData: Partial<StorageData>) => {

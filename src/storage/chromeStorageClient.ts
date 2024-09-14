@@ -15,6 +15,7 @@ const DEFAULT_STORAGE_DATA: StorageData = {
   settings: {
     refreshInterval: 1000 * 60 * 20, // 20 minutes
     triggerImage: chrome.runtime.getURL('/assets/Lee-Gil-ya.webp'),
+    filterOptions: { status: 'ongoing', sortBy: 'endAt', sortOrder: 'asc', kind: 'all' },
   },
 }
 

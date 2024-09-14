@@ -1,68 +1,64 @@
-import { isValid } from 'date-fns'
-
-import { TAB_LIST } from '@/constants'
 import type { ActivityType } from '@/types'
-import { pipe } from '@/utils'
+import type { ActivityKind, ActivityStatus, SortBy, SortOrder } from '@/types/storage'
 
-const activityListByCourse = (activityList: ActivityType[], id: string) => {
-  if (id === '-1') {
-    return activityList
-  }
-
-  return activityList.filter(activity => activity.courseId === id)
+interface FilterOptions {
+  sortBy: SortBy
+  sortOrder: SortOrder
+  status: ActivityStatus
+  kind: ActivityKind
+  courseId?: string
+  searchQuery?: string
 }
 
-const sortActivityList = (activityList: ActivityType[]) => {
-  const [endAtList, noEndAtList] = activityList.reduce<[ActivityType[], ActivityType[]]>(
-    (acc, cur) => {
-      if (isValid(new Date(cur.endAt))) {
-        return [[...acc[0], cur], acc[1]]
-      }
+const isOngoing = (activity: ActivityType, now: Date): boolean =>
+  new Date(activity.startAt) <= now && now <= new Date(activity.endAt)
 
-      return [acc[0], [...acc[1], cur]]
-    },
-    [[], []],
-  )
+const isCompleted = (activity: ActivityType, now: Date): boolean =>
+  activity.hasSubmitted || new Date(activity.endAt) < now
 
-  const sortedList = endAtList.sort((a, b) => {
-    return new Date(a.endAt).getTime() - new Date(b.endAt).getTime()
-  })
+const isUpcoming = (activity: ActivityType, now: Date): boolean => new Date(activity.startAt) > now
 
-  return [...sortedList, ...noEndAtList]
-}
-
-const activityListByTabIndex = (activityList: ActivityType[], tabIndex: number) => {
-  if (TAB_LIST[tabIndex] === TAB_LIST[0]) {
-    return activityList.filter(activity => {
-      if (activity.endAt) return new Date(activity.endAt).getTime() > new Date().getTime()
-
+const filterByStatus = (activity: ActivityType, status: ActivityStatus, now: Date): boolean => {
+  switch (status) {
+    case 'ongoing':
+      return isOngoing(activity, now)
+    case 'completed':
+      return isCompleted(activity, now)
+    case 'upcoming':
+      return isUpcoming(activity, now)
+    case 'all':
       return true
-    })
   }
-
-  return activityList
 }
 
-const activityListBySubmitted = (activityList: ActivityType[], isChecked: boolean) => {
-  if (isChecked) {
-    return activityList.filter(activity => !activity.hasSubmitted)
-  }
-  return activityList
+const filterByKind = (activity: ActivityType, kind: ActivityKind): boolean => kind === 'all' || activity.type === kind
+
+const filterByCourse = (activity: ActivityType, courseId?: string): boolean =>
+  !courseId || activity.courseId === courseId
+
+const filterBySearchQuery = (activity: ActivityType, searchQuery?: string): boolean => {
+  if (!searchQuery) return true
+  const query = searchQuery.toLowerCase()
+  return activity.title.toLowerCase().includes(query) || activity.courseTitle.toLowerCase().includes(query)
 }
 
-const useFilteredActivityList = (
-  activityList: ActivityType[],
-  selectedCourseId: string,
-  tabIndex: number,
-  isChecked: boolean,
-) => {
-  return pipe(
-    activityList,
-    activityList => activityListByCourse(activityList, selectedCourseId),
-    activityList => sortActivityList(activityList),
-    activityList => activityListByTabIndex(activityList, tabIndex),
-    activityList => activityListBySubmitted(activityList, isChecked),
-  )
+const sortActivities = (a: ActivityType, b: ActivityType, sortBy: SortBy, sortOrder: SortOrder): number => {
+  const aDate = new Date(a[sortBy])
+  const bDate = new Date(b[sortBy])
+
+  return sortOrder === 'asc' ? aDate.getTime() - bDate.getTime() : bDate.getTime() - aDate.getTime()
 }
 
-export default useFilteredActivityList
+export function filterAndSortActivities(activities: ActivityType[], options: FilterOptions): ActivityType[] {
+  const now = new Date()
+
+  return activities
+    .filter(
+      activity =>
+        filterByStatus(activity, options.status, now) &&
+        filterByKind(activity, options.kind) &&
+        filterByCourse(activity, options.courseId) &&
+        filterBySearchQuery(activity, options.searchQuery),
+    )
+    .sort((a, b) => sortActivities(a, b, options.sortBy, options.sortOrder))
+}
