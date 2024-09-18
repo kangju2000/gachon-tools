@@ -1,8 +1,9 @@
 import { format, differenceInDays, differenceInHours } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { Video, FileText, CheckCircle, XCircle } from 'lucide-react'
+import { Video, FileText, CheckCircle } from 'lucide-react'
 
 import type { Activity } from '@/types'
+import { cn } from '@/utils/cn'
 
 type TaskCardProps = {
   task: Activity
@@ -45,18 +46,20 @@ export function TaskCard({ task }: TaskCardProps) {
 
   return (
     <a href={taskLink} rel="noopener noreferrer" className="block">
-      <div className="relative cursor-pointer rounded-12px bg-white p-12px shadow-sm transition-shadow duration-300 hover:shadow-md">
+      <div className="relative cursor-pointer rounded-12px border border-transparent bg-white p-12px shadow-sm transition-shadow duration-300 hover:border hover:border-gray-200 hover:bg-gray-50 hover:shadow-md">
         <div className="mb-4px flex items-start">
           <span className="mr-8px mt-2px text-gray-500">
             {task.type === 'video' ? <Video size={16} /> : <FileText size={16} />}
           </span>
           <div className="flex flex-1 items-start">
             <h3 className="flex-1 break-keep text-14px font-semibold text-gray-700">{task.title}</h3>
-            {task.hasSubmitted ? (
-              <CheckCircle size={16} className="ml-4px mt-2px flex-shrink-0 text-emerald-500" />
-            ) : (
-              <XCircle size={16} className="ml-4px mt-2px flex-shrink-0 text-rose-500" />
-            )}
+            <CheckCircle
+              size={16}
+              className={cn('ml-4px mt-2px flex-shrink-0', {
+                'text-emerald-500': task.hasSubmitted,
+                'text-rose-400': !task.hasSubmitted,
+              })}
+            />
           </div>
         </div>
         <div className="flex items-center justify-between">

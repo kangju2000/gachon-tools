@@ -32,7 +32,7 @@ export const useContentsFetcher = () => {
       }),
     ).then(activityList => activityList.flat())
 
-    updateContents({ courseList: [{ id: '-1', title: '전체' }, ...courseList], activityList })
+    updateContents({ courseList: [{ id: '-1', title: '전체 과목' }, ...courseList], activityList })
     updateMeta({ updateAt: new Date().toISOString() })
 
     setIsLoading(false)

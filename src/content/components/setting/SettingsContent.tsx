@@ -1,4 +1,4 @@
-import { Upload } from 'lucide-react'
+import { Camera } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
@@ -6,6 +6,7 @@ import { ImageCropModal } from './ImageCropModal'
 import { SettingItem } from './SettingItem'
 import packageJson from '../../../../package.json'
 import { useStorageStore } from '@/storage/useStorageStore'
+import { cn } from '@/utils/cn'
 
 const { version } = packageJson
 
@@ -22,7 +23,6 @@ export function SettingsContent() {
   const { settings, updateSettings } = useStorageStore()
   const [image, setImage] = useState<string | null>(null)
   const [isCropModalOpen, setIsCropModalOpen] = useState(false)
-  const [isHovering, setIsHovering] = useState(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -55,66 +55,70 @@ export function SettingsContent() {
   }
 
   return (
-    <>
-      <div className="bg-white bg-opacity-50 px-16px py-12px">
-        <div className="mb-12px flex h-32px items-center justify-between">
-          <h2 className="text-16px font-bold">설정</h2>
+    <div className="relative flex flex-1 flex-col overflow-y-auto bg-gray-50">
+      <div className="mb-12px mt-4px bg-white bg-opacity-50 px-16px py-12px">
+        <h2 className="text-16px font-bold">설정</h2>
+      </div>
+
+      <div className="flex flex-col gap-16px p-16px">
+        <div className="rounded-lg bg-white p-16px shadow-sm">
+          <div className="flex items-center justify-center">
+            <div {...getRootProps()} className="relative">
+              <div
+                className={cn(
+                  'relative rounded-full',
+                  isDragActive ? 'border-2px border-dashed border-blue-500' : 'border-2px border-transparent',
+                )}
+              >
+                <div className="relative h-120px w-120px overflow-hidden rounded-full">
+                  <img src={settings.triggerImage} alt="버튼 이미지" className="h-full w-full object-cover" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25">
+                    <div
+                      className="flex h-36px w-36px cursor-pointer items-center justify-center rounded-full bg-white bg-opacity-75 transition-all duration-200 hover:bg-opacity-100"
+                      onClick={() => inputRef.current?.click()}
+                    >
+                      <Camera size={20} className="text-gray-700" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p className="mt-8px text-center text-12px text-gray-400">클릭하거나 이미지를 끌어다 놓아 변경하세요</p>
+        </div>
+
+        <div className="rounded-lg bg-white p-16px shadow-sm">
+          <SettingItem title="새로고침 시간" description="과제 목록을 자동으로 갱신할 간격을 설정합니다.">
+            <select
+              className="d-select d-select-bordered w-full"
+              value={settings.refreshInterval}
+              onChange={handleRefreshIntervalChange}
+            >
+              {refreshIntervalOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </SettingItem>
         </div>
       </div>
 
-      <div {...getRootProps()} className="relative flex flex-1 flex-col gap-16px overflow-y-auto px-16px py-20px">
-        <input {...getInputProps()} ref={inputRef} />
-        {isDragActive && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-80 backdrop-blur-sm">
-            <div className="text-center">
-              <Upload className="mx-auto h-12 w-12 text-gray-400" />
-              <p className="mt-2 text-lg font-semibold text-gray-700">이미지를 여기에 놓아주세요</p>
-            </div>
-          </div>
-        )}
+      <input {...getInputProps()} ref={inputRef} className="hidden" />
 
-        <SettingItem title="새로고침 시간" description="새로고침 시간을 설정합니다.">
-          <select
-            className="d-select d-select-bordered d-select-sm w-full max-w-200px"
-            value={settings.refreshInterval}
-            onChange={handleRefreshIntervalChange}
-          >
-            {refreshIntervalOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </SettingItem>
-
-        <SettingItem
-          title="버튼 이미지"
-          description="버튼의 배경 이미지를 설정합니다.
-파일을 끌어다 놓거나 클릭하여 이미지를 업로드하세요."
-        >
-          <div
-            className="relative h-72px w-72px flex-shrink-0 overflow-hidden rounded-md border-2px border-gray-300"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-          >
-            <img src={settings.triggerImage} alt="버튼 이미지 미리보기" className="h-full w-full object-cover" />
-
-            {isHovering && (
-              <div
-                className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black bg-opacity-50 transition-opacity duration-200"
-                onClick={() => inputRef.current?.click()}
-              >
-                <Upload className="h-24px w-24px text-white" />
-              </div>
-            )}
-          </div>
-        </SettingItem>
-
-        {isCropModalOpen && image && (
-          <ImageCropModal image={image} onComplete={handleCropComplete} onClose={() => setIsCropModalOpen(false)} />
-        )}
-        <span className="absolute bottom-12px right-12px text-12px text-gray-500">v{version}</span>
+      {isCropModalOpen && image && (
+        <ImageCropModal
+          image={image}
+          onComplete={handleCropComplete}
+          onClose={() => {
+            setIsCropModalOpen(false)
+            setImage(null)
+          }}
+        />
+      )}
+      <div className="absolute bottom-8px left-16px">
+        <span className="text-12px text-gray-500">버전 {version}</span>
       </div>
-    </>
+    </div>
   )
 }

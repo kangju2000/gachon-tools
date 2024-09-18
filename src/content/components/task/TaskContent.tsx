@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { LoadingSkeleton } from './LoadingSkeleton'
 import { TaskList } from './TaskList'
-import { filterActivities, getAvailableCourses } from '../task/filterActivities'
+import { filterActivities } from '../task/filterActivities'
 import { useContentsFetcher } from '@/hooks/useContentsFetcher'
 import { useStorageStore } from '@/storage/useStorageStore'
 import type { ActivityStatus } from '@/types/storage'
@@ -20,7 +20,6 @@ export function TaskContent() {
   const { progress, isLoading, refetch } = useContentsFetcher()
   const { meta, contents, filterOptions, updateFilterOptions } = useStorageStore()
 
-  const availableCourses = getAvailableCourses(contents.activityList)
   const filteredTasks = filterActivities(contents.activityList, {
     ...filterOptions,
     searchQuery,
@@ -28,25 +27,14 @@ export function TaskContent() {
 
   const formattedUpdateTime = formatDistanceToNowStrict(new Date(meta.updateAt), { addSuffix: true, locale: ko })
 
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [filteredTasks])
-
   const statusMap: Record<ActivityStatus, string> = {
     ongoing: '진행 중인 과제',
-    completed: '완료한 과제',
     all: '전체 과제',
   }
 
-  const getFilterSummary = () => {
-    const parts = []
-    parts.push(statusMap[filterOptions.status])
-    if (filterOptions.courseId !== '') {
-      const course = availableCourses.find(c => c.id === filterOptions.courseId)
-      if (course) parts.push(course.title)
-    }
-    return parts.join(' · ')
-  }
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [filteredTasks])
 
   return (
     <>
@@ -75,7 +63,16 @@ export function TaskContent() {
         </div>
 
         <div className="flex items-center justify-between text-12px text-gray-500">
-          <span className="truncate">{getFilterSummary()}</span>
+          <div className="flex flex-wrap items-center gap-4px">
+            <span className="flex items-center rounded-full bg-blue-100 px-8px py-2px text-11px text-blue-700">
+              {statusMap[filterOptions.status]}
+            </span>
+
+            <span className="flex items-center rounded-full bg-blue-100 px-8px py-2px text-11px text-blue-700">
+              {contents.courseList.find(course => course.id === filterOptions.courseId)?.title || '전체 과목'}
+            </span>
+          </div>
+
           <button
             className="d-btn d-btn-ghost d-btn-sm flex items-center p-1"
             onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -104,11 +101,10 @@ export function TaskContent() {
                     {Object.entries(statusMap).map(([key, value]) => (
                       <button
                         key={key}
-                        className={`rounded-full px-8px py-2px text-11px ${
-                          filterOptions.status === key
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
+                        className={cn('rounded-full px-8px py-2px text-11px', {
+                          'bg-blue-100 text-blue-700': filterOptions.status === key,
+                          'bg-gray-100 text-gray-700 hover:bg-gray-200': filterOptions.status !== key,
+                        })}
                         onClick={() => updateFilterOptions({ status: key as ActivityStatus })}
                       >
                         {value}
@@ -119,21 +115,12 @@ export function TaskContent() {
                 <div>
                   <label className="mb-2px block text-11px font-medium text-gray-600">과목</label>
                   <div className="flex flex-wrap gap-4px">
-                    <button
-                      className={cn('rounded-full px-8px py-2px text-11px', {
-                        'bg-blue-500 text-white': filterOptions.courseId === '',
-                        'bg-gray-200 text-gray-700 hover:bg-gray-300': filterOptions.courseId !== '',
-                      })}
-                      onClick={() => updateFilterOptions({ courseId: '' })}
-                    >
-                      전체
-                    </button>
-                    {availableCourses.map(course => (
+                    {contents.courseList.map(course => (
                       <button
                         key={course.id}
                         className={cn('rounded-full px-8px py-2px text-11px', {
-                          'bg-blue-500 text-white': filterOptions.courseId === course.id,
-                          'bg-gray-200 text-gray-700 hover:bg-gray-300': filterOptions.courseId !== course.id,
+                          'bg-blue-100 text-blue-700': filterOptions.courseId === course.id,
+                          'bg-gray-100 text-gray-700 hover:bg-gray-300': filterOptions.courseId !== course.id,
                         })}
                         onClick={() => updateFilterOptions({ courseId: course.id })}
                       >

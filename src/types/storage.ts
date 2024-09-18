@@ -13,7 +13,7 @@ export type StorageData = {
   }
 }
 
-export type ActivityStatus = 'ongoing' | 'completed' | 'all'
+export type ActivityStatus = 'ongoing' | 'all'
 
 export type FilterOptions = {
   status: ActivityStatus

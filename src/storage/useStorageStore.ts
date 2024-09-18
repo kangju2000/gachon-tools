@@ -25,8 +25,8 @@ type StorageStore = ExtendedStorageData & {
 
 const initialStorageData: StorageData = {
   meta: { version: packageJson.version, updateAt: '0' },
-  contents: { courseList: [{ id: '', title: '전체' }], activityList: [] },
-  filterOptions: { status: 'ongoing', courseId: '' },
+  contents: { courseList: [{ id: '-1', title: '전체 과목' }], activityList: [] },
+  filterOptions: { status: 'ongoing', courseId: '-1' },
   settings: {
     refreshInterval: 1000 * 60 * 20, // 20 minutes
     triggerImage: chrome.runtime.getURL('/assets/Lee-Gil-ya.webp'),

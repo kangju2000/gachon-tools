@@ -9,7 +9,6 @@ interface FilterOptions extends _FilterOptions {
 
 const isOngoing = (activity: Activity, now: Date): boolean =>
   new Date(activity.startAt) <= now && now <= new Date(activity.endAt)
-const isCompleted = (activity: Activity): boolean => activity.hasSubmitted
 
 const isValidActivity = (activity: Activity): boolean =>
   activity.id.trim() !== '' && isValid(new Date(activity.startAt)) && isValid(new Date(activity.endAt))
@@ -18,14 +17,13 @@ const filterByStatus = (activity: Activity, status: ActivityStatus, now: Date): 
   switch (status) {
     case 'ongoing':
       return isOngoing(activity, now)
-    case 'completed':
-      return isCompleted(activity)
     case 'all':
       return true
   }
 }
 
-const filterByCourse = (activity: Activity, courseId?: string): boolean => !courseId || activity.courseId === courseId
+const filterByCourse = (activity: Activity, courseId: string): boolean =>
+  courseId === '-1' || activity.courseId === courseId
 
 const filterBySearchQuery = (activity: Activity, searchQuery?: string): boolean => {
   if (!searchQuery) return true
@@ -45,8 +43,8 @@ export function filterActivities(activities: Activity[], options: FilterOptions)
   )
 }
 
-export function getAvailableCourses(activities: Activity[]): Course[] {
-  const courseSet = new Set<string>()
-  activities.forEach(activity => courseSet.add(activity.courseId))
-  return Array.from(courseSet).map(id => ({ id, title: activities.find(a => a.courseId === id)?.courseTitle || '' }))
-}
+// export function getAvailableCourses(activities: Activity[]): Course[] {
+//   const courseSet = new Set<string>()
+//   activities.forEach(activity => courseSet.add(activity.courseId))
+//   return Array.from(courseSet).map(id => ({ id, title: activities.find(a => a.courseId === id)?.courseTitle || '' }))
+// }

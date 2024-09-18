@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import Cropper from 'react-easy-crop'
 
 import { getCroppedImg } from '@/utils/cropImage'
@@ -26,6 +26,24 @@ export function ImageCropModal({ image, onComplete, onClose }: ImageCropModalPro
       onComplete(croppedImage)
     }
   }, [croppedAreaPixels, image, onComplete])
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose()
+        return
+      }
+
+      if (event.key === 'Enter') {
+        handleComplete()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
