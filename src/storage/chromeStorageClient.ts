@@ -2,10 +2,10 @@ import type { StorageData } from '@/types'
 
 class ChromeStorageClient {
   private static instance: ChromeStorageClient
-  private storageArea: chrome.storage.StorageArea
+  private storage: chrome.storage.LocalStorageArea
 
   private constructor() {
-    this.storageArea = chrome.storage.sync || chrome.storage.local
+    this.storage = chrome.storage.local
   }
 
   public static getInstance(): ChromeStorageClient {
@@ -17,7 +17,7 @@ class ChromeStorageClient {
 
   public async getData(): Promise<StorageData> {
     return new Promise((resolve, reject) => {
-      this.storageArea.get(null, result => {
+      this.storage.get(null, result => {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message))
         } else {
@@ -29,7 +29,7 @@ class ChromeStorageClient {
 
   public async setData(data: Partial<StorageData>): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.storageArea.set(data, () => {
+      this.storage.set(data, () => {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message))
         } else {
@@ -41,7 +41,7 @@ class ChromeStorageClient {
 
   public async removeData(keys: string | string[]): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.storageArea.remove(keys, () => {
+      this.storage.remove(keys, () => {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message))
         } else {
@@ -53,7 +53,7 @@ class ChromeStorageClient {
 
   public async clearData(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.storageArea.clear(() => {
+      this.storage.clear(() => {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message))
         } else {
@@ -65,7 +65,7 @@ class ChromeStorageClient {
 
   public async clearAllData(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.storageArea.clear(() => {
+      this.storage.clear(() => {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message))
         } else {
@@ -77,7 +77,7 @@ class ChromeStorageClient {
 
   public async getDataByKey<K extends keyof StorageData>(key: K): Promise<StorageData[K]> {
     return new Promise((resolve, reject) => {
-      this.storageArea.get(key, result => {
+      this.storage.get(key, result => {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message))
         } else {

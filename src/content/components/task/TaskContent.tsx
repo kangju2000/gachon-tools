@@ -6,10 +6,11 @@ import { useEffect, useRef, useState } from 'react'
 
 import { LoadingSkeleton } from './LoadingSkeleton'
 import { TaskList } from './TaskList'
+import { filterActivities, getAvailableCourses } from '../task/filterActivities'
 import { useContentsFetcher } from '@/hooks/useContentsFetcher'
-import { filterAndSortActivities } from '@/hooks/useFilteredActivityList'
 import { useStorageStore } from '@/storage/useStorageStore'
-import type { ActivityStatus, SortBy, SortOrder } from '@/types/storage'
+import type { ActivityStatus } from '@/types/storage'
+import { cn } from '@/utils/cn'
 
 export function TaskContent() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -19,7 +20,8 @@ export function TaskContent() {
   const { progress, isLoading, refetch } = useContentsFetcher()
   const { meta, contents, filterOptions, updateFilterOptions } = useStorageStore()
 
-  const filteredTasks = filterAndSortActivities(contents.activityList, {
+  const availableCourses = getAvailableCourses(contents.activityList)
+  const filteredTasks = filterActivities(contents.activityList, {
     ...filterOptions,
     searchQuery,
   })
@@ -30,23 +32,19 @@ export function TaskContent() {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }, [filteredTasks])
 
-  const statusMap = {
-    ongoing: '진행중',
-    upcoming: '예정',
-    completed: '완료',
-    all: '전체',
-  }
-
-  const sortByMap = {
-    endAt: '마감일',
-    startAt: '시작일',
-    title: '제목',
+  const statusMap: Record<ActivityStatus, string> = {
+    ongoing: '진행 중인 과제',
+    completed: '완료한 과제',
+    all: '전체 과제',
   }
 
   const getFilterSummary = () => {
     const parts = []
-    if (filterOptions.status !== 'all') parts.push(statusMap[filterOptions.status])
-    parts.push(`${sortByMap[filterOptions.sortBy]} ${filterOptions.sortOrder === 'asc' ? '오름차순' : '내림차순'}`)
+    parts.push(statusMap[filterOptions.status])
+    if (filterOptions.courseId !== '') {
+      const course = availableCourses.find(c => c.id === filterOptions.courseId)
+      if (course) parts.push(course.title)
+    }
     return parts.join(' · ')
   }
 
@@ -77,7 +75,7 @@ export function TaskContent() {
         </div>
 
         <div className="flex items-center justify-between text-12px text-gray-500">
-          <span>{getFilterSummary()}</span>
+          <span className="truncate">{getFilterSummary()}</span>
           <button
             className="d-btn d-btn-ghost d-btn-sm flex items-center p-1"
             onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -100,43 +98,49 @@ export function TaskContent() {
               className="overflow-hidden"
             >
               <div className="mt-8px space-y-8px rounded-lg border border-gray-200 bg-white p-8px shadow-sm">
-                <div className="grid grid-cols-2 gap-8px">
-                  <div>
-                    <label className="mb-2px block text-11px font-medium text-gray-600">상태</label>
-                    <select
-                      className="d-select d-select-bordered d-select-sm w-full"
-                      value={filterOptions.status}
-                      onChange={e => updateFilterOptions({ status: e.target.value as ActivityStatus })}
-                    >
-                      <option value="ongoing">진행중</option>
-                      <option value="upcoming">예정</option>
-                      <option value="completed">완료</option>
-                      <option value="all">전체</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="mb-2px block text-11px font-medium text-gray-600">정렬 기준</label>
-                    <select
-                      className="d-select d-select-bordered d-select-sm w-full"
-                      value={filterOptions.sortBy}
-                      onChange={e => updateFilterOptions({ sortBy: e.target.value as SortBy })}
-                    >
-                      <option value="endAt">마감일</option>
-                      <option value="startAt">시작일</option>
-                      <option value="title">제목</option>
-                    </select>
+                <div>
+                  <label className="mb-2px block text-11px font-medium text-gray-600">상태</label>
+                  <div className="flex gap-4px">
+                    {Object.entries(statusMap).map(([key, value]) => (
+                      <button
+                        key={key}
+                        className={`rounded-full px-8px py-2px text-11px ${
+                          filterOptions.status === key
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                        onClick={() => updateFilterOptions({ status: key as ActivityStatus })}
+                      >
+                        {value}
+                      </button>
+                    ))}
                   </div>
                 </div>
                 <div>
-                  <label className="mb-2px block text-11px font-medium text-gray-600">정렬 순서</label>
-                  <select
-                    className="d-select d-select-bordered d-select-sm w-full"
-                    value={filterOptions.sortOrder}
-                    onChange={e => updateFilterOptions({ sortOrder: e.target.value as SortOrder })}
-                  >
-                    <option value="asc">오름차순</option>
-                    <option value="desc">내림차순</option>
-                  </select>
+                  <label className="mb-2px block text-11px font-medium text-gray-600">과목</label>
+                  <div className="flex flex-wrap gap-4px">
+                    <button
+                      className={cn('rounded-full px-8px py-2px text-11px', {
+                        'bg-blue-500 text-white': filterOptions.courseId === '',
+                        'bg-gray-200 text-gray-700 hover:bg-gray-300': filterOptions.courseId !== '',
+                      })}
+                      onClick={() => updateFilterOptions({ courseId: '' })}
+                    >
+                      전체
+                    </button>
+                    {availableCourses.map(course => (
+                      <button
+                        key={course.id}
+                        className={cn('rounded-full px-8px py-2px text-11px', {
+                          'bg-blue-500 text-white': filterOptions.courseId === course.id,
+                          'bg-gray-200 text-gray-700 hover:bg-gray-300': filterOptions.courseId !== course.id,
+                        })}
+                        onClick={() => updateFilterOptions({ courseId: course.id })}
+                      >
+                        {course.title}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </motion.div>

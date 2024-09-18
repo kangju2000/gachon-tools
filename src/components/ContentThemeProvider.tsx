@@ -10,7 +10,7 @@ export function ContentThemeProvider({ children }: PropsWithChildren) {
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       <div id="gt-app" data-theme={theme}>
-        {children}
+        <div id="gt-content">{children}</div>
       </div>
     </ThemeContext.Provider>
   )

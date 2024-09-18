@@ -6,19 +6,16 @@ export type StorageData = {
     updateAt: string
   }
   contents: Contents
-  filterOptions: {
-    status: ActivityStatus
-    sortBy: SortBy
-    sortOrder: SortOrder
-    kind: ActivityKind
-  }
+  filterOptions: FilterOptions
   settings: {
     refreshInterval: number
     triggerImage: string
   }
 }
 
-export type SortOrder = 'asc' | 'desc'
-export type ActivityStatus = 'ongoing' | 'completed' | 'upcoming' | 'all'
-export type ActivityKind = 'assignment' | 'video' | 'all'
-export type SortBy = 'endAt' | 'startAt'
+export type ActivityStatus = 'ongoing' | 'completed' | 'all'
+
+export type FilterOptions = {
+  status: ActivityStatus
+  courseId: string
+}

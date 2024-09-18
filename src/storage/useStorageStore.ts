@@ -25,8 +25,8 @@ type StorageStore = ExtendedStorageData & {
 
 const initialStorageData: StorageData = {
   meta: { version: packageJson.version, updateAt: '0' },
-  contents: { courseList: [{ id: '-1', title: '전체' }], activityList: [] },
-  filterOptions: { status: 'ongoing', sortBy: 'endAt', sortOrder: 'asc', kind: 'all' },
+  contents: { courseList: [{ id: '', title: '전체' }], activityList: [] },
+  filterOptions: { status: 'ongoing', courseId: '' },
   settings: {
     refreshInterval: 1000 * 60 * 20, // 20 minutes
     triggerImage: chrome.runtime.getURL('/assets/Lee-Gil-ya.webp'),
@@ -35,7 +35,7 @@ const initialStorageData: StorageData = {
 
 export const useStorageStore = create<StorageStore>((set, get) => ({
   ...initialStorageData,
-  status: 'initializing',
+  status: 'initializing' as Status,
   error: null,
 
   initialize: async () => {
@@ -119,17 +119,8 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
     set({ status: 'loading' })
     try {
       await chromeStorageClient.clearAllData()
-      const defaultState: StorageData = {
-        meta: { version: '', updateAt: '' },
-        contents: { courseList: [], activityList: [] },
-        filterOptions: { status: 'ongoing', sortBy: 'endAt', sortOrder: 'asc', kind: 'all' },
-        settings: {
-          refreshInterval: 0,
-          triggerImage: '',
-        },
-      }
-      await chromeStorageClient.setData(defaultState)
-      set({ ...defaultState, status: 'ready', error: null })
+      await chromeStorageClient.setData(initialStorageData)
+      set({ ...initialStorageData, status: 'ready', error: null })
     } catch (error) {
       set({
         status: 'error',
