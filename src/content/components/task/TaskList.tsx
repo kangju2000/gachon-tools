@@ -1,8 +1,8 @@
 import { TaskCard } from './TaskCard'
-import type { ActivityType } from '@/types'
+import type { Activity } from '@/types'
 
 type TaskListProps = {
-  tasks: ActivityType[]
+  tasks: Activity[]
 }
 
 export function TaskList({ tasks }: TaskListProps) {

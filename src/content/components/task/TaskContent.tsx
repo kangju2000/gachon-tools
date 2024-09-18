@@ -17,10 +17,10 @@ export function TaskContent() {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const { progress, isLoading, refetch } = useContentsFetcher()
-  const { meta, contents, settings, updateData } = useStorageStore()
+  const { meta, contents, filterOptions, updateFilterOptions } = useStorageStore()
 
   const filteredTasks = filterAndSortActivities(contents.activityList, {
-    ...settings.filterOptions,
+    ...filterOptions,
     searchQuery,
   })
 
@@ -28,7 +28,7 @@ export function TaskContent() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [settings.filterOptions])
+  }, [filteredTasks])
 
   const statusMap = {
     ongoing: '진행중',
@@ -45,10 +45,8 @@ export function TaskContent() {
 
   const getFilterSummary = () => {
     const parts = []
-    if (settings.filterOptions.status !== 'all') parts.push(statusMap[settings.filterOptions.status])
-    parts.push(
-      `${sortByMap[settings.filterOptions.sortBy]} ${settings.filterOptions.sortOrder === 'asc' ? '오름차순' : '내림차순'}`,
-    )
+    if (filterOptions.status !== 'all') parts.push(statusMap[filterOptions.status])
+    parts.push(`${sortByMap[filterOptions.sortBy]} ${filterOptions.sortOrder === 'asc' ? '오름차순' : '내림차순'}`)
     return parts.join(' · ')
   }
 
@@ -107,18 +105,8 @@ export function TaskContent() {
                     <label className="mb-2px block text-11px font-medium text-gray-600">상태</label>
                     <select
                       className="d-select d-select-bordered d-select-sm w-full"
-                      value={settings.filterOptions.status}
-                      onChange={e =>
-                        updateData({
-                          settings: {
-                            ...settings,
-                            filterOptions: {
-                              ...settings.filterOptions,
-                              status: e.target.value as ActivityStatus,
-                            },
-                          },
-                        })
-                      }
+                      value={filterOptions.status}
+                      onChange={e => updateFilterOptions({ status: e.target.value as ActivityStatus })}
                     >
                       <option value="ongoing">진행중</option>
                       <option value="upcoming">예정</option>
@@ -130,18 +118,8 @@ export function TaskContent() {
                     <label className="mb-2px block text-11px font-medium text-gray-600">정렬 기준</label>
                     <select
                       className="d-select d-select-bordered d-select-sm w-full"
-                      value={settings.filterOptions.sortBy}
-                      onChange={e =>
-                        updateData({
-                          settings: {
-                            ...settings,
-                            filterOptions: {
-                              ...settings.filterOptions,
-                              sortBy: e.target.value as SortBy,
-                            },
-                          },
-                        })
-                      }
+                      value={filterOptions.sortBy}
+                      onChange={e => updateFilterOptions({ sortBy: e.target.value as SortBy })}
                     >
                       <option value="endAt">마감일</option>
                       <option value="startAt">시작일</option>
@@ -153,18 +131,8 @@ export function TaskContent() {
                   <label className="mb-2px block text-11px font-medium text-gray-600">정렬 순서</label>
                   <select
                     className="d-select d-select-bordered d-select-sm w-full"
-                    value={settings.filterOptions.sortOrder}
-                    onChange={e =>
-                      updateData({
-                        settings: {
-                          ...settings,
-                          filterOptions: {
-                            ...settings.filterOptions,
-                            sortOrder: e.target.value as SortOrder,
-                          },
-                        },
-                      })
-                    }
+                    value={filterOptions.sortOrder}
+                    onChange={e => updateFilterOptions({ sortOrder: e.target.value as SortOrder })}
                   >
                     <option value="asc">오름차순</option>
                     <option value="desc">내림차순</option>

@@ -18,7 +18,7 @@ const refreshIntervalOptions = [
 ]
 
 export function SettingsContent() {
-  const { settings, updateData } = useStorageStore()
+  const { settings, updateSettings } = useStorageStore()
   const [image, setImage] = useState<string | null>(null)
   const [isCropModalOpen, setIsCropModalOpen] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
@@ -42,7 +42,7 @@ export function SettingsContent() {
 
   const handleCropComplete = useCallback(
     async (croppedImage: string) => {
-      updateData({ settings: { ...settings, triggerImage: croppedImage } })
+      updateSettings({ triggerImage: croppedImage })
       setIsCropModalOpen(false)
     },
     [settings],
@@ -50,7 +50,7 @@ export function SettingsContent() {
 
   const handleRefreshIntervalChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newRefreshInterval = Number(event.target.value)
-    updateData({ settings: { ...settings, refreshInterval: newRefreshInterval } })
+    updateSettings({ refreshInterval: newRefreshInterval })
   }
 
   return (

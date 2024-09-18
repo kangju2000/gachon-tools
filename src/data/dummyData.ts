@@ -1,4 +1,4 @@
-import type { ActivityType, Contents, Course } from '@/types'
+import type { Activity, Contents, Course } from '@/types'
 
 export const courseData: Course[] = [
   {
@@ -19,7 +19,7 @@ export const courseData: Course[] = [
   },
 ]
 
-export const ActivityData: ActivityType[] = [
+export const ActivityData: Activity[] = [
   {
     courseId: '79655',
     courseTitle: '데이터베이스',

@@ -1,4 +1,4 @@
-import type { ActivityType } from '@/types'
+import type { Activity } from '@/types'
 import type { ActivityKind, ActivityStatus, SortBy, SortOrder } from '@/types/storage'
 
 interface FilterOptions {
@@ -10,15 +10,12 @@ interface FilterOptions {
   searchQuery?: string
 }
 
-const isOngoing = (activity: ActivityType, now: Date): boolean =>
+const isOngoing = (activity: Activity, now: Date): boolean =>
   new Date(activity.startAt) <= now && now <= new Date(activity.endAt)
+const isCompleted = (activity: Activity, now: Date): boolean => activity.hasSubmitted || new Date(activity.endAt) < now
+const isUpcoming = (activity: Activity, now: Date): boolean => new Date(activity.startAt) > now
 
-const isCompleted = (activity: ActivityType, now: Date): boolean =>
-  activity.hasSubmitted || new Date(activity.endAt) < now
-
-const isUpcoming = (activity: ActivityType, now: Date): boolean => new Date(activity.startAt) > now
-
-const filterByStatus = (activity: ActivityType, status: ActivityStatus, now: Date): boolean => {
+const filterByStatus = (activity: Activity, status: ActivityStatus, now: Date): boolean => {
   switch (status) {
     case 'ongoing':
       return isOngoing(activity, now)
@@ -31,25 +28,24 @@ const filterByStatus = (activity: ActivityType, status: ActivityStatus, now: Dat
   }
 }
 
-const filterByKind = (activity: ActivityType, kind: ActivityKind): boolean => kind === 'all' || activity.type === kind
+const filterByKind = (activity: Activity, kind: ActivityKind): boolean => kind === 'all' || activity.type === kind
 
-const filterByCourse = (activity: ActivityType, courseId?: string): boolean =>
-  !courseId || activity.courseId === courseId
+const filterByCourse = (activity: Activity, courseId?: string): boolean => !courseId || activity.courseId === courseId
 
-const filterBySearchQuery = (activity: ActivityType, searchQuery?: string): boolean => {
+const filterBySearchQuery = (activity: Activity, searchQuery?: string): boolean => {
   if (!searchQuery) return true
   const query = searchQuery.toLowerCase()
   return activity.title.toLowerCase().includes(query) || activity.courseTitle.toLowerCase().includes(query)
 }
 
-const sortActivities = (a: ActivityType, b: ActivityType, sortBy: SortBy, sortOrder: SortOrder): number => {
+const sortActivities = (a: Activity, b: Activity, sortBy: SortBy, sortOrder: SortOrder): number => {
   const aDate = new Date(a[sortBy])
   const bDate = new Date(b[sortBy])
 
   return sortOrder === 'asc' ? aDate.getTime() - bDate.getTime() : bDate.getTime() - aDate.getTime()
 }
 
-export function filterAndSortActivities(activities: ActivityType[], options: FilterOptions): ActivityType[] {
+export function filterAndSortActivities(activities: Activity[], options: FilterOptions): Activity[] {
   const now = new Date()
 
   return activities

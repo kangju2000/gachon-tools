@@ -1,4 +1,4 @@
-interface Activity {
+interface BaseActivity {
   id: string
   courseId: string
   courseTitle: string
@@ -12,18 +12,18 @@ export interface Course {
   title: string
 }
 
-export interface Assignment extends Activity {
+export interface Assignment extends BaseActivity {
   type: 'assignment'
 }
 
-export interface Video extends Activity {
+export interface Video extends BaseActivity {
   type: 'video'
   sectionTitle: string
 }
 
-export type ActivityType = Assignment | Video
+export type Activity = Assignment | Video
 
 export type Contents = {
   courseList: Course[]
-  activityList: ActivityType[]
+  activityList: Activity[]
 }

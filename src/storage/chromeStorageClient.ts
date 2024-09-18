@@ -1,33 +1,112 @@
-import packageJson from '../../package.json'
 import type { StorageData } from '@/types'
 
-const STORAGE_KEY = 'data'
+class ChromeStorageClient {
+  private static instance: ChromeStorageClient
+  private storageArea: chrome.storage.StorageArea
 
-const DEFAULT_STORAGE_DATA: StorageData = {
-  meta: {
-    version: packageJson.version,
-    updateAt: '0',
-  },
-  contents: {
-    courseList: [{ id: '-1', title: '전체' }],
-    activityList: [],
-  },
-  settings: {
-    refreshInterval: 1000 * 60 * 20, // 20 minutes
-    triggerImage: chrome.runtime.getURL('/assets/Lee-Gil-ya.webp'),
-    filterOptions: { status: 'ongoing', sortBy: 'endAt', sortOrder: 'asc', kind: 'all' },
-  },
+  private constructor() {
+    this.storageArea = chrome.storage.sync || chrome.storage.local
+  }
+
+  public static getInstance(): ChromeStorageClient {
+    if (!ChromeStorageClient.instance) {
+      ChromeStorageClient.instance = new ChromeStorageClient()
+    }
+    return ChromeStorageClient.instance
+  }
+
+  public async getData(): Promise<StorageData> {
+    return new Promise((resolve, reject) => {
+      this.storageArea.get(null, result => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message))
+        } else {
+          resolve(result as StorageData)
+        }
+      })
+    })
+  }
+
+  public async setData(data: Partial<StorageData>): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.storageArea.set(data, () => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message))
+        } else {
+          resolve()
+        }
+      })
+    })
+  }
+
+  public async removeData(keys: string | string[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.storageArea.remove(keys, () => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message))
+        } else {
+          resolve()
+        }
+      })
+    })
+  }
+
+  public async clearData(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.storageArea.clear(() => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message))
+        } else {
+          resolve()
+        }
+      })
+    })
+  }
+
+  public async clearAllData(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.storageArea.clear(() => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message))
+        } else {
+          resolve()
+        }
+      })
+    })
+  }
+
+  public async getDataByKey<K extends keyof StorageData>(key: K): Promise<StorageData[K]> {
+    return new Promise((resolve, reject) => {
+      this.storageArea.get(key, result => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message))
+        } else {
+          resolve(result[key] as StorageData[K])
+        }
+      })
+    })
+  }
+
+  public async updateDataByKey<K extends keyof StorageData>(
+    key: K,
+    updateFn: (prevValue: StorageData[K]) => StorageData[K],
+  ): Promise<void> {
+    const currentValue = await this.getDataByKey(key)
+    const newValue = updateFn(currentValue)
+    await this.setData({ [key]: newValue } as Partial<StorageData>)
+  }
+
+  public onStorageChanged(
+    callback: (changes: { [key: string]: chrome.storage.StorageChange }, areaName: string) => void,
+  ): void {
+    chrome.storage.onChanged.addListener(callback)
+  }
+
+  public removeStorageChangedListener(
+    callback: (changes: { [key: string]: chrome.storage.StorageChange }, areaName: string) => void,
+  ): void {
+    chrome.storage.onChanged.removeListener(callback)
+  }
 }
 
-export const chromeStorageClient = {
-  async getData(): Promise<StorageData> {
-    const result = await chrome.storage.local.get(STORAGE_KEY)
-    return (result[STORAGE_KEY] as StorageData) || DEFAULT_STORAGE_DATA
-  },
-
-  async setData(newData: Partial<StorageData>): Promise<void> {
-    const currentData = await chromeStorageClient.getData()
-    const updatedData = { ...currentData, ...newData }
-    await chrome.storage.local.set({ [STORAGE_KEY]: updatedData })
-  },
-}
+export const chromeStorageClient = ChromeStorageClient.getInstance()

@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio'
 
-import type { ActivityType, Assignment, Course, Video } from '@/types'
+import type { Activity, Assignment, Course, Video } from '@/types'
 import { getLinkId } from '@/utils'
 import { getAttr, getText } from '@/utils/cheerioUtils'
 import { mapElement } from '@/utils/mapElement'
@@ -102,7 +102,7 @@ export const getActivities = async (
   courseId: string,
   assignmentSubmittedArray: Awaited<ReturnType<typeof getAssignmentSubmitted>>,
   videoSubmittedArray: Awaited<ReturnType<typeof getVideoSubmitted>>,
-): Promise<ActivityType[]> => {
+): Promise<Activity[]> => {
   const $ = await getDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`)
 
   const assignments = parseAssignments($, courseId).reduce<Assignment[]>((acc, cur) => {

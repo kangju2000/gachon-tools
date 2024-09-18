@@ -20,6 +20,7 @@ export function Trigger() {
   if (status === 'initializing') {
     return null
   }
+
   return (
     <>
       <motion.div

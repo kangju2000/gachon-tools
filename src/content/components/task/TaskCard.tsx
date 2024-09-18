@@ -1,11 +1,11 @@
 import { format, formatDistanceToNowStrict, isValid } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
-import type { ActivityType } from '@/types'
+import type { Activity } from '@/types'
 import { cn } from '@/utils/cn'
 
 type TaskCardProps = {
-  task: ActivityType
+  task: Activity
 }
 
 export function TaskCard({ task }: TaskCardProps) {
@@ -21,8 +21,8 @@ export function TaskCard({ task }: TaskCardProps) {
         <div className="flex gap-4px">
           <span
             className={cn('mr-4px mt-1px h-fit shrink-0 rounded-8px px-6px py-2px text-11px', {
-              'bg-lime-100 text-lime-800': task.type === 'video',
-              'bg-blue-100 text-blue-800': task.type === 'assignment',
+              // 'bg-lime-100 text-lime-800': task.type === 'video',
+              // 'bg-blue-100 text-blue-800': task.type === 'assignment',
             })}
           >
             {task.type === 'video' ? '영상' : '과제'}

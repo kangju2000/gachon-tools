@@ -6,15 +6,15 @@ export type StorageData = {
     updateAt: string
   }
   contents: Contents
+  filterOptions: {
+    status: ActivityStatus
+    sortBy: SortBy
+    sortOrder: SortOrder
+    kind: ActivityKind
+  }
   settings: {
     refreshInterval: number
     triggerImage: string
-    filterOptions: {
-      status: ActivityStatus
-      sortBy: SortBy
-      sortOrder: SortOrder
-      kind: ActivityKind
-    }
   }
 }
 
