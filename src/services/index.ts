@@ -1,9 +1,7 @@
 import * as cheerio from 'cheerio'
 
 import type { Activity, Assignment, Course, Video } from '@/types'
-import { getLinkId } from '@/utils'
-import { getAttr, getText } from '@/utils/cheerioUtils'
-import { mapElement } from '@/utils/mapElement'
+import { getLinkId, mapElement, getAttr, getText } from '@/utils'
 
 import type { AnyNode } from 'domhandler'
 
@@ -52,7 +50,10 @@ export const getCourses = async (): Promise<Course[]> => {
 }
 
 // 과제 파싱 함수
-export function parseAssignments($: CheerioAPI, courseId: string): Omit<Assignment, 'courseTitle' | 'hasSubmitted'>[] {
+export function parseAssignments(
+  $: CheerioAPI,
+  courseId: string,
+): Array<Omit<Assignment, 'courseTitle' | 'hasSubmitted'>> {
   const parseAssignment = ($el: cheerio.Cheerio<AnyNode>, sectionTitle?: string) => {
     const link = getAttr($el.find('a'), 'href')
     const id = getLinkId(link)
@@ -78,10 +79,10 @@ export function parseAssignments($: CheerioAPI, courseId: string): Omit<Assignme
 }
 
 // 비디오 파싱 함수
-export function parseVideos($: CheerioAPI, courseId: string): Omit<Video, 'courseTitle' | 'hasSubmitted'>[] {
+export function parseVideos($: CheerioAPI, courseId: string): Array<Omit<Video, 'courseTitle' | 'hasSubmitted'>> {
   return mapElement($('.total_sections .content'), (_, content) => {
     const $content = $(content)
-    const sectionTitle = getText($content.find('.sectionname')).split(' ')[0].match(/\d+/g)?.[0]
+    const sectionTitle = getText($content.find('.sectionname'))
 
     return mapElement($content.find('.modtype_vod .activityinstance'), (_, el) => {
       const $el = $(el)
@@ -91,6 +92,7 @@ export function parseVideos($: CheerioAPI, courseId: string): Omit<Video, 'cours
       const [startAt, endAt] = getText($el.find('.displayoptions .text-ubstrap').clone().children().remove().end())
         .split(' ~ ')
         .map(t => t.trim())
+
       return { type: 'video' as const, id, courseId, title, startAt, endAt, sectionTitle }
     })
   }).flat()
@@ -119,7 +121,9 @@ export const getActivities = async (
 }
 
 // 과제 제출 여부 파싱 함수
-export function parseAssignmentSubmitted($: CheerioAPI): Pick<Assignment, 'id' | 'title' | 'hasSubmitted' | 'endAt'>[] {
+export function parseAssignmentSubmitted(
+  $: CheerioAPI,
+): Array<Pick<Assignment, 'id' | 'title' | 'hasSubmitted' | 'endAt'>> {
   return mapElement($('tbody tr'), (_, el) => {
     const $el = $(el)
     if ($el.find('.tabledivider').length) return
@@ -136,38 +140,30 @@ export function parseAssignmentSubmitted($: CheerioAPI): Pick<Assignment, 'id' |
 // 과제 제출 여부 가져오기
 export const getAssignmentSubmitted = async (
   courseId: string,
-): Promise<Pick<Assignment, 'id' | 'title' | 'hasSubmitted' | 'endAt'>[]> => {
+): Promise<Array<Pick<Assignment, 'id' | 'title' | 'hasSubmitted' | 'endAt'>>> => {
   const $ = await getDocument(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${courseId}`)
   return parseAssignmentSubmitted($)
 }
 
 // 비디오 제출 여부 파싱 함수
-export function parseVideoSubmitted($: CheerioAPI): Pick<Video, 'title' | 'hasSubmitted' | 'sectionTitle'>[] {
-  const className =
-    $('.user_progress tbody tr').length === 0 ? '.user_progress_table tbody tr' : '.user_progress tbody tr'
-  const attendanceRule = getText($('.rollbook .blue'))
-  const attendanceMark = attendanceRule.match(/\[(.*?)\]/)?.[0]?.replace(/\[|\]/g, '')
-
-  let section = '1'
-  return mapElement($(className), (_, el) => {
+function parseVideoSubmitted($: CheerioAPI): Array<Pick<Video, 'title' | 'hasSubmitted' | 'sectionTitle'>> {
+  let sectionTitle = ''
+  console.log('indd')
+  return mapElement($('.user_progress tbody tr'), (_, el) => {
     const $el = $(el)
-    const $firstChild = $el.children().first()
+    const $sectionTitle = $el.find('.sectiontitle')
 
-    if ($firstChild.attr('rowspan') || $firstChild.hasClass('vmiddle')) {
-      section = getText($firstChild)
+    const originalTitle = $sectionTitle.attr('title')
+
+    if (originalTitle != null && originalTitle !== '') {
+      sectionTitle = originalTitle
     }
 
     const title = getText($el.find('.text-left'))
-    const sectionTitle = section
-
-    if (attendanceMark !== undefined) {
-      const attendance = getText($el.find('.text-center').last())
-      return { title, hasSubmitted: attendance === attendanceMark, sectionTitle }
-    }
 
     const $std = $el.find('.text-center.hidden-xs.hidden-sm')
-    const requiredTime = getText($std)
-    const totalStudyTime = getText($std.next().clone().children().remove().end())
+    const requiredTime = getText($std) // mm:ss
+    const totalStudyTime = getText($std.next().clone().children().remove().end()) // mm:ss
     const hasSubmitted = Number(requiredTime.replace(/:/g, '')) <= Number(totalStudyTime.replace(/:/g, ''))
 
     return { title, hasSubmitted, sectionTitle }
@@ -177,7 +173,7 @@ export function parseVideoSubmitted($: CheerioAPI): Pick<Video, 'title' | 'hasSu
 // 비디오 제출 여부 가져오기
 export const getVideoSubmitted = async (
   courseId: string,
-): Promise<Pick<Video, 'title' | 'hasSubmitted' | 'sectionTitle'>[]> => {
-  const $ = await getDocument(`https://cyber.gachon.ac.kr/report/ubcompletion/progress.php?id=${courseId}`)
+): Promise<Array<Pick<Video, 'title' | 'hasSubmitted' | 'sectionTitle'>>> => {
+  const $ = await getDocument(`https://cyber.gachon.ac.kr/report/ubcompletion/user_progress.php?id=${courseId}`)
   return parseVideoSubmitted($)
 }
