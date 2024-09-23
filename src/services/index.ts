@@ -34,11 +34,11 @@ export async function getDocument(url: string): Promise<CheerioAPI> {
 }
 
 // 강의 목록 파싱 함수
-export function parseCourses($: CheerioAPI): Course[] {
+function parseCourses($: CheerioAPI): Course[] {
   return mapElement($('.coursefullname'), (_, el) => {
     const $el = $(el)
     const id = getLinkId(getAttr($el, 'href'))
-    const title = getText($el).replace(/ \((\d{5}_\d{3})\)/, '')
+    const title = getText($el).replace(/ \((\w{5}_\w{3})\)/, '')
     return { id, title }
   })
 }
@@ -148,7 +148,6 @@ export const getAssignmentSubmitted = async (
 // 비디오 제출 여부 파싱 함수
 function parseVideoSubmitted($: CheerioAPI): Array<Pick<Video, 'title' | 'hasSubmitted' | 'sectionTitle'>> {
   let sectionTitle = ''
-  console.log('indd')
   return mapElement($('.user_progress tbody tr'), (_, el) => {
     const $el = $(el)
     const $sectionTitle = $el.find('.sectiontitle')
