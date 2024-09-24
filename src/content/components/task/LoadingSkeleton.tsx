@@ -8,16 +8,16 @@ export function LoadingSkeleton({ progress }: LoadingSkeletonProps) {
   return (
     <div className="space-y-16px">
       <motion.div
-        className="mb-16px h-2px w-full overflow-hidden bg-blue-200"
+        className="h-3px w-full overflow-hidden rounded-full bg-blue-100"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
         <motion.div
-          className="h-full bg-blue-600"
+          className="h-full bg-blue-400"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.5, ease: 'easeInOut' }}
         />
       </motion.div>
       {[...Array(4)].map((_, index) => (

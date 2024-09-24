@@ -1,25 +1,26 @@
 import { isValid } from 'date-fns'
 
-import type { Activity, Course } from '@/types'
+import type { Activity } from '@/types'
 import type { ActivityStatus, FilterOptions as _FilterOptions } from '@/types/storage'
 
 interface FilterOptions extends _FilterOptions {
   searchQuery?: string
 }
 
-const isOngoing = (activity: Activity, now: Date): boolean =>
-  new Date(activity.startAt) <= now && now <= new Date(activity.endAt)
+const isOngoing = (activity: Activity): boolean => {
+  const now = new Date()
+  return new Date(activity.startAt) <= now && now <= new Date(activity.endAt)
+}
 
 const isValidActivity = (activity: Activity): boolean =>
   activity.id.trim() !== '' && isValid(new Date(activity.startAt)) && isValid(new Date(activity.endAt))
 
-const filterByStatus = (activity: Activity, status: ActivityStatus, now: Date): boolean => {
-  switch (status) {
-    case 'ongoing':
-      return isOngoing(activity, now)
-    case 'all':
-      return true
+const filterByStatus = (activity: Activity, status: ActivityStatus): boolean => {
+  if (status === 'ongoing') {
+    return isOngoing(activity)
   }
+
+  return true
 }
 
 const filterByCourse = (activity: Activity, courseId: string): boolean =>
@@ -31,20 +32,11 @@ const filterBySearchQuery = (activity: Activity, searchQuery?: string): boolean 
   return activity.title.toLowerCase().includes(query) || activity.courseTitle.toLowerCase().includes(query)
 }
 
-export function filterActivities(activities: Activity[], options: FilterOptions): Activity[] {
-  const now = new Date()
-
-  return activities.filter(
-    activity =>
-      isValidActivity(activity) &&
-      filterByStatus(activity, options.status, now) &&
-      filterByCourse(activity, options.courseId) &&
-      filterBySearchQuery(activity, options.searchQuery),
+export function filterActivities(activity: Activity, options: FilterOptions): boolean {
+  return (
+    isValidActivity(activity) &&
+    filterByStatus(activity, options.status) &&
+    filterByCourse(activity, options.courseId) &&
+    filterBySearchQuery(activity, options.searchQuery)
   )
 }
-
-// export function getAvailableCourses(activities: Activity[]): Course[] {
-//   const courseSet = new Set<string>()
-//   activities.forEach(activity => courseSet.add(activity.courseId))
-//   return Array.from(courseSet).map(id => ({ id, title: activities.find(a => a.courseId === id)?.courseTitle || '' }))
-// }

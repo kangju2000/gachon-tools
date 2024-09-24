@@ -6,11 +6,15 @@ import { useEffect, useRef, useState } from 'react'
 
 import { LoadingSkeleton } from './LoadingSkeleton'
 import { TaskList } from './TaskList'
-import { filterActivities } from '../task/filterActivities'
 import { useContentsFetcher } from '@/hooks/useContentsFetcher'
 import { useStorageStore } from '@/storage/useStorageStore'
 import type { ActivityStatus } from '@/types/storage'
 import { cn } from '@/utils/cn'
+
+const statusMap: Record<ActivityStatus, string> = {
+  ongoing: '진행 중인 과제',
+  all: '전체 과제',
+}
 
 export function TaskContent() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -18,23 +22,14 @@ export function TaskContent() {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const { progress, isLoading, refetch } = useContentsFetcher()
-  const { meta, contents, filterOptions, updateFilterOptions } = useStorageStore()
+  const { meta, contents, filterOptions, getFilteredActivities, updateFilterOptions } = useStorageStore()
 
-  const filteredTasks = filterActivities(contents.activityList, {
-    ...filterOptions,
-    searchQuery,
-  })
-
+  const filteredTasks = getFilteredActivities(searchQuery)
   const formattedUpdateTime = formatDistanceToNowStrict(new Date(meta.updateAt), { addSuffix: true, locale: ko })
-
-  const statusMap: Record<ActivityStatus, string> = {
-    ongoing: '진행 중인 과제',
-    all: '전체 과제',
-  }
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [filteredTasks])
+  }, [filterOptions])
 
   return (
     <>
@@ -138,7 +133,13 @@ export function TaskContent() {
       <div className="relative flex-1 overflow-hidden">
         <div className="absolute inset-x-0 top-0 z-10 h-16px bg-gradient-to-b from-slate-100 to-transparent"></div>
         <div className="absolute inset-x-0 bottom-0 z-10 h-16px bg-gradient-to-t from-slate-100 to-transparent"></div>
-        <div ref={scrollRef} className="no-scrollbar h-full overflow-y-auto overscroll-contain px-16px py-20px">
+        <div
+          ref={scrollRef}
+          className={cn('no-scrollbar h-full overscroll-contain px-16px py-20px', {
+            'overflow-y-scroll': !isLoading,
+            'overflow-hidden': isLoading,
+          })}
+        >
           {isLoading ? <LoadingSkeleton progress={progress} /> : <TaskList tasks={filteredTasks} />}
         </div>
       </div>
