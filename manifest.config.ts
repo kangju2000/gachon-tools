@@ -16,15 +16,15 @@ export default defineManifest(async () => ({
     default_title: 'popup',
     default_popup: 'src/popup/index.html',
     default_icon: {
-      '16': 'logo16.png',
-      '48': 'logo48.png',
-      '128': 'logo128.png',
+      '16': 'assets/logo16.png',
+      '48': 'assets/logo48.png',
+      '128': 'assets/logo128.png',
     },
   },
   icons: {
-    '16': 'logo16.png',
-    '48': 'logo48.png',
-    '128': 'logo128.png',
+    '16': 'assets/logo16.png',
+    '48': 'assets/logo48.png',
+    '128': 'assets/logo128.png',
   },
   background: {
     service_worker: 'src/background/index.ts',
