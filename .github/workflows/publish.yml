@@ -31,7 +31,7 @@ jobs:
         run: zip -r ./build.zip ./dist
         shell: bash
       - name: Upload & release
-        uses: mnao305/chrome-extension-upload@v4.0.1
+        uses: mnao305/chrome-extension-upload@v5.0.0
         with:
           file-path: ./build.zip
           extension-id: 'ogldncimhepjdfadhjjhkchknloncnmg'
