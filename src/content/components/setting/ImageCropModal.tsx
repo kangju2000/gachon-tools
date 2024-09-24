@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import React, { useState, useCallback, useEffect } from 'react'
 import Cropper from 'react-easy-crop'
 
@@ -46,7 +47,12 @@ export function ImageCropModal({ image, onComplete, onClose }: ImageCropModalPro
   }, [])
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+    >
       <div className="flex h-400px w-300px flex-col gap-12px rounded-12px bg-white p-12px">
         <div className="relative h-full w-full overflow-hidden rounded-12px">
           <div className="absolute inset-0 bg-white" />
@@ -82,6 +88,6 @@ export function ImageCropModal({ image, onComplete, onClose }: ImageCropModalPro
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

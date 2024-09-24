@@ -1,7 +1,9 @@
-import { Camera } from 'lucide-react'
+import { AnimatePresence } from 'framer-motion'
+import { Camera, Palette } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
+import { ColorPickerModal } from './ColorPickerModal'
 import { ImageCropModal } from './ImageCropModal'
 import { SettingItem } from './SettingItem'
 import packageJson from '../../../../package.json'
@@ -23,6 +25,7 @@ export function SettingsContent() {
   const { settings, updateSettings } = useStorageStore()
   const [image, setImage] = useState<string | null>(null)
   const [isCropModalOpen, setIsCropModalOpen] = useState(false)
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -43,7 +46,7 @@ export function SettingsContent() {
 
   const handleCropComplete = useCallback(
     async (croppedImage: string) => {
-      updateSettings({ triggerImage: croppedImage })
+      updateSettings({ trigger: { type: 'image', image: croppedImage } })
       setIsCropModalOpen(false)
     },
     [updateSettings],
@@ -52,6 +55,15 @@ export function SettingsContent() {
   const handleRefreshIntervalChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newRefreshInterval = Number(event.target.value)
     updateSettings({ refreshInterval: newRefreshInterval })
+  }
+
+  const renderTriggerPreview = () => {
+    switch (settings.trigger.type) {
+      case 'image':
+        return <img src={settings.trigger.image} alt="버튼 이미지" className="h-full w-full object-cover" />
+      case 'color':
+        return <div className="h-full w-full" style={{ background: settings.trigger.color }} />
+    }
   }
 
   return (
@@ -71,20 +83,27 @@ export function SettingsContent() {
                 )}
               >
                 <div className="relative h-120px w-120px overflow-hidden rounded-full">
-                  <img src={settings.triggerImage} alt="버튼 이미지" className="h-full w-full object-cover" />
+                  {renderTriggerPreview()}
                   <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25">
-                    <div
-                      className="flex h-36px w-36px cursor-pointer items-center justify-center rounded-full bg-white bg-opacity-75 transition-all duration-200 hover:bg-opacity-100"
-                      onClick={() => inputRef.current?.click()}
-                    >
-                      <Camera size={20} className="text-gray-700" />
+                    <div className="flex gap-2">
+                      <button
+                        className="flex h-36px w-36px cursor-pointer items-center justify-center rounded-full bg-white bg-opacity-75 transition-all duration-200 hover:bg-opacity-100"
+                        onClick={() => inputRef.current?.click()}
+                      >
+                        <Camera size={20} className="text-gray-700" />
+                      </button>
+                      <button
+                        className="flex h-36px w-36px cursor-pointer items-center justify-center rounded-full bg-white bg-opacity-75 transition-all duration-200 hover:bg-opacity-100"
+                        onClick={() => setIsColorPickerOpen(true)}
+                      >
+                        <Palette size={20} className="text-gray-700" />
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <p className="mt-8px text-center text-12px text-gray-400">클릭하거나 이미지를 끌어다 놓아 변경하세요</p>
         </div>
 
         <div className="rounded-lg bg-white p-16px shadow-sm">
@@ -106,16 +125,29 @@ export function SettingsContent() {
 
       <input {...getInputProps()} ref={inputRef} className="hidden" />
 
-      {isCropModalOpen && image && (
-        <ImageCropModal
-          image={image}
-          onComplete={handleCropComplete}
-          onClose={() => {
-            setIsCropModalOpen(false)
-            setImage(null)
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {isCropModalOpen && image && (
+          <ImageCropModal
+            image={image}
+            onComplete={handleCropComplete}
+            onClose={() => {
+              setIsCropModalOpen(false)
+              setImage(null)
+            }}
+          />
+        )}
+
+        {isColorPickerOpen && (
+          <ColorPickerModal
+            onComplete={value => {
+              updateSettings({ trigger: { type: 'color', color: value } })
+              setIsColorPickerOpen(false)
+            }}
+            onClose={() => setIsColorPickerOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       <div className="absolute bottom-8px left-16px">
         <span className="text-12px text-gray-500">버전 {version}</span>
       </div>

@@ -28,7 +28,10 @@ const initialStorageData: StorageData = {
   filterOptions: { status: 'ongoing', courseId: '-1' },
   settings: {
     refreshInterval: 1000 * 60 * 20, // 20 minutes
-    triggerImage: chrome.runtime.getURL('/assets/Lee-Gil-ya.webp'),
+    trigger: {
+      type: 'image',
+      image: chrome.runtime.getURL('/assets/Lee-Gil-ya.webp'),
+    },
   },
 }
 

@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { SettingsContent } from './setting'
@@ -8,6 +8,46 @@ import { Navigation } from '@/content/components/Navigation'
 import { TaskContent } from '@/content/components/task'
 import { useStorageStore } from '@/storage/useStorageStore'
 import { cn } from '@/utils/cn'
+
+const iconVariants = {
+  closed: {
+    opacity: 0,
+    scale: 0,
+    pathLength: 0,
+    transition: { duration: 0.2 },
+  },
+  open: {
+    opacity: 1,
+    scale: 1,
+    pathLength: 1,
+    transition: {
+      opacity: { delay: 0.2, duration: 0.2 },
+      scale: { delay: 0.2, duration: 0.2 },
+      pathLength: { delay: 0.2, duration: 0.3 },
+    },
+  },
+}
+
+const modalVariants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.9,
+    y: 20,
+    transition: { duration: 0.2, ease: 'easeInOut' },
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: 'easeOut' },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.9,
+    y: 20,
+    transition: { duration: 0.2, ease: 'easeInOut' },
+  },
+}
 
 export function Trigger() {
   const [isOpen, setIsOpen] = useState(false)
@@ -23,46 +63,6 @@ export function Trigger() {
     return null
   }
 
-  const iconVariants = {
-    closed: {
-      opacity: 0,
-      scale: 0,
-      pathLength: 0,
-      transition: { duration: 0.2 },
-    },
-    open: {
-      opacity: 1,
-      scale: 1,
-      pathLength: 1,
-      transition: {
-        opacity: { delay: 0.2, duration: 0.2 },
-        scale: { delay: 0.2, duration: 0.2 },
-        pathLength: { delay: 0.2, duration: 0.3 },
-      },
-    },
-  }
-
-  const modalVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0.9,
-      y: 20,
-      transition: { duration: 0.2, ease: 'easeInOut' },
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: { duration: 0.3, ease: 'easeOut' },
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.9,
-      y: 20,
-      transition: { duration: 0.2, ease: 'easeInOut' },
-    },
-  }
-
   return (
     <>
       <div
@@ -70,7 +70,11 @@ export function Trigger() {
         className={cn(
           'd-mask d-mask-squircle fixed bottom-25px right-25px h-56px w-56px cursor-pointer bg-cover bg-center bg-no-repeat shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl',
         )}
-        style={{ backgroundImage: `url(${settings.triggerImage})` }}
+        style={
+          settings.trigger.type === 'color'
+            ? { background: settings.trigger.color }
+            : { backgroundImage: `url(${settings.trigger.image})` }
+        }
       >
         <AnimatePresence>
           {isOpen && (

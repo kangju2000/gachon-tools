@@ -9,7 +9,7 @@ export type StorageData = {
   filterOptions: FilterOptions
   settings: {
     refreshInterval: number
-    triggerImage: string
+    trigger: { type: 'image'; image: string } | { type: 'color'; color: string }
   }
 }
 
