@@ -16,7 +16,15 @@ module.exports = {
     'prettier/prettier': ['error', { endOfLine: 'auto' }],
     'no-unused-vars': 'off',
     'no-empty-pattern': 'off',
-    '@typescript-eslint/no-unused-vars': 'warn',
+    '@typescript-eslint/consistent-type-imports': 'error',
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/naming-convention': [
@@ -34,12 +42,7 @@ module.exports = {
       'warn',
       {
         'newlines-between': 'always',
-        groups: [
-          ['builtin', 'external'],
-          ['internal', 'parent', 'sibling', 'index'],
-          ['object'],
-          ['type'],
-        ],
+        groups: [['builtin', 'external'], ['internal', 'parent', 'sibling', 'index'], ['object'], ['type']],
         pathGroups: [
           {
             pattern: '@/**',

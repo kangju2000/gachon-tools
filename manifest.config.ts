@@ -1,30 +1,33 @@
 import { defineManifest } from '@crxjs/vite-plugin'
 
 import packageJson from './package.json'
-const { version } = packageJson
 
-const [major, minor, patch, label = '0'] = version.replace(/[^\d.-]+/g, '').split(/[.-]/)
+const [major, minor, patch, label = '0'] = packageJson.version.replace(/[^\d.-]+/g, '').split(/[.-]/)
 
-export default defineManifest(async env => ({
+const isDev = process.env.NODE_ENV === 'development'
+
+export default defineManifest(async () => ({
   manifest_version: 3,
-  name:
-    env.mode === 'staging'
-      ? '[INTERNAL] Gachon Tools - 사이버캠퍼스 확장프로그램'
-      : 'Gachon Tools - 사이버캠퍼스 확장프로그램',
-  description: '가천대학교 사이버캠퍼스 확장프로그램',
+  name: isDev ? '[DEV] Gachon Tools - 사이버캠퍼스 확장프로그램' : 'Gachon Tools - 사이버캠퍼스 확장프로그램',
+  description: packageJson.description,
   version: label === '0' ? `${major}.${minor}.${patch}` : `${major}.${minor}.${patch}.${label}`,
-  version_name: version,
+  version_name: packageJson.version,
   action: {
     default_title: 'popup',
-    default_popup: 'src/pages/popup/index.html',
+    default_popup: 'src/popup/index.html',
+    default_icon: {
+      '16': 'assets/logo16.png',
+      '48': 'assets/logo48.png',
+      '128': 'assets/logo128.png',
+    },
   },
   icons: {
-    '16': 'logo16.png',
-    '48': 'logo48.png',
-    '128': 'logo128.png',
+    '16': 'assets/logo16.png',
+    '48': 'assets/logo48.png',
+    '128': 'assets/logo128.png',
   },
   background: {
-    service_worker: 'src/pages/background/index.ts',
+    service_worker: 'src/background/index.ts',
     type: 'module',
   },
   content_scripts: [
@@ -35,16 +38,17 @@ export default defineManifest(async env => ({
         'https://cyber.gachon.ac.kr/mod/ubfile/viewer.php*',
         'https://cyber.gachon.ac.kr/mod/vod/viewer.php*',
       ],
-      js: ['src/pages/content/main.tsx'],
+      js: isDev ? ['src/content/index.dev.tsx'] : ['src/content/index.prod.tsx'],
+      run_at: 'document_start',
     },
   ],
+  options_page: 'src/options/index.html',
   web_accessible_resources: [
     {
-      resources: ['assets/js/*.js', 'assets/css/*.css'],
+      resources: ['assets/js/*.js', 'assets/css/*.css', '*.webp', '*.png', '*.jpg', '*.jpeg', '*.gif'],
       matches: ['*://*/*'],
     },
   ],
   host_permissions: ['https://cyber.gachon.ac.kr/*'],
-  options_page: 'src/pages/options/index.html',
   permissions: ['storage', 'scripting', 'activeTab'],
 }))

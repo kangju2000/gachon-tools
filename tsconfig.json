@@ -1,15 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "allowJs": false,
-    "skipLibCheck": true,
-    "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "skipLibCheck": true,
+
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -19,6 +17,7 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src", "tests"],
-  "exclude": ["node_modules"]
+  "include": ["*/**.ts", "*/**.tsx", "vite.config.ts", "src"],
+  "exclude": ["node_modules", "dist"],
+  "types": ["chrome", "node"]
 }
