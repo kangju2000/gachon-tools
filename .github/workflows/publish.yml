@@ -13,13 +13,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        name: Setup pnpm
+        with:
+          version: 8.15.0
+          run_install: false
       - uses: actions/setup-node@v4
+        name: Setup Node.js
         with:
           node-version: 20.x
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
       - name: Build
-        run: |
-          yarn install
-          yarn build
+        run: pnpm build
       - name: Make zip file
         run: zip -r ./build.zip ./dist
         shell: bash
