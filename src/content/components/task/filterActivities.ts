@@ -12,8 +12,7 @@ const isOngoing = (activity: Activity): boolean => {
   return new Date(activity.startAt) <= now && now <= new Date(activity.endAt)
 }
 
-const isValidActivity = (activity: Activity): boolean =>
-  activity.id.trim() !== '' && isValid(new Date(activity.startAt)) && isValid(new Date(activity.endAt))
+const isValidActivity = (activity: Activity): boolean => activity.id !== '' && isValid(new Date(activity.endAt))
 
 const filterByStatus = (activity: Activity, status: ActivityStatus): boolean => {
   if (status === 'ongoing') {
@@ -33,6 +32,12 @@ const filterBySearchQuery = (activity: Activity, searchQuery?: string): boolean 
 }
 
 export function filterActivities(activity: Activity, options: FilterOptions): boolean {
+  console.log(
+    isValidActivity(activity),
+    filterByStatus(activity, options.status),
+    filterByCourse(activity, options.courseId),
+    filterBySearchQuery(activity, options.searchQuery),
+  )
   return (
     isValidActivity(activity) &&
     filterByStatus(activity, options.status) &&
