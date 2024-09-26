@@ -4,16 +4,22 @@ import { useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { MainModal } from './MainModal'
+import { useShortcutStore } from '@/storage/useShortcutStore'
 import { useStorageStore } from '@/storage/useStorageStore'
 
 export function Trigger() {
   const [isOpen, setIsOpen] = useState(false)
   const { settings, status } = useStorageStore()
+  const { isEditing } = useShortcutStore()
 
-  useHotkeys(settings.shortcut, event => {
-    event.preventDefault()
-    setIsOpen(prev => !prev)
-  })
+  useHotkeys(
+    settings.shortcut,
+    event => {
+      event.preventDefault()
+      setIsOpen(prev => !prev)
+    },
+    { enabled: !isEditing, preventDefault: true },
+  )
 
   if (status === 'initializing') {
     return null

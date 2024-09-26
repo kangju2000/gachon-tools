@@ -4,6 +4,7 @@ import { chromeStorageClient } from './chromeStorageClient'
 import packageJson from '../../package.json'
 import { filterActivities } from '@/content/components/task/filterActivities'
 import type { Activity, StorageData } from '@/types'
+import { isMac } from '@/utils/isMac'
 
 type Status = 'initializing' | 'ready' | 'error' | 'loading'
 
@@ -26,7 +27,7 @@ const initialStorageData: StorageData = {
       type: 'image',
       image: chrome.runtime.getURL('/assets/Lee-Gil-ya.webp'),
     },
-    shortcut: 'cmd+/, ctrl+/',
+    shortcut: isMac ? '⌘ + /' : 'Ctrl + /',
   },
 }
 

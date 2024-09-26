@@ -1,10 +1,12 @@
 import { Keyboard } from 'lucide-react'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { SettingItem } from './SettingItem'
+import { useShortcutStore } from '@/storage/useShortcutStore'
 import { useStorageStore } from '@/storage/useStorageStore'
 import { cn } from '@/utils/cn'
+import { isMac } from '@/utils/isMac'
 
 const SHORTCUTS = [
   // 브라우저 및 일반적인 단축키
@@ -143,23 +145,31 @@ const KOREAN_TO_ENGLISH = {
   ㅞ: 'np',
 }
 
+const formatShortcutForDisplay = (shortcut: string) => {
+  return shortcut
+    .split('+')
+    .map(key => {
+      if (key === 'meta') return isMac ? '⌘' : 'Win'
+      if (key === 'alt') return isMac ? '⌥' : 'Alt'
+      if (key === 'ctrl') return isMac ? '⌃' : 'Ctrl'
+      if (key === 'shift') return isMac ? '⇧' : 'Shift'
+      return key.charAt(0).toUpperCase() + key.slice(1)
+    })
+    .join(' + ')
+}
+
 export function Shortcut() {
   const { settings, updateData } = useStorageStore()
-  const [isEditingShortcut, setIsEditingShortcut] = useState(false)
+  const { isEditing, setIsEditing } = useShortcutStore()
   const [tempShortcut, setTempShortcut] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const shortcutInputRef = useRef<HTMLInputElement>(null)
 
-  const prevShortcut = useRef(settings.shortcut).current
+  const displayShortcut = useMemo(() => formatShortcutForDisplay(settings.shortcut), [settings.shortcut])
 
   const handleShortcutChange = useCallback((keyboardEvent: KeyboardEvent) => {
     keyboardEvent.preventDefault()
     const { ctrlKey, metaKey, altKey, shiftKey, key } = keyboardEvent
-
-    if (key === settings.shortcut) {
-      setErrorMessage('이미 설정된 단축키입니다.')
-      return
-    }
 
     if (key === 'Escape') {
       handleCancel()
@@ -169,16 +179,22 @@ export function Shortcut() {
     if (key.length === 1 || ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'].includes(key)) {
       let processedKey = key.toLowerCase()
 
-      // 한글 키를 영어로 변환
       if (KOREAN_TO_ENGLISH[processedKey]) {
         processedKey = KOREAN_TO_ENGLISH[processedKey]
       }
 
-      const newShortcut = [ctrlKey && 'ctrl', metaKey && 'meta', altKey && 'alt', shiftKey && 'shift', processedKey]
+      const newShortcut = [
+        (isMac ? metaKey : ctrlKey) && (isMac ? 'meta' : 'ctrl'),
+        !isMac && metaKey && 'meta',
+        altKey && 'alt',
+        shiftKey && 'shift',
+        processedKey,
+      ]
         .filter(Boolean)
         .join('+')
 
       if (SHORTCUTS.includes(newShortcut)) {
+        setTempShortcut(newShortcut)
         setErrorMessage('내장된 단축키는 사용할 수 없습니다.')
         return
       }
@@ -189,36 +205,37 @@ export function Shortcut() {
   }, [])
 
   useHotkeys('*', handleShortcutChange, {
-    enabled: isEditingShortcut,
+    enabled: isEditing,
   })
 
   const handleInputFocus = () => {
-    setIsEditingShortcut(true)
-    updateData('settings', prev => ({ ...prev, shortcut: '' }))
+    setIsEditing(true)
     setErrorMessage('')
   }
 
-  const handleInputBlur = () => {
-    // 포커스를 잃었을 때 편집 모드를 유지합니다.
+  const reset = () => {
+    setIsEditing(false)
+    setTempShortcut('')
+    setErrorMessage('')
   }
 
   const handleSave = () => {
     if (tempShortcut) {
       updateData('settings', prev => ({ ...prev, shortcut: tempShortcut }))
-      setIsEditingShortcut(false)
-      setTempShortcut('')
-      setErrorMessage('')
     }
+
+    reset()
   }
 
   const handleCancel = () => {
-    updateData('settings', prev => ({ ...prev, shortcut: prevShortcut }))
-    setIsEditingShortcut(false)
-    setTempShortcut('')
-    setErrorMessage('')
-
-    shortcutInputRef.current?.blur()
+    reset()
   }
+
+  useEffect(() => {
+    return () => {
+      reset()
+    }
+  }, [])
 
   return (
     <SettingItem title="단축키 설정" description="GachonTools를 열고 닫을 단축키를 설정합니다.">
@@ -229,12 +246,17 @@ export function Shortcut() {
             type="text"
             className={cn(
               'd-input d-input-bordered w-full pr-10 transition-all duration-200',
-              isEditingShortcut ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-gray-300',
+              isEditing ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-gray-300',
               errorMessage && 'border-red-500',
             )}
-            value={isEditingShortcut ? tempShortcut || '새 단축키 입력...' : settings.shortcut}
+            value={
+              isEditing
+                ? tempShortcut
+                  ? formatShortcutForDisplay(tempShortcut)
+                  : '새 단축키 입력...'
+                : displayShortcut
+            }
             onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
             readOnly
             placeholder="클릭하여 단축키 설정"
           />
@@ -242,16 +264,16 @@ export function Shortcut() {
             size={20}
             className={cn(
               'absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-200',
-              isEditingShortcut ? 'text-blue-500' : 'text-gray-400',
+              isEditing ? 'text-blue-500' : 'text-gray-400',
             )}
             onClick={() => {
-              setIsEditingShortcut(true)
+              setIsEditing(true)
               shortcutInputRef.current?.focus()
             }}
           />
         </div>
 
-        {isEditingShortcut && (
+        {isEditing && (
           <div className="rounded-md bg-blue-50 p-3">
             <p className={cn('mb-2 text-sm', errorMessage ? 'text-red-500' : 'text-gray-700')}>
               {errorMessage || '새로운 단축키를 입력하세요. ESC를 눌러 취소할 수 있습니다.'}
