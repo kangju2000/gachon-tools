@@ -1,7 +1,7 @@
 {
   "name": "gachon-tools",
   "description": "가천대학교 사이버캠퍼스 확장프로그램",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "license": "MIT",
   "type": "module",
   "scripts": {
