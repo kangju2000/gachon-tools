@@ -1,7 +1,8 @@
 import { AnimatePresence } from 'framer-motion'
 import { Camera, Palette } from 'lucide-react'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
+import toast from 'react-hot-toast'
 
 import { ColorPickerModal } from './ColorPickerModal'
 import { ImageCropModal } from './ImageCropModal'
@@ -21,33 +22,50 @@ const refreshIntervalOptions = [
   { value: 1000 * 60 * 120, label: '2시간' },
 ]
 
+const maxImageSize = 1024 * 1024 * 4 // 4MB
+
 export function SettingsContent() {
   const { settings, updateSettings } = useStorageStore()
   const [image, setImage] = useState<string | null>(null)
   const [isCropModalOpen, setIsCropModalOpen] = useState(false)
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
 
-  const inputRef = useRef<HTMLInputElement>(null)
-
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
+
+    if (!file) {
+      return
+    }
+
+    if (file.size > maxImageSize) {
+      toast.error(`이미지는 ${maxImageSize / 1024 / 1024}MB 이하로 업로드해주세요`)
+      return
+    }
+
     setImage(URL.createObjectURL(file))
     setIsCropModalOpen(true)
   }, [])
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, inputRef } = useDropzone({
     onDrop,
     accept: {
       'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'],
     },
     noClick: true,
-    maxSize: 1024 * 1024 * 2,
+    noKeyboard: true,
+    maxFiles: 1,
+    onError: () => {
+      toast.error('이미지 업로드에 실패했어요')
+    },
   })
 
   const handleCropComplete = useCallback(
     async (croppedImage: string) => {
       updateSettings({ trigger: { type: 'image', image: croppedImage } })
       setIsCropModalOpen(false)
+      setImage(null)
+
+      toast.success('이미지가 성공적으로 업로드되었어요')
     },
     [updateSettings],
   )

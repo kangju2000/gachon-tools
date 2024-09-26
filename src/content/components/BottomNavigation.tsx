@@ -5,7 +5,7 @@ type NavigationProps = {
   setActiveTab: (tab: 'tasks' | 'settings') => void
 }
 
-export function Navigation({ activeTab, setActiveTab }: NavigationProps) {
+export function BottomNavigation({ activeTab, setActiveTab }: NavigationProps) {
   return (
     <div className="flex justify-around border-t border-gray-200 bg-white bg-opacity-80">
       <button

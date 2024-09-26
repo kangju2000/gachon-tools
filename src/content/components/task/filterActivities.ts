@@ -32,12 +32,6 @@ const filterBySearchQuery = (activity: Activity, searchQuery?: string): boolean 
 }
 
 export function filterActivities(activity: Activity, options: FilterOptions): boolean {
-  console.log(
-    isValidActivity(activity),
-    filterByStatus(activity, options.status),
-    filterByCourse(activity, options.courseId),
-    filterBySearchQuery(activity, options.searchQuery),
-  )
   return (
     isValidActivity(activity) &&
     filterByStatus(activity, options.status) &&

@@ -41,4 +41,15 @@ export default defineConfig({
       '@/assets': resolve(__dirname, './src/assets'),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 1024,
+    rollupOptions: {
+      onwarn(warning, warn) {
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+          return
+        }
+        warn(warning)
+      },
+    },
+  },
 })
