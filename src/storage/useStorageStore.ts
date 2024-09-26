@@ -27,7 +27,7 @@ const initialStorageData: StorageData = {
       type: 'image',
       image: chrome.runtime.getURL('/assets/Lee-Gil-ya.webp'),
     },
-    shortcut: isMac ? '⌘ + /' : 'Ctrl + /',
+    shortcut: isMac ? 'meta+/' : 'Ctrl+/',
   },
 }
 
