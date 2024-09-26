@@ -7,19 +7,13 @@ import type { Activity, StorageData } from '@/types'
 
 type Status = 'initializing' | 'ready' | 'error' | 'loading'
 
-interface ExtendedStorageData extends StorageData {
+interface StorageStore extends StorageData {
   status: Status
   error: string | null
-}
-
-type StorageStore = ExtendedStorageData & {
-  initialize: () => Promise<void>
-  updateMeta: (meta: Partial<StorageData['meta']>) => Promise<void>
-  updateContents: (contents: Partial<StorageData['contents']>) => Promise<void>
-  updateFilterOptions: (filterOptions: Partial<StorageData['filterOptions']>) => void
-  updateSettings: (settings: Partial<StorageData['settings']>) => Promise<void>
-  resetStore: () => Promise<void>
+  initialize: () => void
+  updateData: <K extends keyof StorageData>(key: K, updater: (prev: StorageData[K]) => StorageData[K]) => void
   getFilteredActivities: (searchQuery: string) => Activity[]
+  resetStore: () => void
 }
 
 const initialStorageData: StorageData = {
@@ -27,135 +21,83 @@ const initialStorageData: StorageData = {
   contents: { courseList: [{ id: '-1', title: '전체 과목' }], activityList: [] },
   filterOptions: { status: 'ongoing', courseId: '-1' },
   settings: {
-    refreshInterval: 1000 * 60 * 20, // 20 minutes
+    refreshInterval: 1000 * 60 * 20,
     trigger: {
       type: 'image',
       image: chrome.runtime.getURL('/assets/Lee-Gil-ya.webp'),
     },
+    shortcut: 'cmd+/, ctrl+/',
   },
 }
 
-export const useStorageStore = create<StorageStore>((set, get) => ({
-  ...initialStorageData,
-  status: 'initializing' as Status,
-  error: null,
+const mergeData = (initial: StorageData, stored: Partial<StorageData>): StorageData => ({
+  meta: { ...initial.meta, ...stored.meta },
+  contents: { ...initial.contents, ...stored.contents },
+  filterOptions: { ...initial.filterOptions, ...stored.filterOptions },
+  settings: { ...initial.settings, ...stored.settings },
+})
 
-  initialize: async () => {
+export const useStorageStore = create<StorageStore>((set, get) => {
+  const withAsyncHandler = async <T extends Partial<StorageData>>(operation: () => Promise<T>) => {
+    set({ status: 'loading' })
     try {
-      const data = await chromeStorageClient.getData()
-      if (Object.keys(data).length === 0) {
+      const result = await operation()
+      set({ ...result, status: 'ready', error: null })
+    } catch (error) {
+      set({
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
+    }
+  }
+
+  return {
+    ...initialStorageData,
+    status: 'initializing',
+    error: null,
+
+    initialize: () => {
+      withAsyncHandler(async () => {
+        const storedData = await chromeStorageClient.getData()
+        const mergedData = mergeData(initialStorageData, storedData)
+        await chromeStorageClient.setData(mergedData)
+        return mergedData
+      })
+    },
+
+    updateData: <K extends keyof StorageData>(key: K, updater: (prev: StorageData[K]) => StorageData[K]) => {
+      withAsyncHandler(async () => {
+        const updatedData = updater(get()[key])
+        await chromeStorageClient.updateDataByKey(key, () => updatedData)
+        return { [key]: updatedData } as Partial<StorageData>
+      })
+    },
+
+    getFilteredActivities: (searchQuery: string) =>
+      get()
+        .contents.activityList.filter(activity => filterActivities(activity, { ...get().filterOptions, searchQuery }))
+        .sort((a, b) => new Date(a.endAt).getTime() - new Date(b.endAt).getTime()),
+
+    resetStore: () => {
+      withAsyncHandler(async () => {
         await chromeStorageClient.setData(initialStorageData)
-        set({ ...initialStorageData, status: 'ready', error: null })
-        return
-      }
-
-      set({ ...data, status: 'ready', error: null })
-    } catch (error) {
-      set({
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        return initialStorageData
       })
-    }
-  },
-
-  updateMeta: async (meta: Partial<StorageData['meta']>) => {
-    set({ status: 'loading' })
-    try {
-      await chromeStorageClient.updateDataByKey('meta', prevMeta => ({ ...prevMeta, ...meta }))
-      const updatedMeta = await chromeStorageClient.getDataByKey('meta')
-      set({ meta: updatedMeta, status: 'ready', error: null })
-    } catch (error) {
-      set({
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-    }
-  },
-
-  updateContents: async (contents: Partial<StorageData['contents']>) => {
-    set({ status: 'loading' })
-    try {
-      await chromeStorageClient.updateDataByKey('contents', prevContents => ({ ...prevContents, ...contents }))
-      const updatedContents = await chromeStorageClient.getDataByKey('contents')
-      set({ contents: updatedContents, status: 'ready', error: null })
-    } catch (error) {
-      set({
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-    }
-  },
-
-  updateFilterOptions: async (filterOptions: Partial<StorageData['filterOptions']>) => {
-    set({ status: 'loading' })
-    try {
-      await chromeStorageClient.updateDataByKey('filterOptions', prevFilterOptions => ({
-        ...prevFilterOptions,
-        ...filterOptions,
-      }))
-      const updatedFilterOptions = await chromeStorageClient.getDataByKey('filterOptions')
-      set({ filterOptions: updatedFilterOptions, status: 'ready', error: null })
-    } catch (error) {
-      set({
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-    }
-  },
-
-  updateSettings: async (settings: Partial<StorageData['settings']>) => {
-    set({ status: 'loading' })
-    try {
-      await chromeStorageClient.updateDataByKey('settings', prevSettings => ({ ...prevSettings, ...settings }))
-      const updatedSettings = await chromeStorageClient.getDataByKey('settings')
-      set({ settings: updatedSettings, status: 'ready', error: null })
-    } catch (error) {
-      set({
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-    }
-  },
-
-  resetStore: async () => {
-    set({ status: 'loading' })
-    try {
-      await chromeStorageClient.clearAllData()
-      await chromeStorageClient.setData(initialStorageData)
-      set({ ...initialStorageData, status: 'ready', error: null })
-    } catch (error) {
-      set({
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-    }
-  },
-
-  getFilteredActivities: (searchQuery: string): Activity[] => {
-    return get()
-      .contents.activityList.filter((activity: Activity) =>
-        filterActivities(activity, { ...get().filterOptions, searchQuery }),
-      )
-      .sort((a, b) => new Date(a.endAt).getTime() - new Date(b.endAt).getTime())
-  },
-}))
+    },
+  }
+})
 
 useStorageStore.getState().initialize()
 
 chromeStorageClient.onStorageChanged(changes => {
-  const newState: Partial<StorageData> = {}
-
-  if (changes.meta) {
-    newState.meta = changes.meta.newValue
-  }
-  if (changes.contents) {
-    newState.contents = changes.contents.newValue
-  }
-  if (changes.settings) {
-    newState.settings = changes.settings.newValue
-  }
+  const newState = Object.entries(changes).reduce((acc, [key, { newValue }]) => {
+    if (key in initialStorageData) {
+      acc[key as keyof StorageData] = newValue
+    }
+    return acc
+  }, {} as Partial<StorageData>)
 
   if (Object.keys(newState).length > 0) {
-    useStorageStore.setState({ ...newState, status: 'ready', error: null })
+    useStorageStore.setState(state => ({ ...state, ...newState, status: 'ready', error: null }))
   }
 })

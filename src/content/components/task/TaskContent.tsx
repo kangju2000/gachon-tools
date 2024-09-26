@@ -22,7 +22,7 @@ export function TaskContent() {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const { progress, isLoading, refetch } = useContentsFetcher()
-  const { meta, contents, filterOptions, getFilteredActivities, updateFilterOptions } = useStorageStore()
+  const { meta, contents, filterOptions, getFilteredActivities, updateData } = useStorageStore()
 
   const filteredTasks = getFilteredActivities(searchQuery)
   const formattedUpdateTime = formatDistanceToNowStrict(new Date(meta.updateAt), { addSuffix: true, locale: ko })
@@ -100,7 +100,9 @@ export function TaskContent() {
                           'bg-blue-100 text-blue-700': filterOptions.status === key,
                           'bg-gray-100 text-gray-700 hover:bg-gray-200': filterOptions.status !== key,
                         })}
-                        onClick={() => updateFilterOptions({ status: key as ActivityStatus })}
+                        onClick={() =>
+                          updateData('filterOptions', prev => ({ ...prev, status: key as ActivityStatus }))
+                        }
                       >
                         {value}
                       </button>
@@ -117,7 +119,7 @@ export function TaskContent() {
                           'bg-blue-100 text-blue-700': filterOptions.courseId === course.id,
                           'bg-gray-100 text-gray-700 hover:bg-gray-300': filterOptions.courseId !== course.id,
                         })}
-                        onClick={() => updateFilterOptions({ courseId: course.id })}
+                        onClick={() => updateData('filterOptions', prev => ({ ...prev, courseId: course.id }))}
                       >
                         {course.title}
                       </button>

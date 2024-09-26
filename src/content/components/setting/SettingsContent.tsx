@@ -7,13 +7,14 @@ import toast from 'react-hot-toast'
 import { ColorPickerModal } from './ColorPickerModal'
 import { ImageCropModal } from './ImageCropModal'
 import { SettingItem } from './SettingItem'
+import { Shortcut } from './Shortcut'
 import packageJson from '../../../../package.json'
 import { useStorageStore } from '@/storage/useStorageStore'
 import { cn } from '@/utils/cn'
 
 const { version } = packageJson
 
-const refreshIntervalOptions = [
+const REFRESH_INTERVAL_OPTIONS = [
   { value: 1000 * 60 * 5, label: '5분' },
   { value: 1000 * 60 * 10, label: '10분' },
   { value: 1000 * 60 * 20, label: '20분' },
@@ -22,10 +23,10 @@ const refreshIntervalOptions = [
   { value: 1000 * 60 * 120, label: '2시간' },
 ]
 
-const maxImageSize = 1024 * 1024 * 4 // 4MB
+const MAX_IMAGE_SIZE = 1024 * 1024 * 4 // 4MB
 
 export function SettingsContent() {
-  const { settings, updateSettings } = useStorageStore()
+  const { settings, updateData } = useStorageStore()
   const [image, setImage] = useState<string | null>(null)
   const [isCropModalOpen, setIsCropModalOpen] = useState(false)
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
@@ -37,8 +38,8 @@ export function SettingsContent() {
       return
     }
 
-    if (file.size > maxImageSize) {
-      toast.error(`이미지는 ${maxImageSize / 1024 / 1024}MB 이하로 업로드해주세요`)
+    if (file.size > MAX_IMAGE_SIZE) {
+      toast.error(`이미지는 ${MAX_IMAGE_SIZE / 1024 / 1024}MB 이하로 업로드해주세요`)
       return
     }
 
@@ -61,19 +62,15 @@ export function SettingsContent() {
 
   const handleCropComplete = useCallback(
     async (croppedImage: string) => {
-      updateSettings({ trigger: { type: 'image', image: croppedImage } })
+      updateData('settings', prev => ({ ...prev, trigger: { type: 'image', image: croppedImage } }))
+
       setIsCropModalOpen(false)
       setImage(null)
 
       toast.success('이미지가 성공적으로 업로드되었어요')
     },
-    [updateSettings],
+    [updateData],
   )
-
-  const handleRefreshIntervalChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newRefreshInterval = Number(event.target.value)
-    updateSettings({ refreshInterval: newRefreshInterval })
-  }
 
   const renderTriggerPreview = () => {
     switch (settings.trigger.type) {
@@ -129,15 +126,24 @@ export function SettingsContent() {
             <select
               className="d-select d-select-bordered w-full"
               value={settings.refreshInterval}
-              onChange={handleRefreshIntervalChange}
+              onChange={event =>
+                updateData('settings', prev => ({
+                  ...prev,
+                  refreshInterval: Number(event.target.value),
+                }))
+              }
             >
-              {refreshIntervalOptions.map(option => (
+              {REFRESH_INTERVAL_OPTIONS.map(option => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
             </select>
           </SettingItem>
+        </div>
+
+        <div className="rounded-lg bg-white p-16px shadow-sm">
+          <Shortcut />
         </div>
       </div>
 
@@ -158,16 +164,26 @@ export function SettingsContent() {
         {isColorPickerOpen && (
           <ColorPickerModal
             onComplete={value => {
-              updateSettings({ trigger: { type: 'color', color: value } })
+              updateData('settings', prev => ({ ...prev, trigger: { type: 'color', color: value } }))
               setIsColorPickerOpen(false)
             }}
             onClose={() => setIsColorPickerOpen(false)}
           />
         )}
       </AnimatePresence>
-
-      <div className="absolute bottom-8px left-16px">
-        <span className="text-12px text-gray-500">버전 {version}</span>
+      <div className="flex items-center justify-center gap-8px p-16px text-12px">
+        <span className="text-gray-500">버전: {version}</span>
+        <span className="text-gray-300">|</span>
+        <a
+          href="https://kangju2000.notion.site/Gachon-Tools-f01d077db229434abfce605c2d26f682"
+          className="text-blue-500 hover:underline"
+        >
+          도움말
+        </a>
+        <span className="text-gray-300">|</span>
+        <a href="https://forms.gle/1aVSbBfwbzw9753b7" className="text-blue-500 hover:underline">
+          문의하기
+        </a>
       </div>
     </div>
   )

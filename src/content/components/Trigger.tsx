@@ -8,10 +8,10 @@ import { useStorageStore } from '@/storage/useStorageStore'
 
 export function Trigger() {
   const [isOpen, setIsOpen] = useState(false)
-
   const { settings, status } = useStorageStore()
 
-  useHotkeys('ctrl+/, meta+/', () => {
+  useHotkeys(settings.shortcut, event => {
+    event.preventDefault()
     setIsOpen(prev => !prev)
   })
 

@@ -7,7 +7,7 @@ import { useStorageStore } from '@/storage/useStorageStore'
 export const useContentsFetcher = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [progress, setProgress] = useState(0)
-  const { updateContents, updateMeta } = useStorageStore()
+  const { updateData } = useStorageStore()
   const { shouldRefresh } = useRefreshCheck()
 
   const fetchContents = async () => {
@@ -32,9 +32,11 @@ export const useContentsFetcher = () => {
       }),
     ).then(activityList => activityList.flat())
 
-    updateContents({ courseList: [{ id: '-1', title: '전체 과목' }, ...courseList], activityList })
-    updateMeta({ updateAt: new Date().toISOString() })
-
+    updateData('contents', () => ({
+      courseList: [{ id: '-1', title: '전체 과목' }, ...courseList],
+      activityList,
+    }))
+    updateData('meta', prev => ({ ...prev, updateAt: new Date().toISOString() }))
     setIsLoading(false)
     setProgress(0)
   }

@@ -10,6 +10,7 @@ export type StorageData = {
   settings: {
     refreshInterval: number
     trigger: { type: 'image'; image: string } | { type: 'color'; color: string }
+    shortcut: string
   }
 }
 

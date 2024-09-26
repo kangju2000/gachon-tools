@@ -50,5 +50,5 @@ export default defineManifest(async () => ({
     },
   ],
   host_permissions: ['https://cyber.gachon.ac.kr/*'],
-  permissions: ['storage', 'scripting', 'activeTab'],
+  permissions: ['storage', 'unlimitedStorage', 'scripting', 'activeTab'],
 }))
