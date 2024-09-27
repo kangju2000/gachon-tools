@@ -8,7 +8,9 @@ const isDev = process.env.NODE_ENV === 'development'
 
 export default defineManifest(async () => ({
   manifest_version: 3,
-  name: isDev ? '[DEV] Gachon Tools - 사이버캠퍼스 확장프로그램' : 'Gachon Tools - 사이버캠퍼스 확장프로그램',
+  name: isDev
+    ? '[DEV] Gachon Tools - 과제 대시보드 · 사이버캠퍼스 어시스턴트'
+    : 'Gachon Tools - 과제 대시보드 · 사이버캠퍼스 어시스턴트',
   description: packageJson.description,
   version: label === '0' ? `${major}.${minor}.${patch}` : `${major}.${minor}.${patch}.${label}`,
   version_name: packageJson.version,
