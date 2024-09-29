@@ -50,7 +50,7 @@ export function TaskCard({ task }: Props) {
 
   const getExactDeadline = () => format(endAtDate, 'M월 d일(E) HH:mm', { locale: ko })
 
-  const taskLink = `https://cyber.gachon.ac.kr/mod/${task.type === 'assignment' ? 'assign' : 'vod'}/view.php?id=${task.id}`
+  const taskLink = `${window.location.origin}/mod/${task.type === 'assignment' ? 'assign' : 'vod'}/view.php?id=${task.id}`
 
   return (
     <a href={taskLink} rel="noopener noreferrer" className="block">

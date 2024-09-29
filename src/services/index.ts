@@ -8,7 +8,7 @@ import type { AnyNode } from 'domhandler'
 
 type CheerioAPI = cheerio.CheerioAPI
 
-const origin = document.location.origin
+const origin = window.location.origin
 const university = UNIVERITY_NAME_MAP[origin]
 
 const univSpecific = {
