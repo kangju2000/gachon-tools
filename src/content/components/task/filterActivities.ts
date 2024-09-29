@@ -8,8 +8,7 @@ interface FilterOptions extends _FilterOptions {
 }
 
 const isOngoing = (activity: Activity): boolean => {
-  const now = new Date()
-  return new Date(activity.startAt) <= now && now <= new Date(activity.endAt)
+  return new Date() <= new Date(activity.endAt)
 }
 
 const isValidActivity = (activity: Activity): boolean => activity.id !== '' && isValid(new Date(activity.endAt))
