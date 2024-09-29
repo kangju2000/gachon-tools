@@ -32,7 +32,7 @@ const initialStorageData: StorageData = {
 }
 
 const mergeData = (initial: StorageData, stored: Partial<StorageData>): StorageData => ({
-  meta: { ...initial.meta, ...stored.meta },
+  meta: { ...initial.meta, ...stored.meta, version: packageJson.version },
   contents: { ...initial.contents, ...stored.contents },
   filterOptions: { ...initial.filterOptions, ...stored.filterOptions },
   settings: { ...initial.settings, ...stored.settings },
