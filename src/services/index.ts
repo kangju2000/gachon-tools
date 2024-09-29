@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio'
 
+import { UNIVERITY_NAME_MAP } from '@/constants/univ'
 import type { Activity, Assignment, Course, Video } from '@/types'
 import { getLinkId, mapElement, getAttr, getText } from '@/utils'
 
@@ -7,9 +8,21 @@ import type { AnyNode } from 'domhandler'
 
 type CheerioAPI = cheerio.CheerioAPI
 
+const origin = document.location.origin
+const university = UNIVERITY_NAME_MAP[origin]
+
+const univSpecific = {
+  가천대학교: {
+    titleRegex: /\((\w{5}_\w{3})\)/,
+  },
+  서울시립대학교: {
+    titleRegex: /\[(?:\w{5}_\w{2}|\w{2})]/,
+  },
+}[university]
+
 // 네트워크 요청을 담당하는 함수
 export async function fetchHtml(url: string): Promise<string> {
-  const response = await fetch(url)
+  const response = await fetch(document.location.origin + url)
   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
   return await response.text()
 }
@@ -38,14 +51,14 @@ function parseCourses($: CheerioAPI): Course[] {
   return mapElement($('.coursefullname'), (_, el) => {
     const $el = $(el)
     const id = getLinkId(getAttr($el, 'href'))
-    const title = getText($el).replace(/ \((\w{5}_\w{3})\)/, '')
+    const title = getText($el).replace(univSpecific.titleRegex, '')
     return { id, title }
   })
 }
 
 // 강의 목록 가져오기
 export const getCourses = async (): Promise<Course[]> => {
-  const $ = await getDocument('https://cyber.gachon.ac.kr/local/ubion/user')
+  const $ = await getDocument('/local/ubion/user')
   return parseCourses($)
 }
 
@@ -105,7 +118,7 @@ export const getActivities = async (
   assignmentSubmittedArray: Awaited<ReturnType<typeof getAssignmentSubmitted>>,
   videoSubmittedArray: Awaited<ReturnType<typeof getVideoSubmitted>>,
 ): Promise<Activity[]> => {
-  const $ = await getDocument(`https://cyber.gachon.ac.kr/course/view.php?id=${courseId}`)
+  const $ = await getDocument(`/course/view.php?id=${courseId}`)
 
   const assignments = parseAssignments($, courseId).reduce<Assignment[]>((acc, cur) => {
     const findAssignment = assignmentSubmittedArray.find(a => a.id === cur.id)
@@ -141,7 +154,7 @@ export function parseAssignmentSubmitted(
 export const getAssignmentSubmitted = async (
   courseId: string,
 ): Promise<Array<Pick<Assignment, 'id' | 'title' | 'hasSubmitted' | 'endAt'>>> => {
-  const $ = await getDocument(`https://cyber.gachon.ac.kr/mod/assign/index.php?id=${courseId}`)
+  const $ = await getDocument(`/mod/assign/index.php?id=${courseId}`)
   return parseAssignmentSubmitted($)
 }
 
@@ -173,6 +186,6 @@ function parseVideoSubmitted($: CheerioAPI): Array<Pick<Video, 'title' | 'hasSub
 export const getVideoSubmitted = async (
   courseId: string,
 ): Promise<Array<Pick<Video, 'title' | 'hasSubmitted' | 'sectionTitle'>>> => {
-  const $ = await getDocument(`https://cyber.gachon.ac.kr/report/ubcompletion/user_progress.php?id=${courseId}`)
+  const $ = await getDocument(`/report/ubcompletion/user_progress.php?id=${courseId}`)
   return parseVideoSubmitted($)
 }

@@ -1,6 +1,7 @@
 import { defineManifest } from '@crxjs/vite-plugin'
 
 import packageJson from './package.json'
+import { UNIVERITY_LINK_LIST } from './src/constants/univ'
 
 const [major, minor, patch, label = '0'] = packageJson.version.replace(/[^\d.-]+/g, '').split(/[.-]/)
 
@@ -34,12 +35,12 @@ export default defineManifest(async () => ({
   },
   content_scripts: [
     {
-      matches: ['https://cyber.gachon.ac.kr/*'],
-      exclude_matches: [
-        'https://cyber.gachon.ac.kr/login.php*',
-        'https://cyber.gachon.ac.kr/mod/ubfile/viewer.php*',
-        'https://cyber.gachon.ac.kr/mod/vod/viewer.php*',
-      ],
+      matches: UNIVERITY_LINK_LIST.map(univ => `${univ}/*`),
+      exclude_matches: UNIVERITY_LINK_LIST.map(univ => [
+        `${univ}/login.php*`,
+        `${univ}/mod/ubfile/viewer.php*`,
+        `${univ}/mod/vod/viewer.php*`,
+      ]).flat(),
       js: isDev ? ['src/content/index.dev.tsx'] : ['src/content/index.prod.tsx'],
       run_at: 'document_start',
     },
@@ -51,6 +52,6 @@ export default defineManifest(async () => ({
       matches: ['*://*/*'],
     },
   ],
-  host_permissions: ['https://cyber.gachon.ac.kr/*'],
+  host_permissions: UNIVERITY_LINK_LIST.map(univ => `${univ}/*`),
   permissions: ['storage', 'unlimitedStorage', 'scripting', 'activeTab'],
 }))
