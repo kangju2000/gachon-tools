@@ -4,24 +4,30 @@ import { useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { MainModal } from './MainModal'
+import { useShadowRoot } from '@/hooks/useShadowRoot'
 import { useShortcutStore } from '@/storage/useShortcutStore'
 import { useStorageStore } from '@/storage/useStorageStore'
 
 export function Trigger() {
   const [isOpen, setIsOpen] = useState(false)
-  const { settings, status } = useStorageStore()
+  const { settings, isInitialized } = useStorageStore()
   const { isEditing } = useShortcutStore()
+  const shadowRoot = useShadowRoot()
 
   useHotkeys(
     settings.shortcut,
-    event => {
-      event.preventDefault()
+    () => {
+      const activeElement = shadowRoot?.activeElement
+      if (isEditing || activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement) {
+        return
+      }
+
       setIsOpen(prev => !prev)
     },
-    { enabled: !isEditing, preventDefault: true },
+    [isEditing, shadowRoot],
   )
 
-  if (status === 'initializing') {
+  if (!isInitialized) {
     return null
   }
 
