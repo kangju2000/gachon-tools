@@ -1,149 +1,12 @@
 import { Keyboard } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 import { SettingItem } from './SettingItem'
+import { KOREAN_TO_ENGLISH, SHORTCUTS } from '@/constants'
 import { useShortcutStore } from '@/storage/useShortcutStore'
 import { useStorageStore } from '@/storage/useStorageStore'
 import { cn } from '@/utils/cn'
 import { isMac } from '@/utils/isMac'
-
-const SHORTCUTS = [
-  // 브라우저 및 일반적인 단축키
-  'ctrl+t',
-  'ctrl+n',
-  'ctrl+shift+n',
-  'ctrl+o',
-  'ctrl+shift+t',
-  'ctrl+w',
-  'ctrl+shift+w',
-  'ctrl+f4',
-  'alt+f4',
-  'ctrl+1',
-  'ctrl+2',
-  'ctrl+3',
-  'ctrl+4',
-  'ctrl+5',
-  'ctrl+6',
-  'ctrl+7',
-  'ctrl+8',
-  'ctrl+9',
-  'ctrl+tab',
-  'ctrl+shift+tab',
-  'alt+left',
-  'alt+right',
-  'ctrl+r',
-  'f5',
-  'ctrl+f5',
-  'ctrl+l',
-  'ctrl+f',
-  'ctrl+g',
-  'ctrl+shift+g',
-  'ctrl+h',
-  'ctrl+j',
-  'ctrl+d',
-  'ctrl+shift+d',
-  'ctrl+s',
-  'ctrl+p',
-  'f12',
-  'ctrl+u',
-  'ctrl++',
-  'ctrl+-',
-  'ctrl+0',
-  'ctrl+a',
-  'ctrl+c',
-  'ctrl+v',
-  'ctrl+x',
-  'ctrl+z',
-  'ctrl+y',
-  'ctrl+b',
-  'ctrl+i',
-  // Mac 특화 단축키
-  'meta+t',
-  'meta+n',
-  'meta+shift+n',
-  'meta+o',
-  'meta+shift+t',
-  'meta+w',
-  'meta+shift+w',
-  'meta+q',
-  'meta+1',
-  'meta+2',
-  'meta+3',
-  'meta+4',
-  'meta+5',
-  'meta+6',
-  'meta+7',
-  'meta+8',
-  'meta+9',
-  'meta+tab',
-  'meta+shift+tab',
-  'meta+left',
-  'meta+right',
-  'meta+r',
-  'meta+shift+r',
-  'meta+l',
-  'meta+f',
-  'meta+g',
-  'meta+shift+g',
-  'meta+Option+f',
-  'meta+Option+g',
-  'meta+d',
-  'meta+shift+d',
-  'meta+s',
-  'meta+p',
-  'meta+Option+i',
-  'meta+u',
-  'meta++',
-  'meta+-',
-  'meta+0',
-  'meta+a',
-  'meta+c',
-  'meta+v',
-  'meta+x',
-  'meta+z',
-  'meta+shift+Z',
-  'meta+b',
-  'meta+i',
-]
-
-const KOREAN_TO_ENGLISH = {
-  ㄱ: 'r',
-  ㄴ: 's',
-  ㄷ: 'e',
-  ㄹ: 'f',
-  ㅁ: 'a',
-  ㅂ: 'q',
-  ㅅ: 't',
-  ㅇ: 'd',
-  ㅈ: 'w',
-  ㅊ: 'c',
-  ㅋ: 'z',
-  ㅌ: 'x',
-  ㅍ: 'v',
-  ㅎ: 'g',
-  ㅏ: 'k',
-  ㅑ: 'i',
-  ㅓ: 'j',
-  ㅕ: 'u',
-  ㅗ: 'h',
-  ㅛ: 'y',
-  ㅜ: 'n',
-  ㅠ: 'b',
-  ㅡ: 'm',
-  ㅣ: 'l',
-  ㅐ: 'o',
-  ㅒ: 'O',
-  ㅔ: 'p',
-  ㅖ: 'P',
-  ㅢ: 'ml',
-  ㅚ: 'hl',
-  ㅘ: 'hk',
-  ㅝ: 'nj',
-  ㅟ: 'nl',
-  ㅙ: 'ho',
-  ㅞ: 'np',
-}
 
 const formatShortcutForDisplay = (shortcut: string) => {
   return shortcut
@@ -167,12 +30,12 @@ export function Shortcut() {
 
   const displayShortcut = useMemo(() => formatShortcutForDisplay(settings.shortcut), [settings.shortcut])
 
-  const handleShortcutChange = useCallback((keyboardEvent: KeyboardEvent) => {
-    keyboardEvent.preventDefault()
-    const { ctrlKey, metaKey, altKey, shiftKey, key } = keyboardEvent
+  const handleShortcutChange = useCallback((event: KeyboardEvent) => {
+    event.preventDefault()
+    const { ctrlKey, metaKey, altKey, shiftKey, key } = event
 
     if (key === 'Escape') {
-      handleCancel()
+      reset()
       return
     }
 
@@ -204,10 +67,6 @@ export function Shortcut() {
     }
   }, [])
 
-  useHotkeys('*', handleShortcutChange, {
-    enabled: isEditing,
-  })
-
   const handleInputFocus = () => {
     setIsEditing(true)
     setErrorMessage('')
@@ -227,15 +86,20 @@ export function Shortcut() {
     reset()
   }
 
-  const handleCancel = () => {
-    reset()
-  }
+  useEffect(() => reset, [])
 
   useEffect(() => {
-    return () => {
-      reset()
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (isEditing) {
+        handleShortcutChange(event)
+      }
     }
-  }, [])
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isEditing, handleShortcutChange])
 
   return (
     <SettingItem title="단축키 설정" description="GachonTools를 열고 닫을 단축키를 설정합니다.">
@@ -280,7 +144,7 @@ export function Shortcut() {
             </p>
             <div className="flex justify-end space-x-2">
               <button
-                onClick={handleCancel}
+                onClick={reset}
                 className="rounded-md bg-white px-3 py-1 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 취소

@@ -29,7 +29,7 @@ export function TaskContent() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [filterOptions])
+  }, [filterOptions.courseId, filterOptions.status])
 
   return (
     <>

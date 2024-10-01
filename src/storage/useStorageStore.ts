@@ -6,15 +6,12 @@ import { filterActivities } from '@/content/components/task/filterActivities'
 import type { Activity, StorageData } from '@/types'
 import { isMac } from '@/utils/isMac'
 
-type Status = 'initializing' | 'ready' | 'error' | 'loading'
-
 interface StorageStore extends StorageData {
-  status: Status
-  error: string | null
-  initialize: () => void
-  updateData: <K extends keyof StorageData>(key: K, updater: (prev: StorageData[K]) => StorageData[K]) => void
+  isInitialized: boolean
+  initialize: () => Promise<void>
+  updateData: <K extends keyof StorageData>(key: K, updater: (prev: StorageData[K]) => StorageData[K]) => Promise<void>
   getFilteredActivities: (searchQuery: string) => Activity[]
-  resetStore: () => void
+  resetStore: () => Promise<void>
 }
 
 const initialStorageData: StorageData = {
@@ -38,55 +35,33 @@ const mergeData = (initial: StorageData, stored: Partial<StorageData>): StorageD
   settings: { ...initial.settings, ...stored.settings },
 })
 
-export const useStorageStore = create<StorageStore>((set, get) => {
-  const withAsyncHandler = async <T extends Partial<StorageData>>(operation: () => Promise<T>) => {
-    set({ status: 'loading' })
-    try {
-      const result = await operation()
-      set({ ...result, status: 'ready', error: null })
-    } catch (error) {
-      set({
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-    }
-  }
+export const useStorageStore = create<StorageStore>((set, get) => ({
+  ...initialStorageData,
+  isInitialized: false,
 
-  return {
-    ...initialStorageData,
-    status: 'initializing',
-    error: null,
+  initialize: async () => {
+    const storedData = await chromeStorageClient.getData()
+    const mergedData = mergeData(initialStorageData, storedData)
+    await chromeStorageClient.setData(mergedData)
+    set({ ...mergedData, isInitialized: true })
+  },
 
-    initialize: () => {
-      withAsyncHandler(async () => {
-        const storedData = await chromeStorageClient.getData()
-        const mergedData = mergeData(initialStorageData, storedData)
-        await chromeStorageClient.setData(mergedData)
-        return mergedData
-      })
-    },
+  updateData: async <K extends keyof StorageData>(key: K, updater: (prev: StorageData[K]) => StorageData[K]) => {
+    const updatedData = updater(get()[key])
+    await chromeStorageClient.updateDataByKey(key, () => updatedData)
+    set(state => ({ ...state, [key]: updatedData }))
+  },
 
-    updateData: <K extends keyof StorageData>(key: K, updater: (prev: StorageData[K]) => StorageData[K]) => {
-      withAsyncHandler(async () => {
-        const updatedData = updater(get()[key])
-        await chromeStorageClient.updateDataByKey(key, () => updatedData)
-        return { [key]: updatedData } as Partial<StorageData>
-      })
-    },
+  getFilteredActivities: (searchQuery: string) =>
+    get()
+      .contents.activityList.filter(activity => filterActivities(activity, { ...get().filterOptions, searchQuery }))
+      .sort((a, b) => new Date(a.endAt).getTime() - new Date(b.endAt).getTime()),
 
-    getFilteredActivities: (searchQuery: string) =>
-      get()
-        .contents.activityList.filter(activity => filterActivities(activity, { ...get().filterOptions, searchQuery }))
-        .sort((a, b) => new Date(a.endAt).getTime() - new Date(b.endAt).getTime()),
-
-    resetStore: () => {
-      withAsyncHandler(async () => {
-        await chromeStorageClient.setData(initialStorageData)
-        return initialStorageData
-      })
-    },
-  }
-})
+  resetStore: async () => {
+    await chromeStorageClient.setData(initialStorageData)
+    set({ ...initialStorageData, isInitialized: true })
+  },
+}))
 
 useStorageStore.getState().initialize()
 
@@ -99,6 +74,6 @@ chromeStorageClient.onStorageChanged(changes => {
   }, {} as Partial<StorageData>)
 
   if (Object.keys(newState).length > 0) {
-    useStorageStore.setState(state => ({ ...state, ...newState, status: 'ready', error: null }))
+    useStorageStore.setState(state => ({ ...state, ...newState }))
   }
 })

@@ -6,24 +6,22 @@ import { BottomNavigation } from './BottomNavigation'
 import { SettingsContent } from './setting'
 import { TaskContent } from './task'
 
-const modalVariants = {
+import type { Variants } from 'framer-motion'
+
+const modalVariants: Variants = {
   hidden: {
     opacity: 0,
     scale: 0.8,
-    y: 20,
-    transition: { duration: 0.2, ease: 'easeInOut' },
   },
   visible: {
     opacity: 1,
     scale: 1,
-    y: 0,
-    transition: { duration: 0.3, ease: 'easeOut' },
+    transition: { type: 'spring', stiffness: 100, damping: 12, mass: 0.5 },
   },
   exit: {
     opacity: 0,
     scale: 0.8,
-    y: 20,
-    transition: { duration: 0.2, ease: 'easeInOut' },
+    transition: { type: 'spring', stiffness: 150, damping: 18, mass: 0.5 },
   },
 }
 
