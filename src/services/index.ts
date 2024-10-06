@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio'
 
+import type { University, UniversityLink } from '@/constants/univ'
 import { UNIVERITY_NAME_MAP } from '@/constants/univ'
 import type { Activity, Assignment, Course, Video } from '@/types'
 import { getLinkId, mapElement, getAttr, getText } from '@/utils'
@@ -8,17 +9,20 @@ import type { AnyNode } from 'domhandler'
 
 type CheerioAPI = cheerio.CheerioAPI
 
-const origin = window.location.origin
+const origin = window.location.origin as UniversityLink
 const university = UNIVERITY_NAME_MAP[origin]
 
-const univSpecific = {
+const univSpecific: Record<University, { titleRegex: RegExp }> = {
   가천대학교: {
     titleRegex: /\((\w{5}_\w{3})\)/,
   },
   서울시립대학교: {
     titleRegex: /\[(?:\w{5}_\w{2}|\w{2})]/,
   },
-}[university]
+  // 홍익대학교: {
+  //   titleRegex: /\[\d+]$/,
+  // },
+}
 
 // 네트워크 요청을 담당하는 함수
 export async function fetchHtml(url: string): Promise<string> {
@@ -51,7 +55,7 @@ function parseCourses($: CheerioAPI): Course[] {
   return mapElement($('.coursefullname'), (_, el) => {
     const $el = $(el)
     const id = getLinkId(getAttr($el, 'href'))
-    const title = getText($el).replace(univSpecific.titleRegex, '')
+    const title = getText($el).replace(univSpecific[university]?.titleRegex, '')
     return { id, title }
   })
 }
