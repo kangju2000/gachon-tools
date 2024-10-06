@@ -1,3 +1,4 @@
+import { createRoot } from 'react-dom/client'
 import cropperStyles from 'react-easy-crop/react-easy-crop.css?inline'
 
 import { App } from './App'
@@ -8,8 +9,8 @@ function initApp() {
   // remove scroll to top button
   document.getElementById('back-top')?.remove()
 
-  const root = createShadowRoot([styles, cropperStyles])
-  root.render(<App />)
+  const shadowRoot = createShadowRoot([styles, cropperStyles])
+  createRoot(shadowRoot).render(<App />)
 }
 
 if (document.readyState === 'loading') {

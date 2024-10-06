@@ -1,4 +1,4 @@
-export const SHADOW_ID = 'gachon-tools-shadow-host'
+export const SHADOW_HOST_ID = 'gachon-tools-shadow-host'
 
 export const TAB_LIST = ['진행중인 과제', '모든 과제']
 
