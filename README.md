@@ -2,7 +2,7 @@
    <h1>Gachon Tools</h1>
    <p>사이버캠퍼스 과제 현황을 한 눈에 확인하세요</p>
    <div>
-      <img src="https://file.notion.so/f/f/ff6e767e-24d6-4f3f-815f-eead208f6522/9154ea2c-ce93-40a2-892d-3dafc88d05e8/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-09-27_%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB_12.41.54.png?table=block&id=10f6729b-e2dd-802d-9cf6-cba43675df04&spaceId=ff6e767e-24d6-4f3f-815f-eead208f6522&expirationTimestamp=1727697600000&signature=XYfBnscsJMz2L-dkBLrhsMh1S3LMgsCwH5pqEs0IofQ&downloadName=%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA+2024-09-27+%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB+12.41.54.png" alt="화면" />
+      <img src="https://github.com/user-attachments/assets/7bc1d9dd-3c1e-41fb-aa12-48a663a8e836" alt="화면" />
    </div>
    <br />
    <img src="https://img.shields.io/chrome-web-store/v/ogldncimhepjdfadhjjhkchknloncnmg" alt="크롬 익스텐션 버전"/>
