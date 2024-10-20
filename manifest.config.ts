@@ -38,11 +38,11 @@ export default defineManifest(
       content_scripts: [
         {
           matches: UNIVERITY_LINK_LIST.map(univ => `${univ}/*`),
-          exclude_matches: UNIVERITY_LINK_LIST.map(univ => [
+          exclude_matches: UNIVERITY_LINK_LIST.flatMap(univ => [
             `${univ}/login.php*`,
             `${univ}/mod/ubfile/viewer.php*`,
             `${univ}/mod/vod/viewer.php*`,
-          ]).flat(),
+          ]),
           js: ['src/content/index.tsx'],
           run_at: 'document_start',
         },
