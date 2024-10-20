@@ -1,13 +1,18 @@
 import { Copy } from 'lucide-react'
+import { useState } from 'react'
+import toast from 'react-hot-toast'
 
+import { ToastContainer } from './ToastContainer'
 import packageJson from '../../../package.json'
-import { chromeStorageClient } from '@/storage/chromeStorageClient'
+import { createSnapshots } from '@/apis/snapshots'
 import { useStorageStore } from '@/storage/useStorageStore'
+import { cn } from '@/utils/cn'
 
 import type { FallbackProps } from 'react-error-boundary'
 
 export function ErrorFallback({ error }: FallbackProps) {
   const { resetStore } = useStorageStore()
+  const [isErrorReported, setIsErrorReported] = useState(false)
 
   return (
     <div>
@@ -44,21 +49,28 @@ export function ErrorFallback({ error }: FallbackProps) {
             </button>
 
             <button
-              onClick={async e => {
-                const data = await chromeStorageClient.getData()
-                navigator.clipboard.writeText(JSON.stringify(data, null, 2))
-                ;(e.target as HTMLButtonElement).innerText = '복사 완료!'
-
-                setTimeout(() => {
-                  ;(e.target as HTMLButtonElement).innerText = '데이터 복사하기'
-                }, 2000)
+              onClick={async () => {
+                try {
+                  setIsErrorReported(true)
+                  await createSnapshots()
+                  toast.success('에러 보고가 성공적으로 완료되었습니다.')
+                } catch (error) {
+                  console.error('에러 보고 중 오류 발생:', error)
+                  toast.error('에러 보고에 실패했습니다.')
+                  setIsErrorReported(false)
+                }
               }}
-              className="mt-16px rounded-lg bg-gray-500 px-12px py-8px font-bold text-white"
+              className={cn(
+                'mt-16px rounded-lg bg-blue-400 px-12px py-8px font-bold text-white',
+                isErrorReported && 'opacity-50',
+              )}
+              disabled={isErrorReported}
             >
-              데이터 복사하기
+              에러 보고하기
             </button>
           </div>
           <div className="mt-16px text-sm text-gray-500">버전: {packageJson.version}</div>
+          <ToastContainer />
         </div>
       </div>
     </div>
