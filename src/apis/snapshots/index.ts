@@ -1,5 +1,5 @@
 import { api } from '@/apis/configs/api'
-import { getCourses, getDocument } from '@/services' // 이미 존재하는 유틸리티 함수들
+import { getCourses, getDocument } from '@/services'
 
 import type { CreateSnapshotRequest, CreateSnapshotResponse, SnapshotListResponse } from './types'
 
@@ -22,7 +22,7 @@ export async function postSnapshot(snapshot: CreateSnapshotRequest): Promise<Cre
 
 export async function createSnapshots(): Promise<CreateSnapshotRequest[]> {
   const snapshotRequests: CreateSnapshotRequest[] = []
-  let snapshotResponses: CreateSnapshotResponse[] = [] // 결과를 저장할 변수 선언
+  let snapshotResponses: CreateSnapshotResponse[] = []
 
   const urls = {
     activities: (courseId: string) => `/course/view.php?id=${courseId}`,

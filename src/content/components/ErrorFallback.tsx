@@ -1,6 +1,6 @@
 import { Copy } from 'lucide-react'
 import { useState } from 'react'
-import toast from 'react-hot-toast' // toast 추가
+import toast from 'react-hot-toast'
 
 import { ToastContainer } from './ToastContainer'
 import packageJson from '../../../package.json'
