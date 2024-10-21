@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { crx } from '@crxjs/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
@@ -23,17 +22,6 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
       '@/utils': resolve(__dirname, './src/utils'),
       '@/assets': resolve(__dirname, './src/assets'),
-    },
-  },
-  build: {
-    chunkSizeWarningLimit: 1024,
-    rollupOptions: {
-      onwarn(warning, warn) {
-        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
-          return
-        }
-        warn(warning)
-      },
     },
   },
 })
