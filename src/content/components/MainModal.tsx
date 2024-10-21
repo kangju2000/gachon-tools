@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 
 import { BottomNavigation } from './BottomNavigation'
 import { SettingsContent } from './setting'
@@ -28,16 +28,21 @@ const modalVariants: Variants = {
 export function MainModal() {
   const [activeTab, setActiveTab] = useState<'tasks' | 'settings'>('tasks')
 
+  const Content = useMemo(() => {
+    return activeTab === 'tasks' ? <TaskContent /> : <SettingsContent />
+  }, [activeTab])
+
   return (
     <motion.div
       variants={modalVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
+      transition={{ duration: 0.3 }}
       className="fixed bottom-96px right-25px h-600px w-350px origin-bottom-right overflow-hidden rounded-36px bg-slate-100 shadow-[0_0_100px_0_rgba(0,0,0,0.2)] backdrop-blur-sm"
     >
       <div className="flex h-full flex-col">
-        {activeTab === 'tasks' ? <TaskContent /> : <SettingsContent />}
+        {Content}
         <BottomNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
         <ToastContainer />
       </div>
