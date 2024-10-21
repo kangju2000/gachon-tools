@@ -1,7 +1,7 @@
 {
   "name": "gachon-tools",
   "description": "과제 대시보드 · 사이버캠퍼스 어시스턴트",
-  "version": "2.0.7",
+  "version": "2.1.0",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
