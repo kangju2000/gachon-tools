@@ -9,4 +9,4 @@ export const mapElement = <T>(elements: Cheerio<AnyNode>, callback: (i: number, 
 }
 
 export const getText = ($el: Cheerio<AnyNode>): string => $el.text().trim()
-export const getAttr = ($el: Cheerio<AnyNode>, attr: string): string => $el.attr(attr) || ''
+export const getAttr = ($el: Cheerio<AnyNode>, attr: string): string | undefined => $el.attr(attr)
