@@ -5,6 +5,7 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "strict": true,
 
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -17,7 +18,7 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["*/**.ts", "*/**.tsx", "vite.config.ts", "src"],
+  "include": ["*/**.ts", "*/**.tsx", "vite.config.ts", "src", "src/test/snapshot.test.ts"],
   "exclude": ["node_modules", "dist"],
   "types": ["chrome", "node"]
 }
