@@ -99,7 +99,6 @@ export function parseAssignmentSubmitted(
     const assignmentTitle = getText($el.find(title))
     const endAt = getText($el.find(period)) + ':00'
     const hasSubmitted = SUBMISSION_STATUS_REGEX.test(getText($el.find(status)))
-    console.log({ id, assignmentTitle, endAt, hasSubmitted })
 
     return { id, title: assignmentTitle, endAt, hasSubmitted }
   })

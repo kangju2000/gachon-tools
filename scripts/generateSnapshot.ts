@@ -1,7 +1,14 @@
+import dotenv from 'dotenv'
 import fs from 'fs/promises'
 import path from 'path'
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
 
 import { getSnapshots } from '@/apis/snapshots'
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const __dirname = dirname(fileURLToPath(import.meta.url))
+dotenv.config({ path: path.resolve(__dirname, '../.env') })
 
 const GENERATED_DIR = path.join(process.cwd(), 'src/__generated__')
 const SNAPSHOTS_DIR = path.join(GENERATED_DIR, 'snapshots')

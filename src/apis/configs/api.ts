@@ -1,14 +1,17 @@
-import dotenv from 'dotenv'
-
-dotenv.config()
-
-const API_BASE_URL = process.env.VITE_API_URL
+const getApiUrl = () => {
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env.VITE_API_URL
+  }
+  return import.meta.env.VITE_API_URL
+}
 
 type RequestOptions = RequestInit & {
   params?: Record<string, string | number | undefined>
 }
 
 export async function api<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+  const API_BASE_URL = getApiUrl()
+
   if (!API_BASE_URL) {
     throw new Error('API_BASE_URL is not defined')
   }
