@@ -5,7 +5,7 @@ import { Video, FileText, CheckCircle, AlertTriangle, Clock, XCircle } from 'luc
 import type { Activity } from '@/types'
 import { cn } from '@/utils/cn'
 
-const StatusBadge = ({ isExpired, hasSubmitted }) => {
+const StatusBadge = ({ isExpired, hasSubmitted }: { isExpired: boolean; hasSubmitted: boolean }) => {
   if (isExpired && !hasSubmitted) {
     return (
       <span className="flex items-center text-12px text-red-600">

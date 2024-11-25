@@ -42,8 +42,8 @@ export function Shortcut() {
     if (key.length === 1 || ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'].includes(key)) {
       let processedKey = key.toLowerCase()
 
-      if (KOREAN_TO_ENGLISH[processedKey]) {
-        processedKey = KOREAN_TO_ENGLISH[processedKey]
+      if (KOREAN_TO_ENGLISH[processedKey as keyof typeof KOREAN_TO_ENGLISH]) {
+        processedKey = KOREAN_TO_ENGLISH[processedKey as keyof typeof KOREAN_TO_ENGLISH]
       }
 
       const newShortcut = [

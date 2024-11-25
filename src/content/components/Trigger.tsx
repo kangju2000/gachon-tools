@@ -7,12 +7,21 @@ import { MainModal } from './MainModal'
 import { useShadowRoot } from '@/hooks/useShadowRoot'
 import { useShortcutStore } from '@/storage/useShortcutStore'
 import { useStorageStore } from '@/storage/useStorageStore'
+import type { StorageData } from '@/types'
 
 const isActiveElementEditable = (element: Element | null): boolean => {
   return element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement
 }
 
-const TriggerButton = ({ isOpen, onClick, settings }) => (
+const TriggerButton = ({
+  isOpen,
+  onClick,
+  settings,
+}: {
+  isOpen: boolean
+  onClick: () => void
+  settings: StorageData['settings']
+}) => (
   <div
     onClick={onClick}
     className="d-mask d-mask-squircle fixed bottom-25px right-25px h-56px w-56px cursor-pointer bg-cover bg-center bg-no-repeat shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl"
@@ -50,7 +59,7 @@ export function Trigger() {
 
   const handleHotkey = () => {
     const activeElement = shadowRoot?.activeElement
-    if (isEditing || isActiveElementEditable(activeElement)) {
+    if (isEditing || isActiveElementEditable(activeElement ?? null)) {
       return
     }
 

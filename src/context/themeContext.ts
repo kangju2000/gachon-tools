@@ -7,7 +7,7 @@ type ThemeContextValue<T = Theme> = {
   setTheme: (theme: T) => void
 }
 
-export const ThemeContext = createContext<ThemeContextValue>(null)
+export const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export const useThemeContext = () => {
   const context = useContext(ThemeContext)

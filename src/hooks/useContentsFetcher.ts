@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { useRefreshCheck } from './useRefreshCheck'
-import { getActivities, getAssignmentSubmitted, getCourses, getVideoSubmitted } from '@/services'
+import { getActivities, getAssignmentSubmitted, getCourses, getVideoSubmitted } from '@/services/parser'
 import { useStorageStore } from '@/storage/useStorageStore'
 
 export const useContentsFetcher = () => {
