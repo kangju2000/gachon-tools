@@ -1,14 +1,11 @@
 import { api } from '@/apis/configs/api'
-import { getCourses, getDocument } from '@/services'
+import { getCourses } from '@/services/parser'
+import { fetchAndParse } from '@/services/parser/utils/dom'
 
-import type { CreateSnapshotRequest, CreateSnapshotResponse, SnapshotListResponse } from './types'
+import type { CreateSnapshotRequest, CreateSnapshotResponse, Snapshot } from './types'
 
-export async function getSnapshots(
-  universityId: number,
-  path?: string,
-  courseId?: string,
-): Promise<SnapshotListResponse> {
-  return await api<SnapshotListResponse>('/api/snapshots', {
+export async function getSnapshots(universityId: number, path?: string, courseId?: string): Promise<Snapshot[]> {
+  return await api<Snapshot[]>('/api/snapshots', {
     params: { universityId, path, courseId },
   })
 }
@@ -34,7 +31,7 @@ export async function createSnapshots(): Promise<CreateSnapshotRequest[]> {
     const courses = await getCourses()
 
     for (const course of courses) {
-      const activitiesHtml = (await getDocument(urls.activities(course.id))).html()
+      const activitiesHtml = (await fetchAndParse(urls.activities(course.id))).html()
       snapshotRequests.push({
         courseId: course.id,
         html: activitiesHtml,
@@ -43,7 +40,7 @@ export async function createSnapshots(): Promise<CreateSnapshotRequest[]> {
         url: urls.activities(course.id),
       })
 
-      const assignmentSubmittedHtml = (await getDocument(urls.assignmentSubmitted(course.id))).html()
+      const assignmentSubmittedHtml = (await fetchAndParse(urls.assignmentSubmitted(course.id))).html()
       snapshotRequests.push({
         courseId: course.id,
         html: assignmentSubmittedHtml,
@@ -51,7 +48,7 @@ export async function createSnapshots(): Promise<CreateSnapshotRequest[]> {
         path: urls.assignmentSubmitted(course.id),
         url: urls.assignmentSubmitted(course.id),
       })
-      const videoSubmittedHtml = (await getDocument(urls.videoSubmitted(course.id))).html()
+      const videoSubmittedHtml = (await fetchAndParse(urls.videoSubmitted(course.id))).html()
       snapshotRequests.push({
         courseId: course.id,
         html: videoSubmittedHtml,

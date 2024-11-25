@@ -2,7 +2,6 @@ import { z } from 'zod'
 
 export const domSelectorsSchema = z.object({
   courses: z.object({
-    container: z.string(),
     link: z.string(),
   }),
   activities: z.object({
@@ -37,15 +36,14 @@ export const domSelectorsSchema = z.object({
       title: z.string(),
       sectionTitle: z.string(),
       requiredTime: z.string(),
-      studyTime: z.string(),
+      // studyTime: z.string(),
     }),
   }),
 })
 
 export const DOM_SELECTORS = domSelectorsSchema.parse({
   courses: {
-    container: '.coursefullname',
-    link: 'href',
+    link: '.coursefullname',
   },
   activities: {
     sections: {

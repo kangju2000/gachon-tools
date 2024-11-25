@@ -1,52 +1,35 @@
-import * as cheerio from 'cheerio'
-
 import { DOM_SELECTORS } from './constants/selectors'
 import { UNIVERSITY_REGEX, SUBMISSION_STATUS_REGEX } from './constants/universities'
 import { URL_PATTERNS } from './constants/urls'
-import { UNIVERITY_NAME_MAP } from '@/constants/univ'
-import type { UniversityLink } from '@/constants/univ'
+import { fetchAndParse } from './utils/dom'
+import { UNIVERITY_LINK_LIST, UNIVERITY_NAME_MAP } from '@/constants/univ'
+import type { University, UniversityLink } from '@/constants/univ'
 import type { Activity, Assignment, Course, Video } from '@/types'
 import { getLinkId, mapElement, getAttr, getText } from '@/utils'
 
+import type * as cheerio from 'cheerio'
 import type { AnyNode } from 'domhandler'
 
-const origin = window.location.origin as UniversityLink
-const university = UNIVERITY_NAME_MAP[origin]
+const origin = (typeof window !== 'undefined' ? window.location.origin : UNIVERITY_LINK_LIST[0]) as UniversityLink
 
-/**
- * HTML을 가져와서 파싱하는 함수
- */
-async function fetchHTML(url: string): Promise<cheerio.CheerioAPI> {
-  try {
-    const response = await fetch(origin + url)
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-
-    const html = await response.text()
-    const $ = cheerio.load(html)
-    $('script, style').remove()
-
-    return $
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Failed to fetch ${url}: ${error.message}`)
-    }
-    throw error
-  }
-}
-
-export async function getCourses(params?: { year: number; semester: number }): Promise<Course[]> {
+export async function getCourses(
+  university: University = UNIVERITY_NAME_MAP[origin],
+  params?: { year: number; semester: number },
+): Promise<Course[]> {
   let $: cheerio.CheerioAPI
   if (params) {
     const { year, semester } = params
-    $ = await fetchHTML(URL_PATTERNS.coursesWithYearSemester(year, semester))
+    $ = await fetchAndParse(URL_PATTERNS.coursesWithYearSemester(year, semester))
   } else {
-    $ = await fetchHTML(URL_PATTERNS.courses)
+    $ = await fetchAndParse(URL_PATTERNS.courses)
   }
 
-  return mapElement($(DOM_SELECTORS.courses.container), (_, el) => {
+  const { link } = DOM_SELECTORS.courses
+
+  return mapElement($(link), (_, el) => {
     const $el = $(el)
     return {
-      id: getLinkId(getAttr($el, DOM_SELECTORS.courses.link)),
+      id: getLinkId(getAttr($el, 'href')),
       title: getText($el).replace(UNIVERSITY_REGEX[university]?.titleRegex, ''),
     }
   })
@@ -59,8 +42,7 @@ export function parseAssignments(
   const { sections, assignment } = DOM_SELECTORS.activities
 
   const parseAssignment = ($el: cheerio.Cheerio<AnyNode>, sectionTitle?: string) => {
-    const link = getAttr($el.find(assignment.link), 'href')
-    const id = getLinkId(link)
+    const id = getLinkId(getAttr($el.find(assignment.link), 'href'))
     const title = getText($el.find(assignment.title).clone().children().remove().end())
     const [startAt, endAt] = getText($el.find(assignment.period))
       .split(' ~ ')
@@ -92,8 +74,7 @@ export function parseVideos(
 
     return mapElement($content.find(video.container), (_, el) => {
       const $el = $(el)
-      const link = getAttr($el.find(video.link), 'href')
-      const id = getLinkId(link)
+      const id = getLinkId(getAttr($el.find(video.link), 'href'))
       const title = getText($el.find(video.title).clone().children().remove().end())
       const [startAt, endAt] = getText($el.find(video.period).clone().children().remove().end())
         .split(' ~ ')
@@ -114,9 +95,11 @@ export function parseAssignmentSubmitted(
     if ($el.find(divider).length) return
 
     const id = getLinkId(getAttr($el.find(title), 'href'))
+
     const assignmentTitle = getText($el.find(title))
     const endAt = getText($el.find(period)) + ':00'
     const hasSubmitted = SUBMISSION_STATUS_REGEX.test(getText($el.find(status)))
+    console.log({ id, assignmentTitle, endAt, hasSubmitted })
 
     return { id, title: assignmentTitle, endAt, hasSubmitted }
   })
@@ -140,8 +123,8 @@ export function parseVideoSubmitted(
     const videoTitle = getText($el.find(title))
     const $std = $el.find(requiredTime)
     const required = getText($std) // mm:ss
-    const total = getText($std.next().clone().children().remove().end()) // mm:ss
-    const hasSubmitted = Number(required.replace(/:/g, '')) <= Number(total.replace(/:/g, ''))
+    const study = getText($std.next().clone().children().remove().end()) // mm:ss
+    const hasSubmitted = Number(required.replace(/:/g, '')) <= Number(study.replace(/:/g, ''))
 
     return { title: videoTitle, hasSubmitted, sectionTitle: currentSectionTitle }
   })
@@ -150,14 +133,14 @@ export function parseVideoSubmitted(
 export async function getAssignmentSubmitted(
   courseId: string,
 ): Promise<Array<Pick<Assignment, 'id' | 'title' | 'hasSubmitted' | 'endAt'>>> {
-  const $ = await fetchHTML(URL_PATTERNS.assignmentSubmitted(courseId))
+  const $ = await fetchAndParse(URL_PATTERNS.assignmentSubmitted(courseId))
   return parseAssignmentSubmitted($)
 }
 
 export async function getVideoSubmitted(
   courseId: string,
 ): Promise<Array<Pick<Video, 'title' | 'hasSubmitted' | 'sectionTitle'>>> {
-  const $ = await fetchHTML(URL_PATTERNS.videoSubmitted(courseId))
+  const $ = await fetchAndParse(URL_PATTERNS.videoSubmitted(courseId))
   return parseVideoSubmitted($)
 }
 
@@ -167,7 +150,7 @@ export async function getActivities(
   assignmentSubmittedArray: Awaited<ReturnType<typeof getAssignmentSubmitted>>,
   videoSubmittedArray: Awaited<ReturnType<typeof getVideoSubmitted>>,
 ): Promise<Activity[]> {
-  const $ = await fetchHTML(URL_PATTERNS.activities(courseId))
+  const $ = await fetchAndParse(URL_PATTERNS.activities(courseId))
 
   const assignments = parseAssignments($, courseId).reduce<Assignment[]>((acc, cur) => {
     const findAssignment = assignmentSubmittedArray.find(a => a.id === cur.id)

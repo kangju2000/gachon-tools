@@ -23,11 +23,3 @@ export interface CreateSnapshotRequest {
 }
 
 export interface CreateSnapshotResponse extends Snapshot {}
-
-export interface UniversityListResponse {
-  universities: University[]
-}
-
-export interface SnapshotListResponse {
-  snapshots: Snapshot[]
-}
