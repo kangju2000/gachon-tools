@@ -1,7 +1,7 @@
 import { defineManifest } from '@crxjs/vite-plugin'
 
 import packageJson from './package.json'
-import { UNIVERITY_LINK_LIST } from './src/constants/univ'
+import { UNIVERSITY_LINK_LIST } from './src/constants/univ'
 
 const [major, minor, patch, label = '0'] = packageJson.version.replace(/[^\d.-]+/g, '').split(/[.-]/)
 
@@ -37,8 +37,8 @@ export default defineManifest(
       },
       content_scripts: [
         {
-          matches: UNIVERITY_LINK_LIST.map(univ => `${univ}/*`),
-          exclude_matches: UNIVERITY_LINK_LIST.flatMap(univ => [
+          matches: UNIVERSITY_LINK_LIST.map(univ => `${univ}/*`),
+          exclude_matches: UNIVERSITY_LINK_LIST.flatMap(univ => [
             `${univ}/login.php*`,
             `${univ}/mod/ubfile/viewer.php*`,
             `${univ}/mod/vod/viewer.php*`,
@@ -54,7 +54,7 @@ export default defineManifest(
           matches: ['*://*/*'],
         },
       ],
-      host_permissions: UNIVERITY_LINK_LIST.map(univ => `${univ}/*`),
+      host_permissions: UNIVERSITY_LINK_LIST.map(univ => `${univ}/*`),
       permissions: ['storage', 'unlimitedStorage', 'scripting', 'activeTab'],
     }) as const,
 )

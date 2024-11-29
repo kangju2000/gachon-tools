@@ -1,9 +1,9 @@
 import * as cheerio from 'cheerio'
 
 import type { UniversityLink } from '@/constants/univ'
-import { UNIVERITY_LINK_LIST } from '@/constants/univ'
+import { UNIVERSITY_LINK_LIST } from '@/constants/univ'
 
-const origin = (typeof window !== 'undefined' ? window.location.origin : UNIVERITY_LINK_LIST[0]) as UniversityLink
+const origin = (typeof window !== 'undefined' ? window.location.origin : UNIVERSITY_LINK_LIST[0]) as UniversityLink
 
 export async function fetchAndParse(url: string): Promise<cheerio.CheerioAPI> {
   try {

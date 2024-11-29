@@ -2,7 +2,7 @@ import { DOM_SELECTORS } from './constants/selectors'
 import { UNIVERSITY_REGEX, SUBMISSION_STATUS_REGEX } from './constants/universities'
 import { URL_PATTERNS } from './constants/urls'
 import { fetchAndParse } from './utils/dom'
-import { UNIVERITY_LINK_LIST, UNIVERITY_NAME_MAP } from '@/constants/univ'
+import { UNIVERSITY_LINK_LIST, UNIVERSITY_NAME_MAP } from '@/constants/univ'
 import type { University, UniversityLink } from '@/constants/univ'
 import type { Activity, Assignment, Course, Video } from '@/types'
 import { getLinkId, mapElement, getAttr, getText } from '@/utils'
@@ -10,10 +10,10 @@ import { getLinkId, mapElement, getAttr, getText } from '@/utils'
 import type * as cheerio from 'cheerio'
 import type { AnyNode } from 'domhandler'
 
-const origin = (typeof window !== 'undefined' ? window.location.origin : UNIVERITY_LINK_LIST[0]) as UniversityLink
+const origin = (typeof window !== 'undefined' ? window.location.origin : UNIVERSITY_LINK_LIST[0]) as UniversityLink
 
 export async function getCourses(
-  university: University = UNIVERITY_NAME_MAP[origin],
+  university: University = UNIVERSITY_NAME_MAP[origin],
   params?: { year: number; semester: number },
 ): Promise<Course[]> {
   let $: cheerio.CheerioAPI
