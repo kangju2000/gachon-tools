@@ -21,7 +21,11 @@ export interface Video extends BaseActivity {
   sectionTitle: string
 }
 
-export type Activity = Assignment | Video
+export interface Quiz extends BaseActivity {
+  type: 'quiz'
+}
+
+export type Activity = Assignment | Video | Quiz
 
 export type Contents = {
   courseList: Course[]

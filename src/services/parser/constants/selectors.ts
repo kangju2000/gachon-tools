@@ -16,6 +16,12 @@ export const domSelectorsSchema = z.object({
       title: z.string(),
       period: z.string(),
     }),
+    quiz: z.object({
+      container: z.string(),
+      link: z.string(),
+      title: z.string(),
+      period: z.string(),
+    }),
     video: z.object({
       container: z.string(),
       link: z.string(),
@@ -57,8 +63,14 @@ export const DOM_SELECTORS = domSelectorsSchema.parse({
       title: '.instancename',
       period: '.displayoptions',
     },
+    quiz: {
+      container: '.modtype_quiz .activityinstance',
+      link: 'a',
+      title: '.instancename',
+      period: '.displayoptions',
+    },
     video: {
-      container: '.modtype_vod .activityinstance',
+      container: '.modtype_vod .activityinstance, .modtype_ubionvod .activityinstance, .modtype_kollus .activityinstance',
       link: 'a',
       title: '.instancename',
       period: '.displayoptions .text-ubstrap',

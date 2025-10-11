@@ -1,6 +1,6 @@
 import { differenceInDays, differenceInHours, isPast, format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { Video, FileText, CheckCircle, AlertTriangle, Clock, XCircle } from 'lucide-react'
+import { Video, FileText, HelpCircle, CheckCircle, AlertTriangle, Clock, XCircle } from 'lucide-react'
 
 import type { Activity } from '@/types'
 import { cn } from '@/utils/cn'
@@ -50,7 +50,8 @@ export function TaskCard({ task }: Props) {
 
   const getExactDeadline = () => format(endAtDate, 'M월 d일(E) HH:mm', { locale: ko })
 
-  const taskLink = `${window.location.origin}/mod/${task.type === 'assignment' ? 'assign' : 'vod'}/view.php?id=${task.id}`
+  const modulePath = task.type === 'assignment' ? 'assign' : task.type === 'video' ? 'vod' : 'quiz'
+  const taskLink = `${window.location.origin}/mod/${modulePath}/view.php?id=${task.id}`
 
   return (
     <a href={taskLink} rel="noopener noreferrer" className="block">
@@ -67,7 +68,7 @@ export function TaskCard({ task }: Props) {
         <div className="p-12px">
           <div className="flex items-start">
             <span className="mr-8px mt-2px flex-shrink-0 text-gray-500">
-              {task.type === 'video' ? <Video size={16} /> : <FileText size={16} />}
+              {task.type === 'video' ? <Video size={16} /> : task.type === 'assignment' ? <FileText size={16} /> : <HelpCircle size={16} />}
             </span>
             <div className="flex flex-1 flex-col">
               <h3 className="mb-2px flex-1 break-keep text-14px font-semibold text-gray-700">{task.title}</h3>

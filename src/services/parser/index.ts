@@ -4,7 +4,7 @@ import { URL_PATTERNS } from './constants/urls'
 import { fetchAndParse } from './utils/dom'
 import { UNIVERSITY_LINK_LIST, UNIVERSITY_NAME_MAP } from '@/constants/univ'
 import type { University, UniversityLink } from '@/constants/univ'
-import type { Activity, Assignment, Course, Video } from '@/types'
+import type { Activity, Assignment, Course, Video, Quiz } from '@/types'
 import { getLinkId, mapElement, getAttr, getText } from '@/utils'
 
 import type * as cheerio from 'cheerio'
@@ -85,6 +85,32 @@ export function parseVideos(
   }).flat()
 }
 
+export function parseQuizzes(
+  $: cheerio.CheerioAPI,
+  courseId: string,
+): Array<Omit<Quiz, 'courseTitle' | 'hasSubmitted'>> {
+  const { sections, quiz } = DOM_SELECTORS.activities
+
+  const parseQuiz = ($el: cheerio.Cheerio<AnyNode>, _sectionTitle?: string) => {
+    const id = getLinkId(getAttr($el.find(quiz.link), 'href'))
+    const title = getText($el.find(quiz.title).clone().children().remove().end())
+    const [startAt, endAt] = getText($el.find(quiz.period).clone().children().remove().end())
+      .split(' ~ ')
+      .map(t => t.trim())
+    return { type: 'quiz' as const, id, courseId, title, startAt, endAt }
+  }
+
+  const sectionOne = mapElement($(`${sections.first} ${quiz.container}`), (_, el) => parseQuiz($(el)))
+
+  const sectionTwo = mapElement($(sections.all), (_, content) => {
+    const $content = $(content)
+    const sectionTitle = getText($content.find(sections.title))
+    return mapElement($content.find(quiz.container), (_, el) => parseQuiz($(el), sectionTitle))
+  }).flat()
+
+  return [...sectionOne, ...sectionTwo]
+}
+
 export function parseAssignmentSubmitted(
   $: cheerio.CheerioAPI,
 ): Array<Pick<Assignment, 'id' | 'title' | 'hasSubmitted' | 'endAt'>> {
@@ -113,13 +139,13 @@ export function parseVideoSubmitted(
   return mapElement($(container), (_, el) => {
     const $el = $(el)
     const $sectionTitle = $el.find(sectionTitle)
-    const originalTitle = $sectionTitle.attr('title')
+    const originalTitle = $sectionTitle.attr('title') || $sectionTitle.text()
 
     if (originalTitle != null && originalTitle !== '') {
       currentSectionTitle = originalTitle
     }
 
-    const videoTitle = getText($el.find(title))
+    const videoTitle = getText($el.find(title).clone().children().remove().end())
     const $std = $el.find(requiredTime)
     const required = getText($std) // mm:ss
     const study = getText($std.next().clone().children().remove().end()) // mm:ss
@@ -156,10 +182,23 @@ export async function getActivities(
     return findAssignment ? [...acc, { ...cur, ...findAssignment, courseTitle }] : acc
   }, [])
 
+  const normalize = (text: string) => text.replace(/\s+/g, ' ').trim()
+
   const videos = parseVideos($, courseId).reduce<Video[]>((acc, cur) => {
-    const findVideo = videoSubmittedArray.find(v => v.sectionTitle === cur.sectionTitle && v.title === cur.title)
+    // 우선 섹션+제목 완전 일치 시도
+    let findVideo = videoSubmittedArray.find(
+      v => normalize(v.sectionTitle) === normalize(cur.sectionTitle) && normalize(v.title) === normalize(cur.title),
+    )
+
+    // 실패 시, 섹션명을 제외하고 제목만으로 매칭(fallback)
+    if (!findVideo) {
+      findVideo = videoSubmittedArray.find(v => normalize(v.title) === normalize(cur.title))
+    }
+
     return findVideo ? [...acc, { ...cur, ...findVideo, courseTitle }] : acc
   }, [])
 
-  return [...assignments, ...videos]
+  const quizzes = parseQuizzes($, courseId).map(q => ({ ...q, courseTitle, hasSubmitted: false }))
+
+  return [...assignments, ...videos, ...quizzes]
 }
