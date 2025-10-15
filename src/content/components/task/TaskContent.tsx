@@ -14,6 +14,7 @@ import { cn } from '@/utils/cn'
 const statusMap: Record<ActivityStatus, string> = {
   ongoing: '진행 중인 과제',
   all: '전체 과제',
+  unsubmitted: '미제출한 과제',
 }
 
 export function TaskContent() {
@@ -29,7 +30,7 @@ export function TaskContent() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [filterOptions.courseId, filterOptions.status])
+  }, [filterOptions.selectedCourseIds, filterOptions.status, filterOptions.showHidden])
 
   return (
     <>
@@ -64,7 +65,9 @@ export function TaskContent() {
             </span>
 
             <span className="flex items-center rounded-full bg-blue-100 px-8px py-2px text-11px text-blue-700">
-              {contents.courseList.find(course => course.id === filterOptions.courseId)?.title || '전체 과목'}
+              {filterOptions.selectedCourseIds.includes('-1')
+                ? '전체 과목'
+                : `선택 과목 ${filterOptions.selectedCourseIds.length}개`}
             </span>
           </div>
 
@@ -109,21 +112,47 @@ export function TaskContent() {
                     ))}
                   </div>
                 </div>
+                <div className="flex flex-wrap items-center gap-6px">
+                  <button
+                    className={cn('rounded-full px-8px py-2px text-11px', {
+                      'bg-blue-100 text-blue-700': !!filterOptions.showHidden,
+                      'bg-gray-100 text-gray-700 hover:bg-gray-200': !filterOptions.showHidden,
+                    })}
+                    onClick={() => updateData('filterOptions', prev => ({ ...prev, showHidden: !prev.showHidden }))}
+                  >
+                    숨긴 과제 보기
+                  </button>
+                </div>
                 <div>
                   <label className="mb-2px block text-11px font-medium text-gray-600">과목</label>
                   <div className="flex flex-wrap gap-4px">
-                    {contents.courseList.map(course => (
-                      <button
-                        key={course.id}
-                        className={cn('rounded-full px-8px py-2px text-11px', {
-                          'bg-blue-100 text-blue-700': filterOptions.courseId === course.id,
-                          'bg-gray-100 text-gray-700 hover:bg-gray-300': filterOptions.courseId !== course.id,
-                        })}
-                        onClick={() => updateData('filterOptions', prev => ({ ...prev, courseId: course.id }))}
-                      >
-                        {course.title}
-                      </button>
-                    ))}
+                    {contents.courseList.map(course => {
+                      const isSelected = filterOptions.selectedCourseIds.includes(course.id)
+                      return (
+                        <button
+                          key={course.id}
+                          className={cn('rounded-full px-8px py-2px text-11px', {
+                            'bg-blue-100 text-blue-700': isSelected,
+                            'bg-gray-100 text-gray-700 hover:bg-gray-300': !isSelected,
+                          })}
+                          onClick={() =>
+                            updateData('filterOptions', prev => {
+                              // 전체 과목 토글
+                              if (course.id === '-1') {
+                                return { ...prev, selectedCourseIds: ['-1'] }
+                              }
+                              const next = new Set(prev.selectedCourseIds.filter(id => id !== '-1'))
+                              if (next.has(course.id)) next.delete(course.id)
+                              else next.add(course.id)
+                              if (next.size === 0) return { ...prev, selectedCourseIds: ['-1'] }
+                              return { ...prev, selectedCourseIds: Array.from(next) }
+                            })
+                          }
+                        >
+                          {course.title}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               </div>

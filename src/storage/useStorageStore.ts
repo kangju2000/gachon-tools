@@ -17,7 +17,7 @@ interface StorageStore extends StorageData {
 const initialStorageData: StorageData = {
   meta: { version: packageJson.version, updateAt: '2024-01-01T00:00:00.000Z' },
   contents: { courseList: [{ id: '-1', title: '전체 과목' }], activityList: [] },
-  filterOptions: { status: 'ongoing', courseId: '-1' },
+  filterOptions: { status: 'ongoing', selectedCourseIds: ['-1'] },
   settings: {
     refreshInterval: 1000 * 60 * 20,
     trigger: {
@@ -25,7 +25,15 @@ const initialStorageData: StorageData = {
       image: chrome.runtime.getURL('/assets/Lee-Gil-ya.webp'),
     },
     shortcut: isMac ? 'meta+/' : 'Ctrl+/',
+    reminders: {
+      hoursBefore: [1, 3, 6],
+      daysBefore: [1, 2],
+    },
+    webUiEnhancement: false,
+    webUiHidePopups: false,
   },
+  overrides: { hiddenActivityIds: [], completedActivityIds: [] },
+  reminders: { enabledActivityIds: [] },
 }
 
 const mergeData = (initial: StorageData, stored: Partial<StorageData>): StorageData => ({
@@ -33,6 +41,8 @@ const mergeData = (initial: StorageData, stored: Partial<StorageData>): StorageD
   contents: { ...initial.contents, ...stored.contents },
   filterOptions: { ...initial.filterOptions, ...stored.filterOptions },
   settings: { ...initial.settings, ...stored.settings },
+  overrides: { ...initial.overrides, ...stored.overrides },
+  reminders: { ...initial.reminders, ...stored.reminders },
 })
 
 export const useStorageStore = create<StorageStore>((set, get) => ({
@@ -54,7 +64,13 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
 
   getFilteredActivities: (searchQuery: string) =>
     get()
-      .contents.activityList.filter(activity => filterActivities(activity, { ...get().filterOptions, searchQuery }))
+      .contents.activityList.filter(activity =>
+        get().filterOptions.showHidden ? true : !get().overrides!.hiddenActivityIds.includes(activity.id),
+      )
+      .map(activity =>
+        get().overrides!.completedActivityIds.includes(activity.id) ? { ...activity, hasSubmitted: true } : activity,
+      )
+      .filter(activity => filterActivities(activity, { ...get().filterOptions, searchQuery }))
       .sort((a, b) => new Date(a.endAt).getTime() - new Date(b.endAt).getTime()),
 
   resetStore: async () => {

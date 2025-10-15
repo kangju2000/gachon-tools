@@ -55,6 +55,6 @@ export default defineManifest(
         },
       ],
       host_permissions: UNIVERSITY_LINK_LIST.map(univ => `${univ}/*`),
-      permissions: ['storage', 'unlimitedStorage', 'scripting', 'activeTab'],
+      permissions: ['storage', 'unlimitedStorage', 'scripting', 'activeTab', 'notifications', 'alarms'],
     }) as const,
 )

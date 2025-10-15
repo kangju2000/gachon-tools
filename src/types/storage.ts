@@ -11,12 +11,26 @@ export type StorageData = {
     refreshInterval: number
     trigger: { type: 'image'; image: string } | { type: 'color'; color: string }
     shortcut: string
+    reminders?: {
+      hoursBefore: number[]
+      daysBefore: number[]
+    }
+    webUiEnhancement?: boolean
+    webUiHidePopups?: boolean
+  }
+  overrides: {
+    hiddenActivityIds: string[]
+    completedActivityIds: string[]
+  }
+  reminders: {
+    enabledActivityIds: string[]
   }
 }
 
-export type ActivityStatus = 'ongoing' | 'all'
+export type ActivityStatus = 'ongoing' | 'all' | 'unsubmitted'
 
 export type FilterOptions = {
   status: ActivityStatus
-  courseId: string
+  selectedCourseIds: string[]
+  showHidden?: boolean
 }

@@ -7,22 +7,27 @@ interface FilterOptions extends _FilterOptions {
   searchQuery?: string
 }
 
-const isOngoing = (activity: Activity): boolean => {
-  return new Date() <= new Date(activity.endAt)
-}
+const isOngoing = (activity: Activity): boolean => new Date() <= new Date(activity.endAt)
 
 const isValidActivity = (activity: Activity): boolean => activity.id !== '' && isValid(new Date(activity.endAt))
 
 const filterByStatus = (activity: Activity, status: ActivityStatus): boolean => {
-  if (status === 'ongoing') {
-    return isOngoing(activity)
+  switch (status) {
+    case 'ongoing':
+      return isOngoing(activity)
+    case 'unsubmitted':
+      return !activity.hasSubmitted && isOngoing(activity)
+    case 'all':
+    default:
+      return true
   }
-
-  return true
 }
 
-const filterByCourse = (activity: Activity, courseId: string): boolean =>
-  courseId === '-1' || activity.courseId === courseId
+const filterByCourse = (activity: Activity, selectedCourseIds: string[]): boolean => {
+  if (!selectedCourseIds?.length) return true
+  if (selectedCourseIds.includes('-1')) return true
+  return selectedCourseIds.includes(activity.courseId)
+}
 
 const filterBySearchQuery = (activity: Activity, searchQuery?: string): boolean => {
   if (!searchQuery) return true
@@ -34,7 +39,7 @@ export function filterActivities(activity: Activity, options: FilterOptions): bo
   return (
     isValidActivity(activity) &&
     filterByStatus(activity, options.status) &&
-    filterByCourse(activity, options.courseId) &&
+    filterByCourse(activity, options.selectedCourseIds) &&
     filterBySearchQuery(activity, options.searchQuery)
   )
 }
