@@ -203,7 +203,7 @@ export function SettingsContent() {
                 <input
                   id="ui-enhance"
                   type="checkbox"
-                  className="d-toggle d-toggle-primary"
+                  className="d-toggle"
                   checked={Boolean(settings.webUiEnhancement)}
                   onChange={e => updateData('settings', prev => ({ ...prev, webUiEnhancement: e.target.checked }))}
                 />

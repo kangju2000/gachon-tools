@@ -11,6 +11,14 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Custom toggle color - knob (circle) color when checked */
+  .d-toggle:checked {
+    --chkbg: #3b82f6;
+    --chkfg: white;
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+  }
 }
 
 :host {
